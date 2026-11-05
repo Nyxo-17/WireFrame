@@ -46,7 +46,8 @@ class WireframeApp(ctk.CTk):
 
         self.overrideredirect(True)
 
-        self.grid_columnconfigure(0, weight=0)
+        # Colonne 0 réservée à 64px (taille de la Sidebar repliée) : le centre ne bouge jamais !
+        self.grid_columnconfigure(0, minsize=64, weight=0)
         self.grid_columnconfigure(1, weight=1)
         self.grid_columnconfigure(2, weight=0)
         self.grid_rowconfigure(0, weight=0)
@@ -72,15 +73,7 @@ class WireframeApp(ctk.CTk):
         )
         self.titlebar.grid(row=0, column=0, columnspan=3, sticky="ew")
 
-        # 1. Colonne gauche : Sidebar auto-rétractable au survol
-        self.sidebar = Sidebar(
-            self,
-            on_navigate=self.show_view,
-            on_refresh=lambda: self.refresh_all_data(show_overlay=True),
-        )
-        self.sidebar.grid(row=1, column=0, sticky="nsew")
-
-        # 2. Colonne centrale : Conteneur des Vues + InAppLoader
+        # 1. Colonne centrale : Conteneur des Vues (fixe, ne se redimensionne pas à l'ouverture du menu)
         self.center_container = ctk.CTkFrame(
             self,
             corner_radius=10,
@@ -88,15 +81,24 @@ class WireframeApp(ctk.CTk):
             border_width=1,
             border_color="#1A2234",
         )
-        self.center_container.grid(row=1, column=1, sticky="nsew", padx=(12, 8), pady=12)
+        self.center_container.grid(row=1, column=1, sticky="nsew", padx=(8, 8), pady=12)
         self.center_container.grid_columnconfigure(0, weight=1)
         self.center_container.grid_rowconfigure(0, weight=1)
 
         self.in_app_loader = InAppLoader(self.center_container)
 
-        # 3. Colonne droite : Panneau Live
+        # 2. Colonne droite : Panneau Live
         self.live_panel = LivePanel(self)
         self.live_panel.grid(row=1, column=2, sticky="nsew", padx=(4, 12), pady=12)
+
+        # 3. Colonne gauche en superposition (Overlay Drawer) : flotte par-dessus le centre quand ouverte !
+        self.sidebar = Sidebar(
+            self,
+            on_navigate=self.show_view,
+            on_refresh=lambda: self.refresh_all_data(show_overlay=True),
+        )
+        self.sidebar.place(x=0, y=44, relheight=1.0)
+        self.sidebar.lift()
 
         self.views: dict[str, ctk.CTkFrame] = {
             "welcome": WelcomeView(self.center_container, on_navigate=self.sidebar.select_tab),

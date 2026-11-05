@@ -38,7 +38,14 @@ class Sidebar(ctk.CTkFrame):
         on_navigate: Callable[[str], None],
         on_refresh: Callable[[], None],
     ) -> None:
-        super().__init__(master, width=COLLAPSED_WIDTH, corner_radius=0, fg_color="#0D111A")
+        super().__init__(
+            master,
+            width=COLLAPSED_WIDTH,
+            corner_radius=0,
+            fg_color="#0D111A",
+            border_width=1,
+            border_color="#1A2234",
+        )
         self.on_navigate = on_navigate
         self.on_refresh = on_refresh
         self.is_collapsed: bool = False
@@ -189,7 +196,7 @@ class Sidebar(ctk.CTkFrame):
             font=ctk.CTkFont(size=12, weight="bold"),
             command=self.on_refresh,
         )
-        self.refresh_btn.grid(row=17, column=0, padx=10, pady=(0, 12), sticky="ew")
+        self.refresh_btn.grid(row=17, column=0, padx=10, pady=(0, 56), sticky="ew")
 
     def set_collapsed(self, collapsed: bool) -> None:
         """Range la colonne à gauche (64px) ou la déploie (225px) en masquant/affichant les textes."""
@@ -210,6 +217,7 @@ class Sidebar(ctk.CTkFrame):
                 text_lbl.grid_remove()
         else:
             self.configure(width=EXPANDED_WIDTH)
+            self.lift()
             self.name_lbl.grid()
             self.role_lbl.grid()
             self.sec_home_lbl.grid()
