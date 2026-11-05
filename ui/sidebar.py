@@ -5,6 +5,7 @@ from typing import Callable
 import customtkinter as ctk
 from PIL import Image
 from core.i18n import tr
+from core.updater import get_local_version
 
 LOGO_PATH = Path(__file__).resolve().parent.parent / "data" / "app_logo.png"
 
@@ -37,10 +38,12 @@ class Sidebar(ctk.CTkFrame):
         master: ctk.CTkBaseClass,
         on_navigate: Callable[[str], None],
         on_refresh: Callable[[], None],
+        on_check_update: Callable[[], None] | None = None,
     ) -> None:
         super().__init__(master, width=220, corner_radius=0, fg_color=BG_SIDEBAR)
         self.on_navigate = on_navigate
         self.on_refresh = on_refresh
+        self.on_check_update = on_check_update
         self.active_key: str = "welcome"
 
         self.nav_outer_glows: dict[str, ctk.CTkFrame] = {}
@@ -235,7 +238,7 @@ class Sidebar(ctk.CTkFrame):
         self.refresh_btn = ctk.CTkButton(
             self,
             text=tr("btn_refresh"),
-            height=34,
+            height=32,
             corner_radius=7,
             fg_color="#161E31",
             border_width=1,
@@ -245,7 +248,23 @@ class Sidebar(ctk.CTkFrame):
             font=ctk.CTkFont(size=12, weight="bold"),
             command=self.on_refresh,
         )
-        self.refresh_btn.grid(row=17, column=0, padx=12, pady=(0, 12), sticky="ew")
+        self.refresh_btn.grid(row=17, column=0, padx=12, pady=(0, 6), sticky="ew")
+
+        v_str = get_local_version()
+        self.update_btn = ctk.CTkButton(
+            self,
+            text=f"{tr('btn_check_update')} (v{v_str})",
+            height=28,
+            corner_radius=7,
+            fg_color="#131926",
+            border_width=1,
+            border_color="#232F46",
+            hover_color="#1D2B44",
+            text_color="#8B949E",
+            font=ctk.CTkFont(size=11),
+            command=self.on_check_update if self.on_check_update else lambda: None,
+        )
+        self.update_btn.grid(row=18, column=0, padx=12, pady=(0, 10), sticky="ew")
 
     def select_tab(self, active_key: str) -> None:
         self.active_key = active_key
@@ -290,5 +309,6 @@ class Sidebar(ctk.CTkFrame):
         self.sec_inv_lbl.configure(text=tr("sec_inventory"))
         self.sec_cycles_lbl.configure(text=tr("sec_cycles"))
         self.refresh_btn.configure(text=tr("btn_refresh"))
+        self.update_btn.configure(text=f"{tr('btn_check_update')} (v{get_local_version()})")
         for key, (text_lbl, tr_key) in self.nav_labels.items():
             text_lbl.configure(text=_clean_label(tr(tr_key)))

@@ -6,8 +6,10 @@ import threading
 import customtkinter as ctk
 from core.api_client import fetch_world_state
 from core.duviri_calculator import get_current_duviri_rotation
+from core.i18n import tr
 from core.notification_manager import NotificationManager
 from core.timer_engine import get_remaining_seconds
+from core.updater import check_for_updates, download_and_apply_update, restart_application
 from ui.components.loading_screens import InAppLoader, SplashScreen
 from ui.components.titlebar import CustomTitleBar
 from ui.live_panel import LivePanel
@@ -75,6 +77,7 @@ class WireframeApp(ctk.CTk):
             self,
             on_navigate=self.show_view,
             on_refresh=lambda: self.refresh_all_data(show_overlay=True),
+            on_check_update=lambda: self.trigger_update_check(manual=True),
         )
         self.sidebar.grid(row=1, column=0, sticky="nsew")
 
@@ -141,6 +144,104 @@ class WireframeApp(ctk.CTk):
         self.deiconify()
         self.after(40, self._apply_native_dwm_rounding)
         self._tick_timers()
+        # Vérification silencieuse des mises à jour GitHub au lancement
+        self.after(1500, lambda: self.trigger_update_check(manual=False))
+
+    def trigger_update_check(self, manual: bool = True) -> None:
+        """Vérifie en arrière-plan si une nouvelle version est publiée sur le GitHub de Nyxo_17."""
+        if manual:
+            self.in_app_loader.show_loading("Vérification des mises à jour sur GitHub...")
+
+        def _worker() -> None:
+            info = check_for_updates()
+            self.after(300 if manual else 0, lambda: self._on_update_checked(info, manual))
+
+        threading.Thread(target=_worker, daemon=True).start()
+
+    def _on_update_checked(self, info: dict, manual: bool) -> None:
+        self.in_app_loader.hide_loading()
+        if info.get("update_available"):
+            self._show_update_modal(info)
+        elif manual:
+            v_loc = info.get("local_version", "1.0.0")
+            self.show_in_app_toast(f"WireFrame v{v_loc}", f"✅ {tr('upd_up_to_date')} (v{v_loc})")
+
+    def _show_update_modal(self, info: dict) -> None:
+        """Affiche une bannière interactive permettant d'installer la mise à jour en 1 clic."""
+        if self._toast_frame and self._toast_frame.winfo_exists():
+            self._toast_frame.destroy()
+
+        modal = ctk.CTkFrame(
+            self.center_container, corner_radius=12, fg_color="#13223E", border_width=2, border_color="#4ADE80"
+        )
+        modal.place(relx=0.5, rely=0.04, anchor="n", relwidth=0.92)
+        modal.lift()
+
+        v_rem = info.get("remote_version", "")
+        v_loc = info.get("local_version", "")
+        ctk.CTkLabel(
+            modal,
+            text=f"🚀  {tr('upd_available_title')} : v{v_rem} (actuelle : v{v_loc})",
+            font=ctk.CTkFont(size=14, weight="bold"),
+            text_color="#4ADE80",
+            anchor="w",
+        ).pack(fill="x", padx=16, pady=(10, 2))
+
+        ctk.CTkLabel(
+            modal,
+            text=info.get("changelog", ""),
+            font=ctk.CTkFont(size=12),
+            text_color="#E6EDF3",
+            anchor="w",
+            justify="left",
+            wraplength=520,
+        ).pack(fill="x", padx=16, pady=(0, 8))
+
+        btn_row = ctk.CTkFrame(modal, fg_color="transparent")
+        btn_row.pack(fill="x", padx=16, pady=(0, 10))
+
+        ctk.CTkButton(
+            btn_row,
+            text=tr("upd_install_btn"),
+            height=32,
+            corner_radius=7,
+            fg_color="#16A34A",
+            hover_color="#15803D",
+            text_color="#FFFFFF",
+            font=ctk.CTkFont(size=12, weight="bold"),
+            command=lambda: self._execute_update(info, modal),
+        ).pack(side="left", padx=(0, 8))
+
+        ctk.CTkButton(
+            btn_row,
+            text="✕",
+            width=32,
+            height=32,
+            corner_radius=7,
+            fg_color="#1F2937",
+            hover_color="#374151",
+            text_color="#9CA3AF",
+            command=modal.destroy,
+        ).pack(side="right")
+
+        self._toast_frame = modal
+
+    def _execute_update(self, info: dict, modal: ctk.CTkFrame) -> None:
+        if modal.winfo_exists():
+            modal.destroy()
+        self.in_app_loader.show_loading("Téléchargement et installation de la mise à jour...")
+
+        def _dl() -> None:
+            ok, msg = download_and_apply_update(
+                repo=info.get("repo", "Nyxo-17/WireFrame"),
+                branch=info.get("branch", "master"),
+            )
+            if ok:
+                self.after(300, restart_application)
+            else:
+                self.after(100, lambda: (self.in_app_loader.hide_loading(), self.show_in_app_toast("Erreur MAJ", msg)))
+
+        threading.Thread(target=_dl, daemon=True).start()
 
     def _apply_native_dwm_rounding(self) -> None:
         """Active les coins arrondis Windows 11 DWM et affiche la fenêtre sans bordure dans la barre des tâches."""

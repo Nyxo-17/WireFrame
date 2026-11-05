@@ -99,7 +99,11 @@
     "state_warm": "Chaud",
     "state_cold": "Froid",
     "state_fass": "Fass",
-    "state_vome": "Vome"
+    "state_vome": "Vome",
+    "btn_check_update": "⬇️  Vérifier MAJ",
+    "upd_up_to_date": "Tu utilises déjà la dernière version de WireFrame",
+    "upd_available_title": "Nouvelle mise à jour disponible",
+    "upd_install_btn": "🚀  Installer la mise à jour & Redémarrer"
   },
   "en": {
     "creator_role": "Creator of WireFrame",
@@ -201,6 +205,10 @@
     "state_warm": "Warm",
     "state_cold": "Cold",
     "state_fass": "Fass",
-    "state_vome": "Vome"
+    "state_vome": "Vome",
+    "btn_check_update": "⬇️  Check Update",
+    "upd_up_to_date": "You are already running the latest version of WireFrame",
+    "upd_available_title": "New Update Available",
+    "upd_install_btn": "🚀  Install Update & Restart"
   }
 }
