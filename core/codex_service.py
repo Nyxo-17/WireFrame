@@ -47,3 +47,4 @@ def get_current_bounty_rotation() -> dict[str, Any]:
         "expiry": expiry_iso,
         "hubs": codex.get("bounties", []),
     }
+

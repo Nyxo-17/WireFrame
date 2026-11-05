@@ -8,12 +8,12 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# Cache local de l'application (généré automatiquement)
+# Cache local de l'application et des images téléchargées
 data/cache.json
+data/img_cache/
 
 # Fichiers système et IDE
 .DS_Store
 Thumbs.db
 .vscode/
 .idea/
-

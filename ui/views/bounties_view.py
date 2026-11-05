@@ -133,3 +133,4 @@ class BountiesView(ctk.CTkFrame):
     def update_timers(self) -> None:
         txt = get_formatted_timer(self.expiry_iso, short=False)
         self.timer_badge.configure(text=f"{tr('bounties_change_in')} {txt}")
+
