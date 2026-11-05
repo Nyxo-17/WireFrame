@@ -42,3 +42,4 @@ def get_current_duviri_rotation() -> dict[str, Any]:
         "incarnon_weapons": incarnon_list[inc_index] if incarnon_list else [],
         "expiry": get_next_monday_utc(),
     }
+

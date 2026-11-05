@@ -45,3 +45,4 @@ def get_formatted_timer(expiry_iso: str) -> str:
     """Fonction tout-en-un : prend une date ISO et retourne directement le texte du timer."""
     remaining = get_remaining_seconds(expiry_iso)
     return format_countdown(remaining)
+
