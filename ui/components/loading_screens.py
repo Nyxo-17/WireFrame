@@ -157,3 +157,4 @@ class InAppLoader(ctk.CTkFrame):
         """Arrête l'animation et masque l'overlay."""
         self.bar.stop()
         self.place_forget()
+

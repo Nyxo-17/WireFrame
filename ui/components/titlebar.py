@@ -1,4 +1,4 @@
-"""Module titlebar : Barre de titre personnalisée sombre avec sélecteur FR/EN et zoom central."""
+"""Module titlebar : Barre de titre sombre avec bouton menu rétractable, FR/EN et zoom central."""
 
 from typing import Callable
 import webbrowser
@@ -7,7 +7,7 @@ from core.i18n import get_lang, set_lang
 
 
 class CustomTitleBar(ctk.CTkFrame):
-    """Barre supérieure sombre avec titre WireFrame, boutons FR/EN, Zoom central, Discord et — ▢ ✕."""
+    """Barre supérieure sombre avec bouton ☰ (Sidebar), titre WireFrame, FR/EN, Zoom et — ▢ ✕."""
 
     def __init__(
         self,
@@ -15,6 +15,7 @@ class CustomTitleBar(ctk.CTkFrame):
         app: ctk.CTk,
         on_lang_change: Callable[[], None],
         on_zoom_change: Callable[[float], None],
+        on_toggle_sidebar: Callable[[], None] | None = None,
     ) -> None:
         super().__init__(
             master,
@@ -27,8 +28,9 @@ class CustomTitleBar(ctk.CTkFrame):
         self.app = app
         self.on_lang_change = on_lang_change
         self.on_zoom_change = on_zoom_change
+        self.on_toggle_sidebar = on_toggle_sidebar
         self.grid_propagate(False)
-        self.grid_columnconfigure(1, weight=1)
+        self.grid_columnconfigure(2, weight=1)
 
         self._drag_x = 0
         self._drag_y = 0
@@ -41,20 +43,37 @@ class CustomTitleBar(ctk.CTkFrame):
         self._bind_drag_events()
 
     def _build_left_title(self) -> None:
+        # Bouton [ ☰ ] pour plier / déplier la colonne de gauche à tout moment
+        self.menu_btn = ctk.CTkButton(
+            self,
+            text="☰",
+            width=32,
+            height=28,
+            corner_radius=6,
+            fg_color="#131926",
+            border_width=1,
+            border_color="#232F46",
+            hover_color="#1F2D48",
+            text_color="#D0D7DE",
+            font=ctk.CTkFont(size=14, weight="bold"),
+            command=self.on_toggle_sidebar if self.on_toggle_sidebar else lambda: None,
+        )
+        self.menu_btn.grid(row=0, column=0, padx=(12, 8), pady=8, sticky="w")
+
         self.title_lbl = ctk.CTkLabel(
             self,
             text="WireFrame",
             font=ctk.CTkFont(size=15, weight="bold"),
             text_color="#F0F6FC",
         )
-        self.title_lbl.grid(row=0, column=0, padx=18, pady=8, sticky="w")
+        self.title_lbl.grid(row=0, column=1, padx=(0, 12), pady=8, sticky="w")
 
         self.drag_space = ctk.CTkLabel(self, text="", fg_color="transparent")
-        self.drag_space.grid(row=0, column=1, sticky="nsew")
+        self.drag_space.grid(row=0, column=2, sticky="nsew")
 
     def _build_right_controls(self) -> None:
         right = ctk.CTkFrame(self, fg_color="transparent")
-        right.grid(row=0, column=2, padx=(0, 8), pady=5, sticky="e")
+        right.grid(row=0, column=3, padx=(0, 8), pady=5, sticky="e")
 
         # 1. Sélecteur interactif [ 🌐 FR | EN ]
         lang_box = ctk.CTkFrame(
@@ -216,7 +235,6 @@ class CustomTitleBar(ctk.CTkFrame):
             self._is_maximized = False
 
     def _change_zoom(self, delta: int) -> None:
-        """Modifie le zoom (70% à 140%) et l'applique uniquement au conteneur central."""
         self._zoom_level = max(70, min(140, self._zoom_level + delta))
         self.zoom_lbl.configure(text=f"{self._zoom_level}%")
         self.on_zoom_change(self._zoom_level / 100.0)

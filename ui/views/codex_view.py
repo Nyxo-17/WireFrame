@@ -163,20 +163,22 @@ class CodexView(ctk.CTkFrame):
             )
             _update_img(initial_pil)
 
-            top = ctk.CTkFrame(card, fg_color="transparent")
-            top.grid(row=0, column=1, padx=(0, 12), pady=(8, 2), sticky="ew")
-            top.grid_columnconfigure(0, weight=1)
+            # Colonne de droite alignée au pixel près (Nom, Où trouver, Comment l'avoir)
+            info_col = ctk.CTkFrame(card, fg_color="transparent")
+            info_col.grid(row=0, column=1, rowspan=3, padx=(4, 12), pady=8, sticky="nsew")
+            info_col.grid_columnconfigure(0, weight=1)
 
             ctk.CTkLabel(
-                top,
+                info_col,
                 text=item.get("name", ""),
                 font=ctk.CTkFont(size=int(15 * s), weight="bold"),
                 text_color="#58A6FF",
                 anchor="w",
+                justify="left",
             ).grid(row=0, column=0, sticky="w")
 
             ctk.CTkLabel(
-                top,
+                info_col,
                 text=item.get("category", ""),
                 font=ctk.CTkFont(size=int(11 * s), weight="bold"),
                 text_color="#E5C158",
@@ -184,25 +186,26 @@ class CodexView(ctk.CTkFrame):
                 corner_radius=5,
                 padx=8,
                 pady=2,
-            ).grid(row=0, column=1, sticky="e")
+            ).grid(row=0, column=1, padx=(8, 0), sticky="e")
 
             ctk.CTkLabel(
-                card,
+                info_col,
                 text=f"{tr('lbl_location')} {item.get('location', '')}",
                 font=ctk.CTkFont(size=int(12 * s), weight="bold"),
                 text_color="#D0D7DE",
                 anchor="w",
-            ).grid(row=1, column=1, padx=(0, 12), pady=1, sticky="ew")
+                justify="left",
+            ).grid(row=1, column=0, columnspan=2, pady=(3, 1), sticky="w")
 
             ctk.CTkLabel(
-                card,
+                info_col,
                 text=f"{tr('lbl_drop_method')} {item.get('drop', '')}",
                 font=ctk.CTkFont(size=int(11 * s)),
                 text_color="#8B949E",
                 anchor="w",
                 justify="left",
                 wraplength=int(480 * s),
-            ).grid(row=2, column=1, padx=(0, 12), pady=(1, 8), sticky="ew")
+            ).grid(row=2, column=0, columnspan=2, pady=(1, 0), sticky="w")
 
     def update_language(self) -> None:
         self.title_lbl.configure(text=tr(self.title_tr_key))

@@ -60,6 +60,7 @@ class WireframeApp(ctk.CTk):
         self._is_refreshing: bool = False
 
         self.notif_manager = NotificationManager(on_alert_callback=self.show_in_app_toast)
+        self._sidebar_visible: bool = True
 
         # 0. Barre supérieure personnalisée
         self.titlebar = CustomTitleBar(
@@ -67,14 +68,16 @@ class WireframeApp(ctk.CTk):
             app=self,
             on_lang_change=self.apply_language,
             on_zoom_change=self.apply_center_zoom,
+            on_toggle_sidebar=self.toggle_sidebar,
         )
         self.titlebar.grid(row=0, column=0, columnspan=3, sticky="ew")
 
-        # 1. Colonne gauche : Sidebar
+        # 1. Colonne gauche : Sidebar rétractable à gauche
         self.sidebar = Sidebar(
             self,
             on_navigate=self.show_view,
             on_refresh=lambda: self.refresh_all_data(show_overlay=True),
+            on_toggle_collapse=self.toggle_sidebar,
         )
         self.sidebar.grid(row=1, column=0, sticky="nsew")
 
@@ -152,6 +155,15 @@ class WireframeApp(ctk.CTk):
                     dwmapi.DwmSetWindowAttribute(hwnd, 34, ctypes.byref(ctypes.c_int(0x00462F23)), 4)
         except Exception:
             pass
+
+    def toggle_sidebar(self) -> None:
+        """Range ou déploie la colonne de gauche (Sidebar)."""
+        if self._sidebar_visible:
+            self.sidebar.grid_remove()
+            self._sidebar_visible = False
+        else:
+            self.sidebar.grid(row=1, column=0, sticky="nsew")
+            self._sidebar_visible = True
 
     def show_view(self, view_key: str) -> None:
         self.current_view_key = view_key
