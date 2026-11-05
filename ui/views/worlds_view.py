@@ -1,4 +1,4 @@
-"""Module worlds_view : Vue centrale détaillée des Cycles des Mondes Ouverts bilingue FR/EN."""
+"""Module worlds_view : Vue centrale détaillée des Cycles des Mondes Ouverts bilingue et zoomable."""
 
 import customtkinter as ctk
 from core.i18n import tr
@@ -54,11 +54,17 @@ class WorldsView(ctk.CTkFrame):
             card.set_data(info.get("state", "..."), info.get("expiry", ""))
 
     def update_language(self) -> None:
-        """Traduit la page Temps des Planètes et ses 4 cartes en FR ou EN."""
         self.title_lbl.configure(text=tr("worlds_page_title"))
         self.sub_lbl.configure(text=tr("worlds_page_sub"))
         for card in self.cards.values():
             card.update_language()
+
+    def apply_zoom(self, scale: float) -> None:
+        """Ajuste uniquement la taille des éléments de la vue centrale des planètes."""
+        self.title_lbl.configure(font=ctk.CTkFont(size=int(22 * scale), weight="bold"))
+        self.sub_lbl.configure(font=ctk.CTkFont(size=int(13 * scale)))
+        for card in self.cards.values():
+            card.apply_zoom(scale)
 
     def update_timers(self) -> None:
         for card in self.cards.values():

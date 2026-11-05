@@ -1,4 +1,4 @@
-"""Module duviri_view : Vue centrale du Circuit de Duviri bilingue FR/EN."""
+"""Module duviri_view : Vue centrale du Circuit de Duviri bilingue FR/EN et zoomable."""
 
 import customtkinter as ctk
 from core.i18n import tr
@@ -15,6 +15,7 @@ class DuviriView(ctk.CTkFrame):
 
         self.expiry_iso: str = ""
         self.last_duviri_state: dict = {}
+        self.current_scale: float = 1.0
         self._build_header()
         self._build_columns()
 
@@ -95,6 +96,7 @@ class DuviriView(ctk.CTkFrame):
         for child in container.winfo_children():
             child.destroy()
 
+        s = self.current_scale
         for idx, items in enumerate(weeks, start=1):
             is_current = idx == active_week
             row_box = ctk.CTkFrame(
@@ -112,7 +114,7 @@ class DuviriView(ctk.CTkFrame):
             ctk.CTkLabel(
                 row_box,
                 text=header_txt,
-                font=ctk.CTkFont(size=12, weight="bold"),
+                font=ctk.CTkFont(size=int(12 * s), weight="bold"),
                 text_color="#4ADE80" if is_current else "#7D8590",
                 anchor="w",
             ).grid(row=0, column=0, padx=10, pady=(6, 1), sticky="ew")
@@ -120,16 +122,25 @@ class DuviriView(ctk.CTkFrame):
             ctk.CTkLabel(
                 row_box,
                 text=" • ".join(items),
-                font=ctk.CTkFont(size=13, weight="bold" if is_current else "normal"),
+                font=ctk.CTkFont(size=int(13 * s), weight="bold" if is_current else "normal"),
                 text_color="#FFFFFF" if is_current else "#B1BAC4",
                 anchor="w",
             ).grid(row=1, column=0, padx=10, pady=(0, 8), sticky="ew")
 
     def update_language(self) -> None:
-        """Traduit tous les textes de la vue Duviri en FR ou EN."""
         self.title_lbl.configure(text=tr("duviri_page_title"))
         self.inc_scroll.configure(label_text=tr("duviri_inc_col"))
         self.wf_scroll.configure(label_text=tr("duviri_wf_col"))
+        if self.last_duviri_state:
+            self.load_state({}, self.last_duviri_state)
+
+    def apply_zoom(self, scale: float) -> None:
+        """Ajuste uniquement la taille des éléments de la vue Duviri."""
+        self.current_scale = scale
+        self.title_lbl.configure(font=ctk.CTkFont(size=int(22 * scale), weight="bold"))
+        self.timer_badge.configure(font=ctk.CTkFont(size=int(14 * scale), weight="bold"))
+        self.inc_scroll.configure(label_font=ctk.CTkFont(size=int(14 * scale), weight="bold"))
+        self.wf_scroll.configure(label_font=ctk.CTkFont(size=int(14 * scale), weight="bold"))
         if self.last_duviri_state:
             self.load_state({}, self.last_duviri_state)
 

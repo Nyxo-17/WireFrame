@@ -1,4 +1,4 @@
-"""Module cycle_card : Composant réutilisable ('Moule à gâteau') bilingue FR/EN."""
+"""Module cycle_card : Composant réutilisable ('Moule à gâteau') bilingue FR/EN et zoomable."""
 
 import customtkinter as ctk
 from core.i18n import tr, tr_state
@@ -80,19 +80,26 @@ class CycleCard(ctk.CTkFrame):
         self.timer_label.grid(row=0, column=1, sticky="e")
 
     def set_data(self, state_text: str, expiry_iso: str) -> None:
-        """Met à jour l'état et la date de fin."""
         self.raw_state = state_text
         self.expiry_iso = expiry_iso
         self.state_label.configure(text=tr_state(self.raw_state))
         self.refresh_timer()
 
     def update_language(self) -> None:
-        """Traduit dynamiquement le titre, le sous-titre et l'état en FR ou EN."""
         self.title_label.configure(text=tr(self.title_key))
         self.sub_label.configure(text=tr(self.sub_key))
         self.state_label.configure(text=tr_state(self.raw_state))
 
+    def apply_zoom(self, scale: float) -> None:
+        """Ajuste la taille des textes de la carte lors d'un zoom dans le cadre central."""
+        if self.compact:
+            return
+        self.icon_label.configure(font=ctk.CTkFont(size=max(16, int(28 * scale))))
+        self.title_label.configure(font=ctk.CTkFont(size=max(11, int(16 * scale)), weight="bold"))
+        self.sub_label.configure(font=ctk.CTkFont(size=max(9, int(12 * scale))))
+        self.state_label.configure(font=ctk.CTkFont(size=max(11, int(15 * scale)), weight="bold"))
+        self.timer_label.configure(font=ctk.CTkFont(size=max(11, int(15 * scale)), weight="bold"))
+
     def refresh_timer(self) -> None:
-        """Recalcule et affiche le compte à rebours chaque seconde."""
         timer_text = get_formatted_timer(self.expiry_iso, short=self.compact)
         self.timer_label.configure(text=timer_text)

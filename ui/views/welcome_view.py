@@ -1,4 +1,4 @@
-"""Module welcome_view : Page centrale d'accueil bilingue FR/EN."""
+"""Module welcome_view : Page centrale d'accueil bilingue FR/EN et zoomable."""
 
 from typing import Callable
 import customtkinter as ctk
@@ -136,15 +136,15 @@ class WelcomeView(ctk.CTkFrame):
         )
         self.created_lbl.grid(row=0, column=0)
 
-        ctk.CTkLabel(
+        self.author_lbl = ctk.CTkLabel(
             sig_frame,
             text="Nyxo_17",
             font=ctk.CTkFont(size=14, weight="bold", slant="italic"),
             text_color="#F0F6FC",
-        ).grid(row=0, column=1)
+        )
+        self.author_lbl.grid(row=0, column=1)
 
     def update_language(self) -> None:
-        """Traduit tous les textes de la page Bienvenue en FR ou EN."""
         self.page_title.configure(text=tr("welcome_page_title"))
         self.banner_title.configure(text=tr("welcome_banner_title"))
         self.banner_desc.configure(text=tr("welcome_banner_desc"))
@@ -153,3 +153,15 @@ class WelcomeView(ctk.CTkFrame):
             title_lbl.configure(text=tr(t_key))
             desc_lbl.configure(text=tr(d_key))
             open_btn.configure(text=tr("open_btn"))
+
+    def apply_zoom(self, scale: float) -> None:
+        """Ajuste dynamiquement la taille des textes et cartes de la page Bienvenue."""
+        self.page_title.configure(font=ctk.CTkFont(size=int(22 * scale), weight="bold"))
+        self.banner_title.configure(font=ctk.CTkFont(size=int(20 * scale), weight="bold"))
+        self.banner_desc.configure(font=ctk.CTkFont(size=int(12 * scale)))
+        self.created_lbl.configure(font=ctk.CTkFont(size=int(13 * scale)))
+        self.author_lbl.configure(font=ctk.CTkFont(size=int(14 * scale), weight="bold", slant="italic"))
+        for title_lbl, desc_lbl, open_btn, _, _ in self.card_widgets:
+            title_lbl.configure(font=ctk.CTkFont(size=int(14 * scale), weight="bold"))
+            desc_lbl.configure(font=ctk.CTkFont(size=int(12 * scale)), wraplength=int(260 * scale))
+            open_btn.configure(font=ctk.CTkFont(size=int(12 * scale), weight="bold"))

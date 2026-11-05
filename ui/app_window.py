@@ -1,4 +1,4 @@
-"""Module app_window : Fenêtre principale avec arrondi matériel natif Windows DWM et support FR/EN."""
+"""Module app_window : Fenêtre principale avec arrondi DWM, support FR/EN et zoom central."""
 
 import ctypes
 import customtkinter as ctk
@@ -14,7 +14,7 @@ from ui.views.worlds_view import WorldsView
 
 
 class WireframeApp(ctk.CTk):
-    """Fenêtre principale de WireFrame V1 avec coins arrondis lisses (DWM) et traduction FR/EN."""
+    """Fenêtre principale de WireFrame V1 avec coins arrondis DWM, FR/EN et zoom central."""
 
     def __init__(self) -> None:
         super().__init__()
@@ -25,12 +25,10 @@ class WireframeApp(ctk.CTk):
         self.minsize(1100, 640)
         self.configure(fg_color="#090C14")
 
-        # Supprime la barre blanche Windows et active l'arrondi matériel lisse de Windows (DWM)
         self.overrideredirect(True)
         self.update_idletasks()
         self._apply_native_dwm_rounding()
 
-        # Grille : Ligne 0 = CustomTitleBar, Ligne 1 = Les 3 colonnes principales
         self.grid_columnconfigure(0, weight=0)
         self.grid_columnconfigure(1, weight=1)
         self.grid_columnconfigure(2, weight=0)
@@ -41,13 +39,16 @@ class WireframeApp(ctk.CTk):
         self.duviri_state: dict = {}
         self.current_view_key: str = "welcome"
 
-        # 0. Barre supérieure personnalisée (avec sélecteur FR/EN actif)
+        # 0. Barre supérieure personnalisée (avec FR/EN et Zoom central)
         self.titlebar = CustomTitleBar(
-            self, app=self, on_lang_change=self.apply_language
+            self,
+            app=self,
+            on_lang_change=self.apply_language,
+            on_zoom_change=self.apply_center_zoom,
         )
         self.titlebar.grid(row=0, column=0, columnspan=3, sticky="ew")
 
-        # 1. Colonne gauche : Sidebar
+        # 1. Colonne gauche : Sidebar (taille fixe)
         self.sidebar = Sidebar(
             self,
             on_navigate=self.show_view,
@@ -55,7 +56,7 @@ class WireframeApp(ctk.CTk):
         )
         self.sidebar.grid(row=1, column=0, sticky="nsew")
 
-        # 2. Colonne centrale : Conteneur des Vues
+        # 2. Colonne centrale : Conteneur des Vues (seul élément affecté par le zoom)
         self.center_container = ctk.CTkFrame(
             self,
             corner_radius=10,
@@ -67,11 +68,10 @@ class WireframeApp(ctk.CTk):
         self.center_container.grid_columnconfigure(0, weight=1)
         self.center_container.grid_rowconfigure(0, weight=1)
 
-        # 3. Colonne droite : Panneau Live 'Cycles & Événements'
+        # 3. Colonne droite : Panneau Live 'Cycles & Événements' (taille fixe)
         self.live_panel = LivePanel(self)
         self.live_panel.grid(row=1, column=2, sticky="nsew", padx=(4, 12), pady=12)
 
-        # Instanciation des 4 vues centrales
         self.views: dict[str, ctk.CTkFrame] = {
             "welcome": WelcomeView(self.center_container, on_navigate=self.sidebar.select_tab),
             "worlds": WorldsView(self.center_container),
@@ -88,8 +88,6 @@ class WireframeApp(ctk.CTk):
         try:
             dwmapi = ctypes.windll.dwmapi
             user32 = ctypes.windll.user32
-            # DWMWA_WINDOW_CORNER_PREFERENCE = 33 (2 = DWMWCP_ROUND)
-            # DWMWA_BORDER_COLOR = 34 (0x00462F23 = #232F46 en format BGR Windows)
             corner_pref = ctypes.c_int(2)
             border_color = ctypes.c_int(0x00462F23)
 
@@ -109,12 +107,17 @@ class WireframeApp(ctk.CTk):
                 frame.grid_forget()
 
     def apply_language(self) -> None:
-        """Propage instantanément le changement de langue (FR/EN) à tous les composants."""
         self.sidebar.update_language()
         self.live_panel.update_language()
         for view in self.views.values():
             if hasattr(view, "update_language"):
                 view.update_language()
+
+    def apply_center_zoom(self, scale: float) -> None:
+        """Applique le zoom uniquement aux vues situées dans le cadre du milieu."""
+        for view in self.views.values():
+            if hasattr(view, "apply_zoom"):
+                view.apply_zoom(scale)
 
     def refresh_all_data(self) -> None:
         self.world_state = fetch_world_state()

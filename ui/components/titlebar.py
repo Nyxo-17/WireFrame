@@ -1,4 +1,4 @@
-"""Module titlebar : Barre de titre personnalisée sombre avec sélecteur FR/EN et coins arrondis."""
+"""Module titlebar : Barre de titre personnalisée sombre avec sélecteur FR/EN et zoom central."""
 
 from typing import Callable
 import webbrowser
@@ -7,9 +7,15 @@ from core.i18n import get_lang, set_lang
 
 
 class CustomTitleBar(ctk.CTkFrame):
-    """Barre supérieure sombre avec titre WireFrame, boutons FR/EN actifs, Zoom, Discord et — ▢ ✕."""
+    """Barre supérieure sombre avec titre WireFrame, boutons FR/EN, Zoom central, Discord et — ▢ ✕."""
 
-    def __init__(self, master: ctk.CTkBaseClass, app: ctk.CTk, on_lang_change: Callable[[], None]) -> None:
+    def __init__(
+        self,
+        master: ctk.CTkBaseClass,
+        app: ctk.CTk,
+        on_lang_change: Callable[[], None],
+        on_zoom_change: Callable[[float], None],
+    ) -> None:
         super().__init__(
             master,
             height=44,
@@ -20,6 +26,7 @@ class CustomTitleBar(ctk.CTkFrame):
         )
         self.app = app
         self.on_lang_change = on_lang_change
+        self.on_zoom_change = on_zoom_change
         self.grid_propagate(False)
         self.grid_columnconfigure(1, weight=1)
 
@@ -34,7 +41,6 @@ class CustomTitleBar(ctk.CTkFrame):
         self._bind_drag_events()
 
     def _build_left_title(self) -> None:
-        """Affiche le titre 'WireFrame' à gauche de la barre."""
         self.title_lbl = ctk.CTkLabel(
             self,
             text="WireFrame",
@@ -47,7 +53,6 @@ class CustomTitleBar(ctk.CTkFrame):
         self.drag_space.grid(row=0, column=1, sticky="nsew")
 
     def _build_right_controls(self) -> None:
-        """Construit les capsules [FR|EN], [🔍 100%], [Discord] et les boutons [— ▢ ✕]."""
         right = ctk.CTkFrame(self, fg_color="transparent")
         right.grid(row=0, column=2, padx=(0, 8), pady=5, sticky="e")
 
@@ -83,7 +88,7 @@ class CustomTitleBar(ctk.CTkFrame):
         self.en_btn.grid(row=0, column=2, padx=(2, 6), pady=3)
         self._refresh_lang_buttons()
 
-        # 2. Sélecteur de zoom [ 🔍- 100% 🔍+ ]
+        # 2. Sélecteur de zoom central [ 🔍- 100% 🔍+ ]
         zoom_box = ctk.CTkFrame(
             right, fg_color="#131926", corner_radius=6, border_width=1, border_color="#232F46"
         )
@@ -157,14 +162,12 @@ class CustomTitleBar(ctk.CTkFrame):
             ).grid(row=0, column=col, padx=1)
 
     def _switch_language(self, lang_code: str) -> None:
-        """Change la langue dans i18n, met à jour les boutons FR/EN et rafraîchit toute l'UI."""
         if get_lang() != lang_code:
             set_lang(lang_code)
             self._refresh_lang_buttons()
             self.on_lang_change()
 
     def _refresh_lang_buttons(self) -> None:
-        """Met en surbrillance le bouton FR ou EN actif."""
         is_fr = get_lang() == "fr"
         self.fr_btn.configure(
             fg_color="#253659" if is_fr else "transparent",
@@ -213,6 +216,7 @@ class CustomTitleBar(ctk.CTkFrame):
             self._is_maximized = False
 
     def _change_zoom(self, delta: int) -> None:
-        self._zoom_level = max(80, min(120, self._zoom_level + delta))
+        """Modifie le zoom (70% à 140%) et l'applique uniquement au conteneur central."""
+        self._zoom_level = max(70, min(140, self._zoom_level + delta))
         self.zoom_lbl.configure(text=f"{self._zoom_level}%")
-        ctk.set_widget_scaling(self._zoom_level / 100.0)
+        self.on_zoom_change(self._zoom_level / 100.0)

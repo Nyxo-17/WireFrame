@@ -1,4 +1,4 @@
-"""Module baro_view : Vue centrale dédiée au marchand du Néant Baro Ki'Teer bilingue FR/EN."""
+"""Module baro_view : Vue centrale dédiée au marchand du Néant Baro Ki'Teer bilingue et zoomable."""
 
 import customtkinter as ctk
 from core.i18n import tr
@@ -16,6 +16,7 @@ class BaroView(ctk.CTkFrame):
         self.target_iso: str = ""
         self.is_active: bool = False
         self.last_world_state: dict = {}
+        self.current_scale: float = 1.0
 
         self._build_header()
         self._build_status_banner()
@@ -102,11 +103,12 @@ class BaroView(ctk.CTkFrame):
         for child in self.inv_scroll.winfo_children():
             child.destroy()
 
+        s = self.current_scale
         if not items:
             ctk.CTkLabel(
                 self.inv_scroll,
                 text=tr("baro_empty_msg"),
-                font=ctk.CTkFont(size=13),
+                font=ctk.CTkFont(size=int(13 * s)),
                 text_color="#8B949E",
                 justify="center",
             ).grid(row=0, column=0, padx=20, pady=40)
@@ -120,7 +122,7 @@ class BaroView(ctk.CTkFrame):
             ctk.CTkLabel(
                 row,
                 text=item.get("item", "Item"),
-                font=ctk.CTkFont(size=13, weight="bold"),
+                font=ctk.CTkFont(size=int(13 * s), weight="bold"),
                 text_color="#F0F6FC",
                 anchor="w",
             ).grid(row=0, column=0, padx=12, pady=8, sticky="w")
@@ -129,14 +131,24 @@ class BaroView(ctk.CTkFrame):
             ctk.CTkLabel(
                 row,
                 text=price,
-                font=ctk.CTkFont(size=12),
+                font=ctk.CTkFont(size=int(12 * s)),
                 text_color="#E5C158",
             ).grid(row=0, column=1, padx=12, pady=8, sticky="e")
 
     def update_language(self) -> None:
-        """Traduit tous les textes de la vue Baro Ki'Teer en FR ou EN."""
         self.title_lbl.configure(text=tr("baro_page_title"))
         self.inv_scroll.configure(label_text=tr("baro_inv_title"))
+        if self.last_world_state:
+            self.load_state(self.last_world_state, {})
+
+    def apply_zoom(self, scale: float) -> None:
+        """Ajuste uniquement la taille des éléments de la vue Baro Ki'Teer."""
+        self.current_scale = scale
+        self.title_lbl.configure(font=ctk.CTkFont(size=int(22 * scale), weight="bold"))
+        self.status_title.configure(font=ctk.CTkFont(size=int(18 * scale), weight="bold"))
+        self.relay_label.configure(font=ctk.CTkFont(size=int(14 * scale)))
+        self.timer_label.configure(font=ctk.CTkFont(size=int(20 * scale), weight="bold"))
+        self.inv_scroll.configure(label_font=ctk.CTkFont(size=int(14 * scale), weight="bold"))
         if self.last_world_state:
             self.load_state(self.last_world_state, {})
 
