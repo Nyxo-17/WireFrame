@@ -1,12 +1,14 @@
-"""Module app_window : Fenêtre principale complète assemblant toutes les vues et les notifications."""
+"""Module app_window : Fenêtre principale avec Splash Screen, chargement in-app et 9 vues."""
 
 import ctypes
 from pathlib import Path
+import threading
 import customtkinter as ctk
 from core.api_client import fetch_world_state
 from core.duviri_calculator import get_current_duviri_rotation
 from core.notification_manager import NotificationManager
 from core.timer_engine import get_remaining_seconds
+from ui.components.loading_screens import InAppLoader, SplashScreen
 from ui.components.titlebar import CustomTitleBar
 from ui.live_panel import LivePanel
 from ui.sidebar import Sidebar
@@ -22,9 +24,9 @@ ICON_PATH = Path(__file__).resolve().parent.parent / "data" / "app_icon.ico"
 
 
 class WireframeApp(ctk.CTk):
-    """Fenêtre principale de WireFrame avec surveillance automatique et alertes de rotations."""
+    """Fenêtre principale de WireFrame avec Splash Screen au lancement et InAppLoader."""
 
-    def __init__(self) -> None:
+    def __init__(self, skip_splash: bool = False) -> None:
         try:
             ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("nyxo17.wireframe.v1")
         except Exception:
@@ -43,7 +45,6 @@ class WireframeApp(ctk.CTk):
                 pass
 
         self.overrideredirect(True)
-        self.after(50, self._apply_native_dwm_rounding)
 
         self.grid_columnconfigure(0, weight=0)
         self.grid_columnconfigure(1, weight=1)
@@ -56,11 +57,11 @@ class WireframeApp(ctk.CTk):
         self.current_view_key: str = "welcome"
         self._tick_counter: int = 0
         self._toast_frame: ctk.CTkFrame | None = None
+        self._is_refreshing: bool = False
 
-        # Gestionnaire de notifications (Core)
         self.notif_manager = NotificationManager(on_alert_callback=self.show_in_app_toast)
 
-        # 0. Barre supérieure personnalisée (FR/EN + Zoom central)
+        # 0. Barre supérieure personnalisée
         self.titlebar = CustomTitleBar(
             self,
             app=self,
@@ -69,15 +70,15 @@ class WireframeApp(ctk.CTk):
         )
         self.titlebar.grid(row=0, column=0, columnspan=3, sticky="ew")
 
-        # 1. Colonne gauche : Sidebar complète
+        # 1. Colonne gauche : Sidebar
         self.sidebar = Sidebar(
             self,
             on_navigate=self.show_view,
-            on_refresh=self.refresh_all_data,
+            on_refresh=lambda: self.refresh_all_data(show_overlay=True),
         )
         self.sidebar.grid(row=1, column=0, sticky="nsew")
 
-        # 2. Colonne centrale : Conteneur des Vues
+        # 2. Colonne centrale : Conteneur des Vues + InAppLoader
         self.center_container = ctk.CTkFrame(
             self,
             corner_radius=10,
@@ -89,11 +90,12 @@ class WireframeApp(ctk.CTk):
         self.center_container.grid_columnconfigure(0, weight=1)
         self.center_container.grid_rowconfigure(0, weight=1)
 
-        # 3. Colonne droite : Panneau Live 'Cycles & Événements'
+        self.in_app_loader = InAppLoader(self.center_container)
+
+        # 3. Colonne droite : Panneau Live
         self.live_panel = LivePanel(self)
         self.live_panel.grid(row=1, column=2, sticky="nsew", padx=(4, 12), pady=12)
 
-        # Instanciation modulaire de toutes nos vues
         self.views: dict[str, ctk.CTkFrame] = {
             "welcome": WelcomeView(self.center_container, on_navigate=self.sidebar.select_tab),
             "notifications": NotificationsView(self.center_container, self.notif_manager),
@@ -106,21 +108,48 @@ class WireframeApp(ctk.CTk):
             "baro": BaroView(self.center_container),
         }
 
-        self.refresh_all_data()
+        if skip_splash:
+            self.after(50, self._apply_native_dwm_rounding)
+            self.refresh_all_data(show_overlay=False)
+            self.sidebar.select_tab("welcome")
+            self._tick_timers()
+        else:
+            # Masque la fenêtre principale pendant le Splash Screen de démarrage
+            self.withdraw()
+            self.splash = SplashScreen(self, on_complete=self._on_splash_finished)
+            self._run_startup_sequence()
+
+    def _run_startup_sequence(self) -> None:
+        """Exécute la séquence de lancement animée et récupère l'API en tâche de fond."""
+        self.after(150, lambda: self.splash.set_progress(0.25, "Chargement du Codex (1 442 Mods, 239 Ressources, 120 Warframes)..."))
+        self.after(550, lambda: self.splash.set_progress(0.60, "Synchronisation en direct avec les serveurs Warframe..."))
+
+        def _bg_init() -> None:
+            w_state = fetch_world_state()
+            d_state = get_current_duviri_rotation()
+            self.after(950, lambda: self._finalize_startup(w_state, d_state))
+
+        threading.Thread(target=_bg_init, daemon=True).start()
+
+    def _finalize_startup(self, w_state: dict, d_state: dict) -> None:
+        self._apply_fetched_data(w_state, d_state)
         self.sidebar.select_tab("welcome")
+        self.splash.set_progress(1.0, "Prêt ! Ouverture de WireFrame...")
+
+    def _on_splash_finished(self) -> None:
+        """Affiche la fenêtre principale une fois le Splash Screen terminé."""
+        self.deiconify()
+        self.after(40, self._apply_native_dwm_rounding)
         self._tick_timers()
 
     def _apply_native_dwm_rounding(self) -> None:
         try:
             dwmapi = ctypes.windll.dwmapi
             user32 = ctypes.windll.user32
-            corner_pref = ctypes.c_int(2)
-            border_color = ctypes.c_int(0x00462F23)
-
             for hwnd in (self.winfo_id(), user32.GetParent(self.winfo_id())):
                 if hwnd:
-                    dwmapi.DwmSetWindowAttribute(hwnd, 33, ctypes.byref(corner_pref), 4)
-                    dwmapi.DwmSetWindowAttribute(hwnd, 34, ctypes.byref(border_color), 4)
+                    dwmapi.DwmSetWindowAttribute(hwnd, 33, ctypes.byref(ctypes.c_int(2)), 4)
+                    dwmapi.DwmSetWindowAttribute(hwnd, 34, ctypes.byref(ctypes.c_int(0x00462F23)), 4)
         except Exception:
             pass
 
@@ -133,34 +162,20 @@ class WireframeApp(ctk.CTk):
                 frame.grid_forget()
 
     def show_in_app_toast(self, title: str, message: str) -> None:
-        """Affiche une bannière de notification dorée/bleue en haut du cadre central pendant 5s."""
         if self._toast_frame and self._toast_frame.winfo_exists():
             self._toast_frame.destroy()
 
         toast = ctk.CTkFrame(
-            self.center_container,
-            corner_radius=10,
-            fg_color="#172542",
-            border_width=2,
-            border_color="#E5C158",
+            self.center_container, corner_radius=10, fg_color="#172542", border_width=2, border_color="#E5C158"
         )
         toast.place(relx=0.5, rely=0.03, anchor="n", relwidth=0.92)
         toast.lift()
 
         ctk.CTkLabel(
-            toast,
-            text=f"🔔  {title}",
-            font=ctk.CTkFont(size=14, weight="bold"),
-            text_color="#E5C158",
-            anchor="w",
+            toast, text=f"🔔  {title}", font=ctk.CTkFont(size=14, weight="bold"), text_color="#E5C158", anchor="w"
         ).pack(fill="x", padx=16, pady=(8, 2))
-
         ctk.CTkLabel(
-            toast,
-            text=message,
-            font=ctk.CTkFont(size=12),
-            text_color="#FFFFFF",
-            anchor="w",
+            toast, text=message, font=ctk.CTkFont(size=12), text_color="#FFFFFF", anchor="w"
         ).pack(fill="x", padx=16, pady=(0, 8))
 
         self._toast_frame = toast
@@ -178,13 +193,30 @@ class WireframeApp(ctk.CTk):
             if hasattr(view, "apply_zoom"):
                 view.apply_zoom(scale)
 
-    def refresh_all_data(self) -> None:
-        self.world_state = fetch_world_state()
-        self.duviri_state = get_current_duviri_rotation()
+    def refresh_all_data(self, show_overlay: bool = False) -> None:
+        """Actualise les données en tâche de fond avec écran de chargement interne optionnel."""
+        if self._is_refreshing:
+            return
+        self._is_refreshing = True
 
-        # Vérifie si un cycle ou une rotation a changé et déclenche les notifications
+        if show_overlay:
+            self.in_app_loader.show_loading("Synchronisation en direct avec Warframe...")
+
+        def _worker() -> None:
+            w_state = fetch_world_state()
+            d_state = get_current_duviri_rotation()
+            delay = 450 if show_overlay else 0
+            self.after(delay, lambda: self._apply_fetched_data(w_state, d_state))
+
+        threading.Thread(target=_worker, daemon=True).start()
+
+    def _apply_fetched_data(self, w_state: dict, d_state: dict) -> None:
+        self.world_state = w_state
+        self.duviri_state = d_state
+        self._is_refreshing = False
+        self.in_app_loader.hide_loading()
+
         self.notif_manager.check_transitions(self.world_state, self.duviri_state)
-
         self.sidebar.update_status(self.world_state.get("source", "Live"))
         self.live_panel.load_state(self.world_state, self.duviri_state)
 
@@ -200,12 +232,11 @@ class WireframeApp(ctk.CTk):
         if active_view and hasattr(active_view, "update_timers"):
             active_view.update_timers()
 
-        # Si un timer vient d'atteindre 0 seconde (ou toutes les 60s), on resynchronise automatiquement
         self._tick_counter += 1
         cetus_rem = get_remaining_seconds(self.world_state.get("cetus", {}).get("expiry", ""))
         vallis_rem = get_remaining_seconds(self.world_state.get("vallis", {}).get("expiry", ""))
         if self._tick_counter >= 60 or cetus_rem == 1 or vallis_rem == 1:
             self._tick_counter = 0
-            self.after(1500, self.refresh_all_data)
+            self.after(1500, lambda: self.refresh_all_data(show_overlay=False))
 
         self.after(1000, self._tick_timers)
