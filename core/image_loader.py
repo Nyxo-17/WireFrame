@@ -80,3 +80,4 @@ def fetch_item_image_async(
 
     threading.Thread(target=_worker, daemon=True).start()
     return create_placeholder_pil(size)
+

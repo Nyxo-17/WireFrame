@@ -1,4 +1,4 @@
-"""Module sidebar : Barre latérale gauche complète avec Inventaire & Cycles."""
+"""Module sidebar : Barre latérale gauche complète avec Notifications, Inventaire & Cycles."""
 
 from typing import Callable
 import customtkinter as ctk
@@ -6,7 +6,7 @@ from core.i18n import tr
 
 
 class Sidebar(ctk.CTkFrame):
-    """Menu latéral contenant l'en-tête Nyxo_17, Accueil, Inventaire & Codex, et Cycles."""
+    """Menu latéral contenant l'en-tête Nyxo_17, Accueil, Notifications, Inventaire et Cycles."""
 
     def __init__(
         self,
@@ -20,6 +20,7 @@ class Sidebar(ctk.CTkFrame):
         self.nav_buttons: dict[str, ctk.CTkButton] = {}
         self.nav_keys_map = {
             "welcome": "nav_welcome",
+            "notifications": "nav_notifications",
             "resources": "nav_resources",
             "mods": "nav_mods",
             "warframes": "nav_warframes",
@@ -31,7 +32,7 @@ class Sidebar(ctk.CTkFrame):
 
         self.grid_propagate(False)
         self.grid_columnconfigure(0, weight=1)
-        self.grid_rowconfigure(14, weight=1)
+        self.grid_rowconfigure(15, weight=1)
 
         self._build_creator_badge()
         self._build_navigation()
@@ -39,7 +40,7 @@ class Sidebar(ctk.CTkFrame):
 
     def _build_creator_badge(self) -> None:
         profile_box = ctk.CTkFrame(self, fg_color="transparent")
-        profile_box.grid(row=0, column=0, padx=14, pady=(14, 8), sticky="ew")
+        profile_box.grid(row=0, column=0, padx=14, pady=(12, 6), sticky="ew")
 
         emblem = ctk.CTkLabel(
             profile_box,
@@ -71,18 +72,16 @@ class Sidebar(ctk.CTkFrame):
         self.role_lbl.grid(row=1, column=1, sticky="w")
 
     def _build_navigation(self) -> None:
-        # Section 1 : ACCUEIL
         self.sec_home_lbl = self._make_section_header("sec_home", row=1)
         self._create_nav_btn("welcome", row=2)
+        self._create_nav_btn("notifications", row=3)
 
-        # Section 2 : INVENTAIRE & CODEX
-        self.sec_inv_lbl = self._make_section_header("sec_inventory", row=3)
-        for key, row_idx in [("resources", 4), ("mods", 5), ("warframes", 6)]:
+        self.sec_inv_lbl = self._make_section_header("sec_inventory", row=4)
+        for key, row_idx in [("resources", 5), ("mods", 6), ("warframes", 7)]:
             self._create_nav_btn(key, row=row_idx)
 
-        # Section 3 : CYCLES & ROTATIONS
-        self.sec_cycles_lbl = self._make_section_header("sec_cycles", row=7)
-        for key, row_idx in [("worlds", 8), ("bounties", 9), ("duviri", 10), ("baro", 11)]:
+        self.sec_cycles_lbl = self._make_section_header("sec_cycles", row=8)
+        for key, row_idx in [("worlds", 9), ("bounties", 10), ("duviri", 11), ("baro", 12)]:
             self._create_nav_btn(key, row=row_idx)
 
     def _make_section_header(self, tr_key: str, row: int) -> ctk.CTkLabel:
@@ -93,7 +92,7 @@ class Sidebar(ctk.CTkFrame):
             text_color="#6E7681",
             anchor="w",
         )
-        lbl.grid(row=row, column=0, padx=18, pady=(10, 2), sticky="ew")
+        lbl.grid(row=row, column=0, padx=18, pady=(8, 2), sticky="ew")
         return lbl
 
     def _create_nav_btn(self, key: str, row: int) -> None:
@@ -101,7 +100,7 @@ class Sidebar(ctk.CTkFrame):
             self,
             text=tr(self.nav_keys_map[key]),
             anchor="w",
-            height=35,
+            height=33,
             corner_radius=7,
             border_width=1,
             border_color="#0D111A",
@@ -122,7 +121,7 @@ class Sidebar(ctk.CTkFrame):
             text_color="#7D8590",
             anchor="w",
         )
-        self.status_label.grid(row=15, column=0, padx=16, pady=(4, 4), sticky="ew")
+        self.status_label.grid(row=16, column=0, padx=16, pady=(4, 4), sticky="ew")
 
         self.refresh_btn = ctk.CTkButton(
             self,
@@ -137,7 +136,7 @@ class Sidebar(ctk.CTkFrame):
             font=ctk.CTkFont(size=12, weight="bold"),
             command=self.on_refresh,
         )
-        self.refresh_btn.grid(row=16, column=0, padx=12, pady=(0, 14), sticky="ew")
+        self.refresh_btn.grid(row=17, column=0, padx=12, pady=(0, 12), sticky="ew")
 
     def select_tab(self, active_key: str) -> None:
         for key, btn in self.nav_buttons.items():

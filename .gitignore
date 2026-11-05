@@ -8,8 +8,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# Cache local de l'application et des images téléchargées
+# Cache local de l'application, réglages utilisateur et images téléchargées
 data/cache.json
+data/settings.json
 data/img_cache/
 
 # Fichiers système et IDE

@@ -9,6 +9,16 @@ DUVIRI_FILE = DATA_DIR / "duviri_rotations.json"
 TRANSLATIONS_FILE = DATA_DIR / "translations.json"
 CODEX_FILE = DATA_DIR / "codex_data.json"
 CACHE_FILE = DATA_DIR / "cache.json"
+SETTINGS_FILE = DATA_DIR / "settings.json"
+
+DEFAULT_SETTINGS: dict[str, bool] = {
+    "notify_planets": True,
+    "notify_baro": True,
+    "notify_bounties": True,
+    "notify_incarnon": True,
+    "notify_warframes": True,
+    "sound_enabled": True,
+}
 
 
 def _read_json_safe(file_path: Path, default_value: Any) -> Any:
@@ -39,6 +49,28 @@ def load_codex_data() -> dict[str, list[dict[str, str]]]:
         CODEX_FILE,
         {"resources": [], "mods": [], "warframes": [], "bounties": []},
     )
+
+
+def load_notification_settings() -> dict[str, bool]:
+    """Charge les préférences de notifications de l'utilisateur."""
+    saved = _read_json_safe(SETTINGS_FILE, {})
+    merged = DEFAULT_SETTINGS.copy()
+    if isinstance(saved, dict):
+        for k in merged:
+            if k in saved:
+                merged[k] = bool(saved[k])
+    return merged
+
+
+def save_notification_settings(settings: dict[str, bool]) -> bool:
+    """Sauvegarde les préférences de notifications dans data/settings.json."""
+    try:
+        with open(SETTINGS_FILE, "w", encoding="utf-8") as file:
+            json.dump(settings, file, indent=2, ensure_ascii=False)
+        return True
+    except OSError as error:
+        print(f"[Erreur Data] Impossible d'écrire les réglages : {error}")
+        return False
 
 
 def save_api_cache(data: dict[str, Any]) -> bool:

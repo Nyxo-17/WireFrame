@@ -1,9 +1,11 @@
-"""Module app_window : Fenêtre principale complète assemblant toutes les vues de WireFrame."""
+"""Module app_window : Fenêtre principale complète assemblant toutes les vues et les notifications."""
 
 import ctypes
 import customtkinter as ctk
 from core.api_client import fetch_world_state
 from core.duviri_calculator import get_current_duviri_rotation
+from core.notification_manager import NotificationManager
+from core.timer_engine import get_remaining_seconds
 from ui.components.titlebar import CustomTitleBar
 from ui.live_panel import LivePanel
 from ui.sidebar import Sidebar
@@ -11,12 +13,13 @@ from ui.views.baro_view import BaroView
 from ui.views.bounties_view import BountiesView
 from ui.views.codex_view import CodexView
 from ui.views.duviri_view import DuviriView
+from ui.views.notifications_view import NotificationsView
 from ui.views.welcome_view import WelcomeView
 from ui.views.worlds_view import WorldsView
 
 
 class WireframeApp(ctk.CTk):
-    """Fenêtre principale de WireFrame (Ressources, Mods, Warframes, Planètes, Mises à Prix, Duviri, Baro)."""
+    """Fenêtre principale de WireFrame avec surveillance automatique et alertes de rotations."""
 
     def __init__(self) -> None:
         super().__init__()
@@ -39,6 +42,11 @@ class WireframeApp(ctk.CTk):
         self.world_state: dict = {}
         self.duviri_state: dict = {}
         self.current_view_key: str = "welcome"
+        self._tick_counter: int = 0
+        self._toast_frame: ctk.CTkFrame | None = None
+
+        # Gestionnaire de notifications (Core)
+        self.notif_manager = NotificationManager(on_alert_callback=self.show_in_app_toast)
 
         # 0. Barre supérieure personnalisée (FR/EN + Zoom central)
         self.titlebar = CustomTitleBar(
@@ -73,9 +81,10 @@ class WireframeApp(ctk.CTk):
         self.live_panel = LivePanel(self)
         self.live_panel.grid(row=1, column=2, sticky="nsew", padx=(4, 12), pady=12)
 
-        # Instanciation modulaire de toutes nos vues (en réutilisant CodexView 3 fois !)
+        # Instanciation modulaire de toutes nos vues
         self.views: dict[str, ctk.CTkFrame] = {
             "welcome": WelcomeView(self.center_container, on_navigate=self.sidebar.select_tab),
+            "notifications": NotificationsView(self.center_container, self.notif_manager),
             "resources": CodexView(self.center_container, "resources", "res_page_title"),
             "mods": CodexView(self.center_container, "mods", "mod_page_title"),
             "warframes": CodexView(self.center_container, "warframes", "wf_page_title"),
@@ -111,6 +120,40 @@ class WireframeApp(ctk.CTk):
             else:
                 frame.grid_forget()
 
+    def show_in_app_toast(self, title: str, message: str) -> None:
+        """Affiche une bannière de notification dorée/bleue en haut du cadre central pendant 5s."""
+        if self._toast_frame and self._toast_frame.winfo_exists():
+            self._toast_frame.destroy()
+
+        toast = ctk.CTkFrame(
+            self.center_container,
+            corner_radius=10,
+            fg_color="#172542",
+            border_width=2,
+            border_color="#E5C158",
+        )
+        toast.place(relx=0.5, rely=0.03, anchor="n", relwidth=0.92)
+        toast.lift()
+
+        ctk.CTkLabel(
+            toast,
+            text=f"🔔  {title}",
+            font=ctk.CTkFont(size=14, weight="bold"),
+            text_color="#E5C158",
+            anchor="w",
+        ).pack(fill="x", padx=16, pady=(8, 2))
+
+        ctk.CTkLabel(
+            toast,
+            text=message,
+            font=ctk.CTkFont(size=12),
+            text_color="#FFFFFF",
+            anchor="w",
+        ).pack(fill="x", padx=16, pady=(0, 8))
+
+        self._toast_frame = toast
+        self.after(5000, lambda: toast.destroy() if toast.winfo_exists() else None)
+
     def apply_language(self) -> None:
         self.sidebar.update_language()
         self.live_panel.update_language()
@@ -127,16 +170,30 @@ class WireframeApp(ctk.CTk):
         self.world_state = fetch_world_state()
         self.duviri_state = get_current_duviri_rotation()
 
+        # Vérifie si un cycle ou une rotation a changé et déclenche les notifications
+        self.notif_manager.check_transitions(self.world_state, self.duviri_state)
+
         self.sidebar.update_status(self.world_state.get("source", "Live"))
         self.live_panel.load_state(self.world_state, self.duviri_state)
 
         for view in self.views.values():
             if hasattr(view, "load_state"):
                 view.load_state(self.world_state, self.duviri_state)
+            if hasattr(view, "refresh_history"):
+                view.refresh_history()
 
     def _tick_timers(self) -> None:
         self.live_panel.update_timers()
         active_view = self.views.get(self.current_view_key)
         if active_view and hasattr(active_view, "update_timers"):
             active_view.update_timers()
+
+        # Si un timer vient d'atteindre 0 seconde (ou toutes les 60s), on resynchronise automatiquement
+        self._tick_counter += 1
+        cetus_rem = get_remaining_seconds(self.world_state.get("cetus", {}).get("expiry", ""))
+        vallis_rem = get_remaining_seconds(self.world_state.get("vallis", {}).get("expiry", ""))
+        if self._tick_counter >= 60 or cetus_rem == 1 or vallis_rem == 1:
+            self._tick_counter = 0
+            self.after(1500, self.refresh_all_data)
+
         self.after(1000, self._tick_timers)

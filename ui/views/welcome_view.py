@@ -68,7 +68,7 @@ class WelcomeView(ctk.CTkFrame):
             ("card_wf_title", "card_wf_desc", "warframes", 1, 0),
             ("card_wld_title", "card_wld_desc", "worlds", 1, 1),
             ("card_bnt_title", "card_bnt_desc", "bounties", 2, 0),
-            ("card_duv_title", "card_duv_desc", "duviri", 2, 1),
+            ("card_duv_title", "card_duv_desc", "notifications", 2, 1),
         ]
 
         for t_key, d_key, target_key, r, c in cards_data:
