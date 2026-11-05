@@ -149,18 +149,19 @@ class WireframeApp(ctk.CTk):
         self._check_sidebar_hover()
 
     def toggle_sidebar(self) -> None:
-        """Bascule manuellement l'état déployé/rangé de la colonne de gauche."""
-        self.sidebar.set_collapsed(not self.sidebar.is_collapsed)
+        """Épingle ou désépingle manuellement la colonne de gauche via le bouton ☰."""
+        self._sidebar_pinned = not getattr(self, "_sidebar_pinned", False)
+        self.sidebar.set_collapsed(not self._sidebar_pinned)
 
     def _check_sidebar_hover(self) -> None:
         """Déploie la colonne de gauche quand la souris la survole, et la range dès qu'elle la quitte."""
         try:
-            if self.state() == "normal":
+            if self.state() == "normal" and not getattr(self, "_sidebar_pinned", False):
                 rel_x = self.winfo_pointerx() - self.winfo_rootx()
                 rel_y = self.winfo_pointery() - self.winfo_rooty()
                 win_h = self.winfo_height()
-                threshold = 68 if self.sidebar.is_collapsed else 230
-                inside_sidebar = (0 <= rel_x <= threshold) and (44 <= rel_y <= win_h)
+                sb_w = max(68, self.sidebar.winfo_width() + 6)
+                inside_sidebar = (0 <= rel_x <= sb_w) and (0 <= rel_y <= win_h)
                 self.sidebar.set_collapsed(not inside_sidebar)
         except Exception:
             pass
