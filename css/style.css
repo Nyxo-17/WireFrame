@@ -60,6 +60,20 @@ html {
   background: #3B82F6;
 }
 
+/* Poignées de redimensionnement de la fenêtre (8 directions) */
+.resize-handle {
+  position: fixed;
+  z-index: 9000;
+}
+.resize-n  { top: 0; left: 10px; right: 130px; height: 5px; cursor: ns-resize; }
+.resize-s  { bottom: 0; left: 10px; right: 10px; height: 6px; cursor: ns-resize; }
+.resize-w  { left: 0; top: 10px; bottom: 10px; width: 6px; cursor: ew-resize; }
+.resize-e  { right: 0; top: 40px; bottom: 10px; width: 6px; cursor: ew-resize; }
+.resize-nw { top: 0; left: 0; width: 12px; height: 12px; cursor: nwse-resize; z-index: 9001; }
+.resize-ne { top: 0; right: 0; width: 8px; height: 5px; cursor: nesw-resize; z-index: 9001; }
+.resize-sw { bottom: 0; left: 0; width: 14px; height: 14px; cursor: nesw-resize; z-index: 9001; }
+.resize-se { bottom: 0; right: 0; width: 14px; height: 14px; cursor: nwse-resize; z-index: 9001; }
+
 /* ==========================================================================
    1. ÉCRAN DE CHARGEMENT AU LANCEMENT (SPLASH SCREEN)
    ========================================================================== */

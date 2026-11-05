@@ -1048,6 +1048,12 @@ function onTopbarDblClick(e) {
   windowControl("maximize");
 }
 
+function startWindowResize(dir, e) {
+  if (e && e.button !== 0) return;
+  if (e) e.preventDefault();
+  fetch(`http://127.0.0.1:49172/resize?dir=${dir}&t=${Date.now()}`, { mode: "no-cors" }).catch(() => {});
+}
+
 /* ==========================================================================
    7. INITIALISATION AU DÉMARRAGE & ANIMATION DU SPLASH SCREEN
    ========================================================================== */

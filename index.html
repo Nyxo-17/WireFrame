@@ -9,6 +9,16 @@
 </head>
 <body>
 
+  <!-- POIGNÉES DE REDIMENSIONNEMENT INVISIBLES (8 BORDS & COINS) -->
+  <div class="resize-handle resize-n" onmousedown="startWindowResize('n', event)"></div>
+  <div class="resize-handle resize-s" onmousedown="startWindowResize('s', event)"></div>
+  <div class="resize-handle resize-w" onmousedown="startWindowResize('w', event)"></div>
+  <div class="resize-handle resize-e" onmousedown="startWindowResize('e', event)"></div>
+  <div class="resize-handle resize-nw" onmousedown="startWindowResize('nw', event)"></div>
+  <div class="resize-handle resize-ne" onmousedown="startWindowResize('ne', event)"></div>
+  <div class="resize-handle resize-sw" onmousedown="startWindowResize('sw', event)"></div>
+  <div class="resize-handle resize-se" onmousedown="startWindowResize('se', event)"></div>
+
   <!-- 1. ÉCRAN DE CHARGEMENT AU LANCEMENT (SPLASH SCREEN) -->
   <div id="splash-screen">
     <div class="splash-card">
