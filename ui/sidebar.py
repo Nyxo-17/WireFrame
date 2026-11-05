@@ -1,4 +1,4 @@
-"""Module sidebar : Barre latérale gauche qui se déploie au survol et se range automatiquement."""
+"""Module sidebar : Barre latérale coulissante à 100 FPS (Clipping matériel sans recalcul de layout)."""
 
 from pathlib import Path
 from typing import Callable
@@ -30,7 +30,7 @@ def _clean_label(raw_text: str) -> str:
 
 
 class Sidebar(ctk.CTkFrame):
-    """Menu latéral auto-rétractable (mode icônes 64px hors survol, mode complet 225px au survol)."""
+    """Menu latéral en surcouche avec animation Ease-Out ultra fluide (zéro recalcul de grille)."""
 
     def __init__(
         self,
@@ -48,24 +48,30 @@ class Sidebar(ctk.CTkFrame):
         )
         self.on_navigate = on_navigate
         self.on_refresh = on_refresh
-        self.is_collapsed: bool = False
-        self._last_source_text: str = "Live"
+        self.is_collapsed: bool = True
+
+        # Variables d'animation Ease-Out (glissement fluide)
+        self._current_w: float = float(COLLAPSED_WIDTH)
+        self._target_w: float = float(COLLAPSED_WIDTH)
+        self._anim_running: bool = False
+
+        # Conteneur interne de largeur fixe (225px) : les widgets ne sont JAMAIS recalculés pendant le slide !
+        self.inner = ctk.CTkFrame(self, width=EXPANDED_WIDTH, corner_radius=0, fg_color="transparent")
+        self.inner.place(x=2, y=2, relheight=0.99)
+        self.inner.grid_propagate(False)
+        self.inner.grid_columnconfigure(0, weight=1)
+        self.inner.grid_rowconfigure(15, weight=1)
 
         self.nav_rows: dict[str, ctk.CTkFrame] = {}
         self.nav_labels: dict[str, tuple[ctk.CTkLabel, str]] = {}
 
-        self.grid_propagate(False)
-        self.grid_columnconfigure(0, weight=1)
-        self.grid_rowconfigure(15, weight=1)
-
         self._build_creator_badge()
         self._build_navigation()
         self._build_footer()
-        self.set_collapsed(True)
 
     def _build_creator_badge(self) -> None:
-        self.profile_box = ctk.CTkFrame(self, fg_color="transparent")
-        self.profile_box.grid(row=0, column=0, padx=12, pady=(12, 8), sticky="ew")
+        self.profile_box = ctk.CTkFrame(self.inner, fg_color="transparent")
+        self.profile_box.grid(row=0, column=0, padx=10, pady=(12, 8), sticky="ew")
         self.profile_box.grid_columnconfigure(1, weight=1)
 
         if LOGO_PATH.exists():
@@ -85,7 +91,7 @@ class Sidebar(ctk.CTkFrame):
                 text_color="#E5C158",
                 font=ctk.CTkFont(size=20, weight="bold"),
             )
-        self.emblem.grid(row=0, column=0, rowspan=2, padx=(0, 10), sticky="w")
+        self.emblem.grid(row=0, column=0, rowspan=2, padx=(0, 12), sticky="w")
 
         self.name_lbl = ctk.CTkLabel(
             self.profile_box,
@@ -115,18 +121,18 @@ class Sidebar(ctk.CTkFrame):
 
     def _make_section_header(self, tr_key: str, row: int) -> ctk.CTkLabel:
         lbl = ctk.CTkLabel(
-            self,
+            self.inner,
             text=tr(tr_key),
             font=ctk.CTkFont(size=10, weight="bold"),
             text_color="#6E7681",
             anchor="w",
         )
-        lbl.grid(row=row, column=0, padx=16, pady=(10, 3), sticky="ew")
+        lbl.grid(row=row, column=0, padx=62, pady=(10, 2), sticky="ew")
         return lbl
 
     def _create_aligned_nav_item(self, key: str, icon: str, tr_key: str, row: int) -> None:
         item_frame = ctk.CTkFrame(
-            self,
+            self.inner,
             height=36,
             corner_radius=7,
             border_width=1,
@@ -134,16 +140,16 @@ class Sidebar(ctk.CTkFrame):
             fg_color="transparent",
             cursor="hand2",
         )
-        item_frame.grid(row=row, column=0, padx=10, pady=2, sticky="ew")
+        item_frame.grid(row=row, column=0, padx=8, pady=2, sticky="ew")
         item_frame.grid_propagate(False)
-        item_frame.grid_columnconfigure(0, minsize=40, weight=0)
+        item_frame.grid_columnconfigure(0, minsize=44, weight=0)
         item_frame.grid_columnconfigure(1, weight=1)
         item_frame.grid_rowconfigure(0, weight=1)
 
         icon_lbl = ctk.CTkLabel(
             item_frame,
             text=icon,
-            width=36,
+            width=40,
             font=ctk.CTkFont(size=14),
             text_color="#B1BAC4",
             anchor="center",
@@ -157,7 +163,7 @@ class Sidebar(ctk.CTkFrame):
             text_color="#B1BAC4",
             anchor="w",
         )
-        text_lbl.grid(row=0, column=1, padx=(2, 8), sticky="nsew")
+        text_lbl.grid(row=0, column=1, padx=(6, 8), sticky="nsew")
 
         for widget in (item_frame, icon_lbl, text_lbl):
             widget.bind("<Button-1>", lambda _e, k=key: self.select_tab(k))
@@ -175,18 +181,19 @@ class Sidebar(ctk.CTkFrame):
 
     def _build_footer(self) -> None:
         self.status_label = ctk.CTkLabel(
-            self,
+            self.inner,
             text="📡 ...",
             font=ctk.CTkFont(size=11),
             text_color="#7D8590",
             anchor="w",
         )
-        self.status_label.grid(row=16, column=0, padx=16, pady=(4, 4), sticky="ew")
+        self.status_label.grid(row=16, column=0, padx=62, pady=(4, 4), sticky="ew")
 
         self.refresh_btn = ctk.CTkButton(
-            self,
-            text=tr("btn_refresh"),
-            height=34,
+            self.inner,
+            text="🔄    " + tr("btn_refresh").replace("🔄", "").strip(),
+            anchor="w",
+            height=36,
             corner_radius=7,
             fg_color="#161E31",
             border_width=1,
@@ -196,37 +203,33 @@ class Sidebar(ctk.CTkFrame):
             font=ctk.CTkFont(size=12, weight="bold"),
             command=self.on_refresh,
         )
-        self.refresh_btn.grid(row=17, column=0, padx=10, pady=(0, 56), sticky="ew")
+        self.refresh_btn.grid(row=17, column=0, padx=8, pady=(0, 56), sticky="ew")
 
     def set_collapsed(self, collapsed: bool) -> None:
-        """Range la colonne à gauche (64px) ou la déploie (225px) en masquant/affichant les textes."""
+        """Lance l'animation fluide vers la largeur cible (64px ou 225px)."""
         if self.is_collapsed == collapsed:
             return
         self.is_collapsed = collapsed
-
-        if collapsed:
-            self.configure(width=COLLAPSED_WIDTH)
-            self.name_lbl.grid_remove()
-            self.role_lbl.grid_remove()
-            self.sec_home_lbl.grid_remove()
-            self.sec_inv_lbl.grid_remove()
-            self.sec_cycles_lbl.grid_remove()
-            self.status_label.grid_remove()
-            self.refresh_btn.configure(text="🔄", width=42)
-            for text_lbl, _ in self.nav_labels.values():
-                text_lbl.grid_remove()
-        else:
-            self.configure(width=EXPANDED_WIDTH)
+        self._target_w = float(COLLAPSED_WIDTH if collapsed else EXPANDED_WIDTH)
+        if not collapsed:
             self.lift()
-            self.name_lbl.grid()
-            self.role_lbl.grid()
-            self.sec_home_lbl.grid()
-            self.sec_inv_lbl.grid()
-            self.sec_cycles_lbl.grid()
-            self.status_label.grid()
-            self.refresh_btn.configure(text=tr("btn_refresh"))
-            for text_lbl, _ in self.nav_labels.values():
-                text_lbl.grid()
+        if not self._anim_running:
+            self._anim_running = True
+            self._animate_step()
+
+    def _animate_step(self) -> None:
+        """Interpolation Ease-Out à ~90 FPS sans recalculer les enfants."""
+        diff = self._target_w - self._current_w
+        if abs(diff) <= 1.2:
+            self._current_w = self._target_w
+            self.configure(width=int(self._current_w))
+            self._anim_running = False
+            return
+
+        # Avance de 38% de la distance restante toutes les 11 ms (effet ressort amorti)
+        self._current_w += diff * 0.38
+        self.configure(width=int(self._current_w))
+        self.after(11, self._animate_step)
 
     def select_tab(self, active_key: str) -> None:
         for key, frame in self.nav_rows.items():
@@ -244,7 +247,6 @@ class Sidebar(ctk.CTkFrame):
         self.on_navigate(active_key)
 
     def update_status(self, source_text: str) -> None:
-        self._last_source_text = source_text
         self.status_label.configure(text=f"📡 {source_text}")
 
     def update_language(self) -> None:
@@ -252,7 +254,7 @@ class Sidebar(ctk.CTkFrame):
         self.sec_home_lbl.configure(text=tr("sec_home"))
         self.sec_inv_lbl.configure(text=tr("sec_inventory"))
         self.sec_cycles_lbl.configure(text=tr("sec_cycles"))
-        if not self.is_collapsed:
-            self.refresh_btn.configure(text=tr("btn_refresh"))
+        clean_ref = tr("btn_refresh").replace("🔄", "").strip()
+        self.refresh_btn.configure(text=f"🔄    {clean_ref}")
         for key, (text_lbl, tr_key) in self.nav_labels.items():
             text_lbl.configure(text=_clean_label(tr(tr_key)))

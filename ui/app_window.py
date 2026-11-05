@@ -164,7 +164,7 @@ class WireframeApp(ctk.CTk):
                 self.sidebar.set_collapsed(not inside_sidebar)
         except Exception:
             pass
-        self.after(70, self._check_sidebar_hover)
+        self.after(30, self._check_sidebar_hover)
 
     def _apply_native_dwm_rounding(self) -> None:
         try:
