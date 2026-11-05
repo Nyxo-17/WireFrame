@@ -186,3 +186,4 @@ class LivePanel(ctk.CTkFrame):
         self.inc_timer.configure(text=duv_txt)
         self.wf_timer.configure(text=duv_txt)
         self.baro_timer.configure(text=get_formatted_timer(self.baro_target_iso, short=True))
+

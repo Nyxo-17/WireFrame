@@ -87,3 +87,4 @@ class WorldsView(ctk.CTkFrame):
         """Rafraîchit les comptes à rebours chaque seconde."""
         for card in self.cards.values():
             card.refresh_timer()
+

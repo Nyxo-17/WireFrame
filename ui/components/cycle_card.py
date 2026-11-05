@@ -89,3 +89,4 @@ class CycleCard(ctk.CTkFrame):
         """Recalcule et affiche le compte à rebours chaque seconde."""
         timer_text = get_formatted_timer(self.expiry_iso, short=self.compact)
         self.timer_label.configure(text=timer_text)
+

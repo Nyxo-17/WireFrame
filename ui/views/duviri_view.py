@@ -129,3 +129,4 @@ class DuviriView(ctk.CTkFrame):
         """Met à jour le timer du reset hebdomadaire."""
         txt = get_formatted_timer(self.expiry_iso, short=False)
         self.timer_badge.configure(text=f"⏳ Reset dans : {txt}")
+

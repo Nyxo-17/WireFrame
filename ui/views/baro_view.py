@@ -142,3 +142,4 @@ class BaroView(ctk.CTkFrame):
         """Met à jour le compte à rebours d'arrivée ou de départ."""
         prefix = "Départ dans :" if self.is_active else "Arrivée dans :"
         self.timer_label.configure(text=f"{prefix} {get_formatted_timer(self.target_iso)}")
+

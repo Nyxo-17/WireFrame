@@ -1,8 +1,9 @@
-"""Module app_window : Fenêtre principale en 3 colonnes (Sidebar + Vue Centrale + LivePanel)."""
+"""Module app_window : Fenêtre principale sans bordure Windows (TitleBar + 3 colonnes)."""
 
 import customtkinter as ctk
 from core.api_client import fetch_world_state
 from core.duviri_calculator import get_current_duviri_rotation
+from ui.components.titlebar import CustomTitleBar
 from ui.live_panel import LivePanel
 from ui.sidebar import Sidebar
 from ui.views.baro_view import BaroView
@@ -12,26 +13,34 @@ from ui.views.worlds_view import WorldsView
 
 
 class WireframeApp(ctk.CTk):
-    """Fenêtre principale de WireFrame V1 reproduisant le layout 3 colonnes de Nyxo_17."""
+    """Fenêtre principale de WireFrame V1 avec barre supérieure sombre et 3 colonnes."""
 
     def __init__(self) -> None:
         super().__init__()
 
         ctk.set_appearance_mode("dark")
-        self.title("WireFrame — Compagnon Warframe (by Nyxo_17)")
-        self.geometry("1280x720")
-        self.minsize(1100, 620)
+        self.title("WireFrame")
+        self.geometry("1280x740+100+60")
+        self.minsize(1100, 640)
         self.configure(fg_color="#090C14")
 
-        # Grille 3 colonnes : 0 = Sidebar (fixe), 1 = Vue Centrale (extensible), 2 = LivePanel (fixe)
+        # Supprime la barre de titre blanche de Windows pour utiliser notre CustomTitleBar
+        self.overrideredirect(True)
+
+        # Grille : Ligne 0 = CustomTitleBar, Ligne 1 = Les 3 colonnes principales
         self.grid_columnconfigure(0, weight=0)
         self.grid_columnconfigure(1, weight=1)
         self.grid_columnconfigure(2, weight=0)
-        self.grid_rowconfigure(0, weight=1)
+        self.grid_rowconfigure(0, weight=0)
+        self.grid_rowconfigure(1, weight=1)
 
         self.world_state: dict = {}
         self.duviri_state: dict = {}
         self.current_view_key: str = "welcome"
+
+        # 0. Barre supérieure personnalisée (sur toute la largeur)
+        self.titlebar = CustomTitleBar(self)
+        self.titlebar.grid(row=0, column=0, columnspan=3, sticky="ew")
 
         # 1. Colonne gauche : Sidebar
         self.sidebar = Sidebar(
@@ -39,7 +48,7 @@ class WireframeApp(ctk.CTk):
             on_navigate=self.show_view,
             on_refresh=self.refresh_all_data,
         )
-        self.sidebar.grid(row=0, column=0, sticky="nsew")
+        self.sidebar.grid(row=1, column=0, sticky="nsew")
 
         # 2. Colonne centrale : Conteneur des Vues
         self.center_container = ctk.CTkFrame(
@@ -49,15 +58,15 @@ class WireframeApp(ctk.CTk):
             border_width=1,
             border_color="#1A2234",
         )
-        self.center_container.grid(row=0, column=1, sticky="nsew", padx=(12, 8), pady=12)
+        self.center_container.grid(row=1, column=1, sticky="nsew", padx=(12, 8), pady=12)
         self.center_container.grid_columnconfigure(0, weight=1)
         self.center_container.grid_rowconfigure(0, weight=1)
 
-        # 3. Colonne droite : Panneau Live 'Cycles & Événements' toujours visible
+        # 3. Colonne droite : Panneau Live 'Cycles & Événements'
         self.live_panel = LivePanel(self)
-        self.live_panel.grid(row=0, column=2, sticky="nsew", padx=(4, 12), pady=12)
+        self.live_panel.grid(row=1, column=2, sticky="nsew", padx=(4, 12), pady=12)
 
-        # Instanciation de nos vues modulaires
+        # Instanciation des 4 vues centrales
         self.views: dict[str, ctk.CTkFrame] = {
             "welcome": WelcomeView(self.center_container, on_navigate=self.sidebar.select_tab),
             "worlds": WorldsView(self.center_container),
@@ -65,11 +74,8 @@ class WireframeApp(ctk.CTk):
             "baro": BaroView(self.center_container),
         }
 
-        # Chargement initial et sélection de la page Bienvenue
         self.refresh_all_data()
         self.sidebar.select_tab("welcome")
-
-        # Boucle d'horloge (toutes les secondes)
         self._tick_timers()
 
     def show_view(self, view_key: str) -> None:

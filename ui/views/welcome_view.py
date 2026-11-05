@@ -168,3 +168,4 @@ class WelcomeView(ctk.CTkFrame):
             font=ctk.CTkFont(size=14, weight="bold", slant="italic"),
             text_color="#F0F6FC",
         ).grid(row=0, column=1)
+
