@@ -72,12 +72,11 @@ class WireframeApp(ctk.CTk):
         )
         self.titlebar.grid(row=0, column=0, columnspan=3, sticky="ew")
 
-        # 1. Colonne gauche : Sidebar rétractable à gauche
+        # 1. Colonne gauche : Sidebar auto-rétractable au survol
         self.sidebar = Sidebar(
             self,
             on_navigate=self.show_view,
             on_refresh=lambda: self.refresh_all_data(show_overlay=True),
-            on_toggle_collapse=self.toggle_sidebar,
         )
         self.sidebar.grid(row=1, column=0, sticky="nsew")
 
@@ -116,6 +115,7 @@ class WireframeApp(ctk.CTk):
             self.refresh_all_data(show_overlay=False)
             self.sidebar.select_tab("welcome")
             self._tick_timers()
+            self._check_sidebar_hover()
         else:
             # Masque la fenêtre principale pendant le Splash Screen de démarrage
             self.withdraw()
@@ -144,6 +144,25 @@ class WireframeApp(ctk.CTk):
         self.deiconify()
         self.after(40, self._apply_native_dwm_rounding)
         self._tick_timers()
+        self._check_sidebar_hover()
+
+    def toggle_sidebar(self) -> None:
+        """Bascule manuellement l'état déployé/rangé de la colonne de gauche."""
+        self.sidebar.set_collapsed(not self.sidebar.is_collapsed)
+
+    def _check_sidebar_hover(self) -> None:
+        """Déploie la colonne de gauche quand la souris la survole, et la range dès qu'elle la quitte."""
+        try:
+            if self.state() == "normal":
+                rel_x = self.winfo_pointerx() - self.winfo_rootx()
+                rel_y = self.winfo_pointery() - self.winfo_rooty()
+                win_h = self.winfo_height()
+                threshold = 68 if self.sidebar.is_collapsed else 230
+                inside_sidebar = (0 <= rel_x <= threshold) and (44 <= rel_y <= win_h)
+                self.sidebar.set_collapsed(not inside_sidebar)
+        except Exception:
+            pass
+        self.after(70, self._check_sidebar_hover)
 
     def _apply_native_dwm_rounding(self) -> None:
         try:
@@ -151,19 +170,10 @@ class WireframeApp(ctk.CTk):
             user32 = ctypes.windll.user32
             for hwnd in (self.winfo_id(), user32.GetParent(self.winfo_id())):
                 if hwnd:
-                    dwmapi.DwmSetWindowAttribute(hwnd, 33, ctypes.byref(ctypes.c_int(2)), 4)
+                    dwmapi.DwmSetWindowAttribute(hwnd, 33, ctypes.byref(corner_pref := ctypes.c_int(2)), 4)
                     dwmapi.DwmSetWindowAttribute(hwnd, 34, ctypes.byref(ctypes.c_int(0x00462F23)), 4)
         except Exception:
             pass
-
-    def toggle_sidebar(self) -> None:
-        """Range ou déploie la colonne de gauche (Sidebar)."""
-        if self._sidebar_visible:
-            self.sidebar.grid_remove()
-            self._sidebar_visible = False
-        else:
-            self.sidebar.grid(row=1, column=0, sticky="nsew")
-            self._sidebar_visible = True
 
     def show_view(self, view_key: str) -> None:
         self.current_view_key = view_key
