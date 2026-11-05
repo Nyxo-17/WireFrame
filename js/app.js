@@ -1062,3 +1062,4 @@ window.addEventListener("DOMContentLoaded", async () => {
   setInterval(updateLivePanel, 1000);
   setInterval(() => refreshAllData(false), 60000);
 });
+
