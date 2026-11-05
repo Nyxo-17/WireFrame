@@ -60,20 +60,6 @@ html {
   background: #3B82F6;
 }
 
-/* Poignées de redimensionnement de la fenêtre (8 directions) */
-.resize-handle {
-  position: fixed;
-  z-index: 9000;
-}
-.resize-n  { top: 0; left: 10px; right: 130px; height: 5px; cursor: ns-resize; }
-.resize-s  { bottom: 0; left: 10px; right: 10px; height: 6px; cursor: ns-resize; }
-.resize-w  { left: 0; top: 10px; bottom: 10px; width: 6px; cursor: ew-resize; }
-.resize-e  { right: 0; top: 40px; bottom: 10px; width: 6px; cursor: ew-resize; }
-.resize-nw { top: 0; left: 0; width: 12px; height: 12px; cursor: nwse-resize; z-index: 9001; }
-.resize-ne { top: 0; right: 0; width: 8px; height: 5px; cursor: nesw-resize; z-index: 9001; }
-.resize-sw { bottom: 0; left: 0; width: 14px; height: 14px; cursor: nesw-resize; z-index: 9001; }
-.resize-se { bottom: 0; right: 0; width: 14px; height: 14px; cursor: nwse-resize; z-index: 9001; }
-
 /* ==========================================================================
    1. ÉCRAN DE CHARGEMENT AU LANCEMENT (SPLASH SCREEN)
    ========================================================================== */
@@ -166,60 +152,60 @@ html {
 }
 
 /* ==========================================================================
-   2. BARRE SUPÉRIEURE FUSIONNÉE (STYLE ALECAFRAME)
+   2. BARRE SUPÉRIEURE (TOPBAR)
    ========================================================================== */
 .topbar {
-  height: 40px;
-  min-height: 40px;
-  background: #0B0E17;
-  border-bottom: 1px solid #171E2E;
+  height: 46px;
+  min-height: 46px;
+  background: var(--bg-sidebar);
+  border-bottom: 1px solid var(--border-subtle);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 0 0 14px;
-  cursor: default;
+  padding: 0 16px;
 }
 
 .topbar-left {
   display: flex;
   align-items: center;
-  gap: 9px;
-}
-
-.topbar-logo {
-  width: 20px;
-  height: 20px;
-  object-fit: contain;
-  filter: drop-shadow(0 0 6px rgba(229, 193, 88, 0.45));
+  gap: 10px;
 }
 
 .topbar-title {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--text-main);
-  letter-spacing: 0.3px;
+  letter-spacing: 0.4px;
+}
+
+.topbar-tag {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.35);
+  color: var(--accent-cyan);
+  font-weight: 600;
 }
 
 .topbar-right {
   display: flex;
   align-items: center;
-  height: 100%;
-  gap: 8px;
+  gap: 10px;
 }
 
 .control-pill {
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 4px;
   background: #131926;
   border: 1px solid #232F46;
-  border-radius: 6px;
-  padding: 2px 6px;
-  height: 28px;
+  border-radius: 7px;
+  padding: 3px 6px;
 }
 
 .pill-icon {
-  font-size: 11px;
+  font-size: 12px;
   margin-right: 2px;
 }
 
@@ -230,7 +216,7 @@ html {
   color: var(--text-muted);
   font-size: 11px;
   font-weight: 700;
-  padding: 2px 6px;
+  padding: 3px 7px;
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -251,68 +237,37 @@ html {
   font-size: 11px;
   font-weight: 700;
   color: #FFFFFF;
-  min-width: 36px;
+  min-width: 38px;
   text-align: center;
 }
 
 .discord-btn {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
   background: #5865F2;
   border: 1px solid #7289DA;
   color: #FFFFFF;
-  font-size: 11.5px;
+  font-size: 12px;
   font-weight: 700;
-  height: 28px;
-  padding: 0 10px;
-  border-radius: 6px;
+  padding: 5px 12px;
+  border-radius: 7px;
   cursor: pointer;
   text-decoration: none;
   transition: all 0.18s ease;
-  box-shadow: 0 0 10px rgba(88, 101, 242, 0.25);
+  box-shadow: 0 0 12px rgba(88, 101, 242, 0.3);
 }
 
 .discord-btn:hover {
   background: #4752C4;
-  box-shadow: 0 0 16px rgba(88, 101, 242, 0.65);
+  box-shadow: 0 0 18px rgba(88, 101, 242, 0.65);
+  transform: translateY(-1px);
 }
 
 .discord-btn img {
-  width: 15px;
-  height: 15px;
+  width: 16px;
+  height: 16px;
   object-fit: contain;
-}
-
-.window-controls {
-  display: flex;
-  align-items: stretch;
-  height: 100%;
-  margin-left: 4px;
-}
-
-.win-btn {
-  width: 42px;
-  height: 100%;
-  background: transparent;
-  border: none;
-  color: #8B949E;
-  font-size: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
-}
-
-.win-btn:hover {
-  background: #1C2539;
-  color: #FFFFFF;
-}
-
-.win-btn.win-close:hover {
-  background: #E81123;
-  color: #FFFFFF;
 }
 
 /* ==========================================================================
@@ -914,4 +869,84 @@ html {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* Section Actualités Officielles Warframe (Moitié basse de la colonne de droite) */
+.live-news-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+.live-news-link {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--accent-cyan);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+.live-news-link:hover {
+  color: #FFFFFF;
+  text-decoration: underline;
+}
+.live-news-list {
+  flex: 1;
+  min-height: 140px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-right: 3px;
+}
+.news-card {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 9px;
+  align-items: center;
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: 8px;
+  padding: 7px 9px;
+  text-decoration: none;
+  transition: all 0.18s ease;
+}
+.news-card:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.28);
+  transform: translateX(2px);
+}
+.news-thumb {
+  width: 64px;
+  height: 40px;
+  border-radius: 5px;
+  object-fit: cover;
+  background: #0B0F19;
+  border: 1px solid #24324C;
+}
+.news-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+}
+.news-title {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1.28;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.news-card:hover .news-title {
+  color: var(--accent-cyan);
+}
+.news-meta {
+  font-size: 10px;
+  color: var(--accent-gold);
+  font-weight: 600;
 }

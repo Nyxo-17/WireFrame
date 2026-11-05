@@ -9,16 +9,6 @@
 </head>
 <body>
 
-  <!-- POIGNÉES DE REDIMENSIONNEMENT INVISIBLES (8 BORDS & COINS) -->
-  <div class="resize-handle resize-n" onmousedown="startWindowResize('n', event)"></div>
-  <div class="resize-handle resize-s" onmousedown="startWindowResize('s', event)"></div>
-  <div class="resize-handle resize-w" onmousedown="startWindowResize('w', event)"></div>
-  <div class="resize-handle resize-e" onmousedown="startWindowResize('e', event)"></div>
-  <div class="resize-handle resize-nw" onmousedown="startWindowResize('nw', event)"></div>
-  <div class="resize-handle resize-ne" onmousedown="startWindowResize('ne', event)"></div>
-  <div class="resize-handle resize-sw" onmousedown="startWindowResize('sw', event)"></div>
-  <div class="resize-handle resize-se" onmousedown="startWindowResize('se', event)"></div>
-
   <!-- 1. ÉCRAN DE CHARGEMENT AU LANCEMENT (SPLASH SCREEN) -->
   <div id="splash-screen">
     <div class="splash-card">
@@ -32,11 +22,11 @@
     </div>
   </div>
 
-  <!-- 2. BARRE SUPÉRIEURE FUSIONNÉE (STYLE ALECAFRAME) -->
-  <header class="topbar" onmousedown="onTopbarMouseDown(event)" ondblclick="onTopbarDblClick(event)">
+  <!-- 2. BARRE SUPÉRIEURE PERSONNALISÉE -->
+  <header class="topbar">
     <div class="topbar-left">
-      <img src="data/app_logo.png" alt="WireFrame" class="topbar-logo" />
       <span class="topbar-title">WireFrame</span>
+      <span class="topbar-tag">HTML5 • 144 FPS</span>
     </div>
     <div class="topbar-right">
       <!-- Sélecteur FR | EN -->
@@ -51,17 +41,11 @@
         <span id="zoom-label">100%</span>
         <button class="zoom-btn" onclick="changeZoom(10)">🔍+</button>
       </div>
-      <!-- Bouton Discord officiel intégré -->
-      <a href="https://discord.gg/DhGwHPf82n" target="_blank" class="discord-btn" title="Rejoindre le Discord WireFrame">
+      <!-- Bouton Discord officiel -->
+      <a href="https://discord.gg/DhGwHPf82n" target="_blank" class="discord-btn">
         <img src="data/icons/discord_logo.png" alt="Discord" />
         <span>Discord</span>
       </a>
-      <!-- Boutons de fenêtre intégrés (Minimiser / Agrandir / Fermer) -->
-      <div class="window-controls">
-        <button class="win-btn" onclick="windowControl('minimize')" title="Réduire">&#x2015;</button>
-        <button class="win-btn" onclick="windowControl('maximize')" title="Agrandir / Restaurer">&#x25A1;</button>
-        <button class="win-btn win-close" onclick="windowControl('close')" title="Fermer">&#x2715;</button>
-      </div>
     </div>
   </header>
 
@@ -182,6 +166,12 @@
         </div>
         <div id="live-baro-info" class="live-box-cur">...</div>
       </div>
+
+      <div class="live-news-header">
+        <span id="live-news-title" class="live-sec-title">📰 Actualités Officielles Warframe</span>
+        <a href="https://www.warframe.com/fr/news" target="_blank" id="live-news-all" class="live-news-link">warframe.com ↗</a>
+      </div>
+      <div id="live-news-list" class="live-news-list"></div>
     </aside>
 
   </div>

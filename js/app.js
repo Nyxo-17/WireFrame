@@ -156,7 +156,30 @@ function computeOfflineWorldState() {
       activation: baroActive ? new Date(nowMs).toISOString() : baroTarget,
       expiry: baroActive ? baroTarget : "",
       inventory: []
-    }
+    },
+    news: [
+      {
+        title_fr: "Actualités & Mises à jour officielles Warframe",
+        title_en: "Official Warframe News & Patch Notes",
+        link: "https://www.warframe.com/fr/news",
+        image: "data/planets/earth.png",
+        date: new Date(nowMs).toISOString()
+      },
+      {
+        title_fr: "Forums Officiels Warframe — Notes de version",
+        title_en: "Official Warframe Forums — Update Notes",
+        link: "https://forums.warframe.com/",
+        image: "data/planets/zariman.png",
+        date: new Date(nowMs - 86400000).toISOString()
+      },
+      {
+        title_fr: "Prime Resurgence & Rotations Varzia en cours",
+        title_en: "Prime Resurgence & Current Varzia Rotations",
+        link: "https://www.warframe.com/fr/prime-resurgence",
+        image: "data/planets/venus.png",
+        date: new Date(nowMs - 172800000).toISOString()
+      }
+    ]
   };
 }
 
@@ -252,7 +275,21 @@ async function fetchLiveWarframeAPI() {
               credits: it.credits || 0
             }))
           : []
-      }
+      },
+      news: Array.isArray(raw.news) && raw.news.length > 0
+        ? raw.news
+            .slice()
+            .sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0))
+            .slice(0, 10)
+            .map((n) => ({
+              title_fr: (n.translations && n.translations.fr) || n.message || "Actualité Warframe",
+              title_en: (n.translations && n.translations.en) || n.message || "Warframe News",
+              link: n.link || "https://www.warframe.com/fr/news",
+              image: n.imageLink || "data/app_logo.png",
+              date: n.date || "",
+              eta: n.eta || ""
+            }))
+        : fallback.news
     };
   } catch (err) {
     return fallback;
@@ -262,6 +299,48 @@ async function fetchLiveWarframeAPI() {
 /* ==========================================================================
    3. PANNEAU LATÉRAL DROIT EN DIRECT & COMPTE À REBOURS 1 SECONDE
    ========================================================================== */
+function formatNewsDate(isoStr) {
+  if (!isoStr) return "Officiel";
+  const d = new Date(isoStr);
+  if (isNaN(d.getTime())) return "Officiel";
+  const diffDays = Math.max(0, Math.floor((Date.now() - d.getTime()) / 86400000));
+  if (diffDays === 0) return currentLang === "fr" ? "Aujourd'hui" : "Today";
+  if (diffDays === 1) return currentLang === "fr" ? "Hier" : "Yesterday";
+  return currentLang === "fr" ? `Il y a ${diffDays}j` : `${diffDays}d ago`;
+}
+
+function buildLiveNewsList() {
+  const listEl = document.getElementById("live-news-list");
+  if (!listEl || !worldState) return;
+
+  const titleEl = document.getElementById("live-news-title");
+  if (titleEl) {
+    titleEl.textContent = currentLang === "fr" ? "📰 Actualités Officielles" : "📰 Official Warframe News";
+  }
+  const allLinkEl = document.getElementById("live-news-all");
+  if (allLinkEl) {
+    allLinkEl.href = currentLang === "fr" ? "https://www.warframe.com/fr/news" : "https://www.warframe.com/news";
+  }
+
+  const newsItems = worldState.news || [];
+  listEl.innerHTML = newsItems
+    .map((n) => {
+      const title = currentLang === "fr" ? n.title_fr : n.title_en;
+      const dateLbl = formatNewsDate(n.date);
+      const imgUrl = n.image || "data/app_logo.png";
+      return `
+        <a href="${n.link}" target="_blank" class="news-card" title="${title.replace(/"/g, "&quot;")}">
+          <img src="${imgUrl}" alt="News" class="news-thumb" loading="lazy" onerror="this.onerror=null;this.src='data/app_logo.png';" />
+          <div class="news-body">
+            <div class="news-title">${title}</div>
+            <div class="news-meta">🔗 Warframe.com • ${dateLbl}</div>
+          </div>
+        </a>
+      `;
+    })
+    .join("");
+}
+
 function buildLiveWorldsGrid() {
   const grid = document.getElementById("live-worlds-grid");
   if (!grid || !worldState) return;
@@ -983,6 +1062,7 @@ function setLanguage(lang) {
   });
 
   buildLiveWorldsGrid();
+  buildLiveNewsList();
   updateLivePanel();
   renderCurrentTab();
 }
@@ -1001,6 +1081,7 @@ async function refreshAllData(showLoader = false) {
   if (showLoader && loader) loader.classList.remove("hidden");
   worldState = await fetchLiveWarframeAPI();
   buildLiveWorldsGrid();
+  buildLiveNewsList();
   updateLivePanel();
   renderCurrentTab();
   if (showLoader && loader) {
@@ -1025,33 +1106,6 @@ async function checkForUpdatesManual() {
   } catch (e) {
     triggerAlert("WireFrame — Mise à jour", `${tr("upd_up_to_date")} (v${localVer}).`);
   }
-}
-
-/* ==========================================================================
-   6B. CONTRÔLES DE FENÊTRE NATIFS (BARRE SUPÉRIEURE FUSIONNÉE)
-   ========================================================================== */
-function windowControl(action) {
-  fetch(`http://127.0.0.1:49172/${action}?t=${Date.now()}`, { mode: "no-cors" }).catch(() => {});
-  if (action === "close") {
-    setTimeout(() => window.close(), 120);
-  }
-}
-
-function onTopbarMouseDown(e) {
-  if (e.button !== 0) return;
-  if (e.target.closest("button, a, .control-pill, .window-controls")) return;
-  fetch(`http://127.0.0.1:49172/drag?t=${Date.now()}`, { mode: "no-cors" }).catch(() => {});
-}
-
-function onTopbarDblClick(e) {
-  if (e.target.closest("button, a, .control-pill, .window-controls")) return;
-  windowControl("maximize");
-}
-
-function startWindowResize(dir, e) {
-  if (e && e.button !== 0) return;
-  if (e) e.preventDefault();
-  fetch(`http://127.0.0.1:49172/resize?dir=${dir}&t=${Date.now()}`, { mode: "no-cors" }).catch(() => {});
 }
 
 /* ==========================================================================
