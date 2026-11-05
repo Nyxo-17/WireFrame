@@ -1,7 +1,7 @@
 {
-  "version": "1.0.0",
+  "version": "1.0.1",
   "repo": "Nyxo-17/WireFrame",
   "branch": "main",
-  "changelog": "Version 1.0.0 : Cycles des planètes avec vraies images, Codex complet (1 442 Mods, 239 Ressources, 120 Warframes), Notifications sonores et système d'Auto-Update GitHub."
+  "changelog_fr": "Version 1.0.1 : Refonte HTML5/CSS3 144 FPS, effet Neon Glow et ajout du flux d'Actualités Officielles Warframe en direct dans la colonne de droite.",
+  "changelog": "Version 1.0.1 : Refonte HTML5/CSS3 144 FPS, effet Neon Glow et ajout du flux d'Actualités Officielles Warframe en direct dans la colonne de droite."
 }
-
