@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WireFrame — Compagnon Warframe (par Nyxo_17)</title>
+  <link rel="icon" type="image/x-icon" href="data/app_icon.ico" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- 1. ÉCRAN DE CHARGEMENT AU LANCEMENT (SPLASH SCREEN) -->
+  <div id="splash-screen">
+    <div class="splash-card">
+      <img src="data/app_logo.png" alt="WireFrame" class="splash-logo" />
+      <div class="splash-title">WIREFRAME</div>
+      <div class="splash-sub">Compagnon Warframe • Créé par Nyxo_17</div>
+      <div class="splash-bar-bg">
+        <div id="splash-bar-fill" class="splash-bar-fill"></div>
+      </div>
+      <div id="splash-status" class="splash-status">Initialisation du Système Origine...</div>
+    </div>
+  </div>
+
+  <!-- 2. BARRE SUPÉRIEURE PERSONNALISÉE -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <span class="topbar-title">WireFrame</span>
+      <span class="topbar-tag">HTML5 • 144 FPS</span>
+    </div>
+    <div class="topbar-right">
+      <!-- Sélecteur FR | EN -->
+      <div class="control-pill">
+        <span class="pill-icon">🌐</span>
+        <button id="btn-lang-fr" class="lang-btn active" onclick="setLanguage('fr')">FR</button>
+        <button id="btn-lang-en" class="lang-btn" onclick="setLanguage('en')">EN</button>
+      </div>
+      <!-- Zoom du cadre central uniquement -->
+      <div class="control-pill">
+        <button class="zoom-btn" onclick="changeZoom(-10)">🔍-</button>
+        <span id="zoom-label">100%</span>
+        <button class="zoom-btn" onclick="changeZoom(10)">🔍+</button>
+      </div>
+      <!-- Bouton Discord officiel -->
+      <a href="https://discord.gg/DhGwHPf82n" target="_blank" class="discord-btn">
+        <img src="data/icons/discord_logo.png" alt="Discord" />
+        <span>Discord</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- 3. CORPS PRINCIPAL EN 3 COLONNES -->
+  <div class="app-body">
+
+    <!-- COLONNE GAUCHE : SIDEBAR FIXE AVEC EFFET NEON GLOW -->
+    <aside class="sidebar">
+      <div class="creator-box">
+        <img src="data/app_logo.png" alt="Nyxo_17" class="creator-logo" />
+        <div>
+          <div class="creator-name">Nyxo_17</div>
+          <div id="lbl-creator-role" class="creator-role">Créateur de WireFrame</div>
+        </div>
+      </div>
+
+      <div id="sec-home" class="nav-section-title glow">ACCUEIL</div>
+      <div class="nav-item active" data-tab="welcome" data-sec="sec-home" onclick="selectTab('welcome')">
+        <span class="nav-icon">🏠</span><span id="nav-welcome">Bienvenue</span>
+      </div>
+      <div class="nav-item" data-tab="notifications" data-sec="sec-home" onclick="selectTab('notifications')">
+        <span class="nav-icon">🔔</span><span id="nav-notifications">Notifications</span>
+      </div>
+
+      <div id="sec-inv" class="nav-section-title">INVENTAIRE & CODEX</div>
+      <div class="nav-item" data-tab="resources" data-sec="sec-inv" onclick="selectTab('resources')">
+        <span class="nav-icon">💎</span><span id="nav-resources">Ressources</span>
+      </div>
+      <div class="nav-item" data-tab="mods" data-sec="sec-inv" onclick="selectTab('mods')">
+        <span class="nav-icon">🃏</span><span id="nav-mods">Mods</span>
+      </div>
+      <div class="nav-item" data-tab="warframes" data-sec="sec-inv" onclick="selectTab('warframes')">
+        <span class="nav-icon">⚡</span><span id="nav-warframes">Warframes</span>
+      </div>
+
+      <div id="sec-cycles" class="nav-section-title">CYCLES & ROTATIONS</div>
+      <div class="nav-item" data-tab="worlds" data-sec="sec-cycles" onclick="selectTab('worlds')">
+        <span class="nav-icon">🌍</span><span id="nav-worlds">Temps des Planètes</span>
+      </div>
+      <div class="nav-item" data-tab="bounties" data-sec="sec-cycles" onclick="selectTab('bounties')">
+        <span class="nav-icon">🎯</span><span id="nav-bounties">Mises à Prix</span>
+      </div>
+      <div class="nav-item" data-tab="duviri" data-sec="sec-cycles" onclick="selectTab('duviri')">
+        <span class="nav-icon">🌀</span><span id="nav-duviri">Circuit & Incarnon</span>
+      </div>
+      <div class="nav-item" data-tab="baro" data-sec="sec-cycles" onclick="selectTab('baro')">
+        <span class="nav-icon">💠</span><span id="nav-baro">Baro Ki'Teer</span>
+      </div>
+
+      <div class="sidebar-spacer"></div>
+
+      <div class="sidebar-footer">
+        <div id="lbl-api-status" class="api-status">📡 En direct (API)</div>
+        <button id="btn-refresh" class="btn-sidebar-action" onclick="refreshAllData(true)">🔄 Actualiser en direct</button>
+        <button id="btn-check-update" class="btn-sidebar-secondary" onclick="checkForUpdatesManual()">⬇️ Vérifier MAJ (v1.0.0)</button>
+      </div>
+    </aside>
+
+    <!-- COLONNE CENTRALE : VUES DYNAMIQUES -->
+    <main class="center-container">
+      <!-- Loader interne -->
+      <div id="in-app-loader" class="hidden">
+        <div class="spinner"></div>
+        <div id="loader-text" style="font-size:13px; color:#E5C158; font-weight:700;">Synchronisation en direct...</div>
+      </div>
+
+      <!-- Bannière Toast de notification -->
+      <div id="toast-banner" class="hidden">
+        <div id="toast-title" style="font-size:14px; font-weight:700; color:#E5C158; margin-bottom:4px;"></div>
+        <div id="toast-msg" style="font-size:12.5px; color:#FFFFFF;"></div>
+      </div>
+
+      <!-- Contenu zoomable -->
+      <div id="center-zoom-content"></div>
+    </main>
+
+    <!-- COLONNE DROITE : PANNEAU EN DIRECT -->
+    <aside class="live-panel">
+      <div class="live-header-pill">
+        <span id="live-badge" style="color:#F0F6FC;">● Cycles & Événements</span>
+        <span id="live-tag" style="color:#8A94A6; font-size:11px;">📡 En direct</span>
+      </div>
+
+      <div id="live-worlds-title" class="live-sec-title">Cycles des Mondes</div>
+      <div id="live-worlds-grid" class="live-worlds-grid"></div>
+
+      <div id="live-duviri-title" class="live-sec-title">Le Circuit // Duviri</div>
+      <div class="live-box">
+        <div class="live-box-top">
+          <span id="live-inc-title" class="live-box-title">⚔️ Incarnon (Acier)</span>
+          <span id="live-inc-timer" class="live-box-timer">--j --h</span>
+        </div>
+        <div id="live-inc-cur" class="live-box-cur">...</div>
+        <div id="live-inc-nxt" class="live-box-nxt">...</div>
+      </div>
+
+      <div class="live-box">
+        <div class="live-box-top">
+          <span id="live-wf-title" class="live-box-title">🛡️ Warframes (Circuit)</span>
+          <span id="live-wf-timer" class="live-box-timer">--j --h</span>
+        </div>
+        <div id="live-wf-cur" class="live-box-cur">...</div>
+        <div id="live-wf-nxt" class="live-box-nxt">...</div>
+      </div>
+
+      <div class="live-box">
+        <div class="live-box-top">
+          <span id="live-bounty-title" class="live-box-title">🎯 Mises à Prix (Planètes)</span>
+          <span id="live-bounty-timer" class="live-box-timer">--h --m</span>
+        </div>
+        <div id="live-bounty-info" class="live-box-cur">...</div>
+      </div>
+
+      <div class="live-box">
+        <div class="live-box-top">
+          <span id="live-baro-title" class="live-box-title">💎 Baro Ki'Teer (Néant)</span>
+          <span id="live-baro-timer" class="live-box-timer">--j --h</span>
+        </div>
+        <div id="live-baro-info" class="live-box-cur">...</div>
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- Base de données locale pré-compilée + Logique applicative -->
+  <script src="js/data_bundle.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
