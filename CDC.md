@@ -123,8 +123,8 @@ Nous avancerons pas à pas en cochant cette liste au fur et à mesure :
 - [x] **1.3.** Tester `data_manager.py` dans le terminal et faire un commit Git.
 
 ### Phase 2 : Le Cerveau / Logique Métier (`core/`)
-- [ ] **2.1.** Coder `core/timer_engine.py` (convertir une date de fin UTC en texte `HHh MMm SSs` restant).
-- [ ] **2.2.** Coder `core/duviri_calculator.py` (calculer la semaine actuelle de Duviri et renvoyer les récompenses).
+- [x] **2.1.** Coder `core/timer_engine.py` (convertir une date de fin UTC en texte `HHh MMm SSs` restant).
+- [x] **2.2.** Coder `core/duviri_calculator.py` (calculer la semaine actuelle de Duviri et renvoyer les récompenses).
 - [ ] **2.3.** Coder `core/api_client.py` (interroger l'API Warframe pour Cetus, Vallis, Cambion et Baro + sauvegarde dans le cache).
 - [ ] **2.4.** Tester tout le dossier `core/` en mode console (sans interface graphique) et faire un commit Git.
 

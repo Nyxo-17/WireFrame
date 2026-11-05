@@ -45,3 +45,4 @@ def load_api_cache() -> dict[str, Any] | None:
     except (json.JSONDecodeError, OSError) as error:
         print(f"[Erreur Data] Cache corrompu ou illisible : {error}")
         return None
+
