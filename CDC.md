@@ -129,7 +129,7 @@ Nous avancerons pas à pas en cochant cette liste au fur et à mesure :
 - [x] **2.4.** Tester tout le dossier `core/` en mode console (sans interface graphique) et faire un commit Git.
 
 ### Phase 3 : L'Interface Graphique Modulaire (`ui/` & `main.py`)
-- [ ] **3.1.** Coder la coquille vide : `ui/sidebar.py`, `ui/app_window.py` et `main.py` pour afficher la fenêtre et tester les boutons du menu. (Commit Git).
+- [x] **3.1.** Coder la coquille vide : `ui/sidebar.py`, `ui/app_window.py` et `main.py` pour afficher la fenêtre et tester les boutons du menu. (Commit Git).
 - [ ] **3.2.** Coder le composant réutilisable `ui/components/cycle_card.py` puis la vue `ui/views/worlds_view.py` connectée aux timers en direct. (Commit Git).
 - [ ] **3.3.** Coder la vue `ui/views/duviri_view.py` pour afficher les rotations de la semaine. (Commit Git).
 - [ ] **3.4.** Coder la vue `ui/views/baro_view.py` pour afficher l'état et l'inventaire de Baro Ki'Teer. (Commit Git).

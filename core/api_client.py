@@ -114,3 +114,4 @@ def fetch_world_state() -> dict[str, Any]:
             cached["source"] = "Hors-Ligne (Cache local)"
             return cached
         return _build_offline_fallback()
+
