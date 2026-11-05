@@ -143,10 +143,38 @@ class WireframeApp(ctk.CTk):
         self._tick_timers()
 
     def _apply_native_dwm_rounding(self) -> None:
+        """Active les coins arrondis Windows 11 DWM et affiche la fenêtre sans bordure dans la barre des tâches."""
         try:
             dwmapi = ctypes.windll.dwmapi
             user32 = ctypes.windll.user32
-            for hwnd in (self.winfo_id(), user32.GetParent(self.winfo_id())):
+            wid = self.winfo_id()
+            parent = user32.GetParent(wid) or wid
+
+            # 1. Force l'affichage dans la barre des tâches Windows et Alt+Tab (WS_EX_APPWINDOW & ~WS_EX_TOOLWINDOW)
+            gwl_exstyle = -20
+            ws_ex_toolwindow = 0x00000080
+            ws_ex_appwindow = 0x00040000
+            cur_ex = user32.GetWindowLongW(parent, gwl_exstyle)
+            new_ex = (cur_ex & ~ws_ex_toolwindow) | ws_ex_appwindow
+            if cur_ex != new_ex:
+                user32.ShowWindow(parent, 0)  # SW_HIDE bref pour rafraîchir la barre des tâches Windows
+                user32.SetWindowLongW(parent, gwl_exstyle, new_ex)
+                user32.ShowWindow(parent, 5)  # SW_SHOW
+
+            # 2. Assigne l'icône officielle dorée (.ico) directement au HWND pour la barre des tâches
+            if ICON_PATH.exists():
+                lr_loadfromfile = 0x00000010
+                image_icon = 1
+                wm_seticon = 0x0080
+                h_icon_big = user32.LoadImageW(0, str(ICON_PATH), image_icon, 48, 48, lr_loadfromfile)
+                h_icon_small = user32.LoadImageW(0, str(ICON_PATH), image_icon, 16, 16, lr_loadfromfile)
+                if h_icon_big:
+                    user32.SendMessageW(parent, wm_seticon, 1, h_icon_big)
+                if h_icon_small:
+                    user32.SendMessageW(parent, wm_seticon, 0, h_icon_small)
+
+            # 3. Coins arrondis matériels Windows 11 DWM
+            for hwnd in (wid, parent):
                 if hwnd:
                     dwmapi.DwmSetWindowAttribute(hwnd, 33, ctypes.byref(ctypes.c_int(2)), 4)
                     dwmapi.DwmSetWindowAttribute(hwnd, 34, ctypes.byref(ctypes.c_int(0x00462F23)), 4)

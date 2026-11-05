@@ -1,5 +1,6 @@
 """Module titlebar : Barre de titre personnalisée sombre avec sélecteur FR/EN et zoom central."""
 
+import ctypes
 from pathlib import Path
 from typing import Callable
 import webbrowser
@@ -207,14 +208,13 @@ class CustomTitleBar(ctk.CTkFrame):
         self.app.geometry(f"+{event.x_root - self._drag_x}+{event.y_root - self._drag_y}")
 
     def _minimize_window(self) -> None:
-        self.app.overrideredirect(False)
-        self.app.iconify()
-        self.app.bind("<Map>", self._restore_from_minimize)
-
-    def _restore_from_minimize(self, _event) -> None:
-        if self.app.state() == "normal":
-            self.app.overrideredirect(True)
-            self.app.unbind("<Map>")
+        """Réduit proprement la fenêtre dans la barre des tâches Windows via l'API Win32."""
+        try:
+            user32 = ctypes.windll.user32
+            hwnd = user32.GetParent(self.app.winfo_id()) or self.app.winfo_id()
+            user32.ShowWindow(hwnd, 6)  # SW_MINIMIZE = 6
+        except Exception:
+            self.app.iconify()
 
     def _toggle_maximize(self) -> None:
         if not self._is_maximized:
