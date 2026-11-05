@@ -1,8 +1,12 @@
-"""Module sidebar : Barre latérale gauche complète avec Notifications, Inventaire & Cycles."""
+"""Module sidebar : Barre latérale gauche complète avec le logo officiel WireFrame de Nyxo_17."""
 
+from pathlib import Path
 from typing import Callable
 import customtkinter as ctk
+from PIL import Image
 from core.i18n import tr
+
+LOGO_PATH = Path(__file__).resolve().parent.parent / "data" / "app_logo.png"
 
 
 class Sidebar(ctk.CTkFrame):
@@ -42,16 +46,21 @@ class Sidebar(ctk.CTkFrame):
         profile_box = ctk.CTkFrame(self, fg_color="transparent")
         profile_box.grid(row=0, column=0, padx=14, pady=(12, 6), sticky="ew")
 
-        emblem = ctk.CTkLabel(
-            profile_box,
-            text="❖",
-            width=38,
-            height=38,
-            corner_radius=6,
-            fg_color="#2A2415",
-            text_color="#E5C158",
-            font=ctk.CTkFont(size=20, weight="bold"),
-        )
+        if LOGO_PATH.exists():
+            pil_logo = Image.open(LOGO_PATH)
+            ctk_logo = ctk.CTkImage(light_image=pil_logo, dark_image=pil_logo, size=(40, 40))
+            emblem = ctk.CTkLabel(profile_box, text="", image=ctk_logo, width=40, height=40)
+        else:
+            emblem = ctk.CTkLabel(
+                profile_box,
+                text="❖",
+                width=38,
+                height=38,
+                corner_radius=6,
+                fg_color="#2A2415",
+                text_color="#E5C158",
+                font=ctk.CTkFont(size=20, weight="bold"),
+            )
         emblem.grid(row=0, column=0, rowspan=2, padx=(0, 10))
 
         ctk.CTkLabel(

@@ -1,6 +1,7 @@
 """Module app_window : Fenêtre principale complète assemblant toutes les vues et les notifications."""
 
 import ctypes
+from pathlib import Path
 import customtkinter as ctk
 from core.api_client import fetch_world_state
 from core.duviri_calculator import get_current_duviri_rotation
@@ -17,11 +18,17 @@ from ui.views.notifications_view import NotificationsView
 from ui.views.welcome_view import WelcomeView
 from ui.views.worlds_view import WorldsView
 
+ICON_PATH = Path(__file__).resolve().parent.parent / "data" / "app_icon.ico"
+
 
 class WireframeApp(ctk.CTk):
     """Fenêtre principale de WireFrame avec surveillance automatique et alertes de rotations."""
 
     def __init__(self) -> None:
+        try:
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("nyxo17.wireframe.v1")
+        except Exception:
+            pass
         super().__init__()
 
         ctk.set_appearance_mode("dark")
@@ -29,6 +36,11 @@ class WireframeApp(ctk.CTk):
         self.geometry("1280x740+100+60")
         self.minsize(1100, 640)
         self.configure(fg_color="#090C14")
+        if ICON_PATH.exists():
+            try:
+                self.iconbitmap(str(ICON_PATH))
+            except Exception:
+                pass
 
         self.overrideredirect(True)
         self.after(50, self._apply_native_dwm_rounding)
