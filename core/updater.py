@@ -110,7 +110,12 @@ def download_and_apply_update(repo: str = "Nyxo-17/WireFrame", branch: str = "ma
                 if not member.startswith(root_prefix) or member.endswith("/"):
                     continue
                 rel_path = member[len(root_prefix):]
-                if not rel_path or rel_path in PROTECTED_PATHS or rel_path.startswith("data/img_cache/"):
+                if (
+                    not rel_path
+                    or rel_path in PROTECTED_PATHS
+                    or rel_path.startswith("data/img_cache/")
+                    or rel_path.startswith("runtime/")
+                ):
                     continue
 
                 target_file = ROOT_DIR / rel_path
