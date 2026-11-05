@@ -1,9 +1,13 @@
 """Module titlebar : Barre de titre personnalisée sombre avec sélecteur FR/EN et zoom central."""
 
+from pathlib import Path
 from typing import Callable
 import webbrowser
 import customtkinter as ctk
+from PIL import Image
 from core.i18n import get_lang, set_lang
+
+DISCORD_LOGO_PATH = Path(__file__).resolve().parent.parent.parent / "data" / "icons" / "discord_logo.png"
 
 
 class CustomTitleBar(ctk.CTkFrame):
@@ -126,18 +130,25 @@ class CustomTitleBar(ctk.CTkFrame):
             command=lambda: self._change_zoom(10),
         ).grid(row=0, column=2, padx=(2, 4), pady=2)
 
-        # 3. Bouton [ 💬 Discord ] -> Serveur Discord officiel de Nyxo_17
+        # 3. Bouton [ Discord ] avec le vrai logo officiel Discord
+        discord_img = None
+        if DISCORD_LOGO_PATH.exists():
+            pil_disc = Image.open(DISCORD_LOGO_PATH)
+            discord_img = ctk.CTkImage(light_image=pil_disc, dark_image=pil_disc, size=(16, 16))
+
         ctk.CTkButton(
             right,
-            text="💬  Discord",
-            width=92,
+            text=" Discord" if discord_img else "💬  Discord",
+            image=discord_img,
+            compound="left",
+            width=96,
             height=28,
             corner_radius=6,
-            fg_color="#131926",
+            fg_color="#5865F2",
             border_width=1,
-            border_color="#232F46",
-            hover_color="#1F2D48",
-            text_color="#D0D7DE",
+            border_color="#7289DA",
+            hover_color="#4752C4",
+            text_color="#FFFFFF",
             font=ctk.CTkFont(size=12, weight="bold"),
             command=lambda: webbrowser.open("https://discord.gg/DhGwHPf82n"),
         ).grid(row=0, column=2, padx=(5, 10), pady=2)

@@ -61,13 +61,15 @@ class LivePanel(ctk.CTkFrame):
         grid_frame.grid_columnconfigure((0, 1), weight=1, uniform="world_col")
 
         specs = [
-            ("cetus", "🌍", "w_cetus_short", "w_cetus_sub", 0, 0),
-            ("vallis", "🪐", "w_vallis_short", "w_vallis_sub", 0, 1),
-            ("cambion", "☄️", "w_cambion_short", "w_cambion_sub", 1, 0),
-            ("earth", "🌲", "w_earth_short", "w_earth_sub", 1, 1),
+            ("cetus", "🌍", "w_cetus_short", "w_cetus_sub", 0, 0, "earth.png"),
+            ("vallis", "🪐", "w_vallis_short", "w_vallis_sub", 0, 1, "venus.png"),
+            ("cambion", "☄️", "w_cambion_short", "w_cambion_sub", 1, 0, "deimos.png"),
+            ("earth", "🌲", "w_earth_short", "w_earth_sub", 1, 1, "earth.png"),
         ]
-        for key, icon, t_key, s_key, r, c in specs:
-            card = CycleCard(grid_frame, icon=icon, title_key=t_key, sub_key=s_key, compact=True)
+        for key, icon, t_key, s_key, r, c, p_img in specs:
+            card = CycleCard(
+                grid_frame, icon=icon, title_key=t_key, sub_key=s_key, compact=True, planet_img=p_img
+            )
             card.grid(row=r, column=c, padx=4, pady=3, sticky="nsew")
             self.world_cards[key] = card
 

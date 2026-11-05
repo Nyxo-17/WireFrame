@@ -1,12 +1,16 @@
-"""Module cycle_card : Composant réutilisable ('Moule à gâteau') bilingue FR/EN et zoomable."""
+"""Module cycle_card : Carte de cycle planétaire avec véritable image officielle de la planète."""
 
+from pathlib import Path
 import customtkinter as ctk
+from PIL import Image
 from core.i18n import tr, tr_state
 from core.timer_engine import get_formatted_timer
 
+PLANETS_DIR = Path(__file__).resolve().parent.parent.parent / "data" / "planets"
+
 
 class CycleCard(ctk.CTkFrame):
-    """Carte affichant l'icône, le nom, le sous-titre, l'état (Jour/Day) et le timer d'un monde."""
+    """Carte affichant la vraie planète Warframe, le nom, le sous-titre, l'état et le timer."""
 
     def __init__(
         self,
@@ -15,6 +19,7 @@ class CycleCard(ctk.CTkFrame):
         title_key: str,
         sub_key: str,
         compact: bool = True,
+        planet_img: str | None = None,
     ) -> None:
         super().__init__(
             master,
@@ -28,16 +33,37 @@ class CycleCard(ctk.CTkFrame):
         self.raw_state: str = "..."
         self.expiry_iso: str = ""
         self.compact = compact
+        self._pil_planet: Image.Image | None = None
 
         self.grid_columnconfigure(1, weight=1)
 
-        self.icon_label = ctk.CTkLabel(
-            self,
-            text=icon,
-            font=ctk.CTkFont(size=22 if compact else 28),
-            width=32,
-        )
-        self.icon_label.grid(row=0, column=0, rowspan=2, padx=(10, 6), pady=(10, 4), sticky="n")
+        img_size = 34 if compact else 54
+        ctk_img = None
+        if planet_img:
+            img_path = PLANETS_DIR / planet_img
+            if img_path.exists():
+                self._pil_planet = Image.open(img_path)
+                ctk_img = ctk.CTkImage(
+                    light_image=self._pil_planet,
+                    dark_image=self._pil_planet,
+                    size=(img_size, img_size),
+                )
+
+        if ctk_img:
+            self.icon_label = ctk.CTkLabel(
+                self,
+                text="",
+                image=ctk_img,
+                width=img_size + 4,
+            )
+        else:
+            self.icon_label = ctk.CTkLabel(
+                self,
+                text=icon,
+                font=ctk.CTkFont(size=22 if compact else 28),
+                width=32,
+            )
+        self.icon_label.grid(row=0, column=0, rowspan=2, padx=(10, 8), pady=(8, 4), sticky="ns")
 
         self.title_label = ctk.CTkLabel(
             self,
@@ -91,10 +117,17 @@ class CycleCard(ctk.CTkFrame):
         self.state_label.configure(text=tr_state(self.raw_state))
 
     def apply_zoom(self, scale: float) -> None:
-        """Ajuste la taille des textes de la carte lors d'un zoom dans le cadre central."""
+        """Ajuste la taille des textes et de l'image de la planète lors d'un zoom central."""
         if self.compact:
             return
-        self.icon_label.configure(font=ctk.CTkFont(size=max(16, int(28 * scale))))
+        if self._pil_planet:
+            sz = max(36, int(54 * scale))
+            scaled_img = ctk.CTkImage(
+                light_image=self._pil_planet, dark_image=self._pil_planet, size=(sz, sz)
+            )
+            self.icon_label.configure(image=scaled_img, width=sz + 4)
+        else:
+            self.icon_label.configure(font=ctk.CTkFont(size=max(16, int(28 * scale))))
         self.title_label.configure(font=ctk.CTkFont(size=max(11, int(16 * scale)), weight="bold"))
         self.sub_label.configure(font=ctk.CTkFont(size=max(9, int(12 * scale))))
         self.state_label.configure(font=ctk.CTkFont(size=max(11, int(15 * scale)), weight="bold"))

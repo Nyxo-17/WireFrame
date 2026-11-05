@@ -37,14 +37,16 @@ class WorldsView(ctk.CTkFrame):
 
     def _build_cards(self) -> None:
         planets = [
-            ("cetus", "🌍", "w_cetus_long", "w_cetus_desc", 2, 0),
-            ("vallis", "🪐", "w_vallis_long", "w_vallis_desc", 2, 1),
-            ("cambion", "☄️", "w_cambion_long", "w_cambion_desc", 3, 0),
-            ("earth", "🌲", "w_earth_long", "w_earth_desc", 3, 1),
+            ("cetus", "🌍", "w_cetus_long", "w_cetus_desc", 2, 0, "earth.png"),
+            ("vallis", "🪐", "w_vallis_long", "w_vallis_desc", 2, 1, "venus.png"),
+            ("cambion", "☄️", "w_cambion_long", "w_cambion_desc", 3, 0, "deimos.png"),
+            ("earth", "🌲", "w_earth_long", "w_earth_desc", 3, 1, "earth.png"),
         ]
 
-        for key, icon, t_key, s_key, r, c in planets:
-            card = CycleCard(self, icon=icon, title_key=t_key, sub_key=s_key, compact=False)
+        for key, icon, t_key, s_key, r, c, p_img in planets:
+            card = CycleCard(
+                self, icon=icon, title_key=t_key, sub_key=s_key, compact=False, planet_img=p_img
+            )
             card.grid(row=r, column=c, padx=8, pady=8, sticky="nsew")
             self.cards[key] = card
 
