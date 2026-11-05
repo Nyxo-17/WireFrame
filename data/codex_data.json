@@ -1,0 +1,93 @@
+{
+  "resources": [
+    {"name": "Cellule Orokin (Orokin Cell)", "category": "Rare • Composant", "location": "Saturne (Hélène), Cérès (Gabii), Deimos", "drop": "Boss Sargas Ruk (Saturne) ~50% • Survie Gabii / Hélène (avec Nekros/Khora)"},
+    {"name": "Cristal d'Argon (Argon Crystal)", "category": "Rare • Néant (Périt en 24h)", "location": "Le Néant (Mot, Ani, Hepit, Teshub)", "drop": "Casses de dépôts d'Argon (Hepit/Teshub avec Xaku/Limbo) ou Survie Mot (2-4 par 20m)"},
+    {"name": "Capteur Neuronal (Neural Sensors)", "category": "Rare • Composant", "location": "Jupiter (Io, Cameria), Forteresse Kuva", "drop": "Boss Alad V (Themisto - Jupiter) ~50% (1-2 par run de 1m30)"},
+    {"name": "Neurodes", "category": "Rare • Infesté / Grineer", "location": "Terre (Mariana), Éris, Lua, Deimos", "drop": "Extermination Terre (casses de masses neuroptiques) ou Boss Lephantis (Deimos) 100%"},
+    {"name": "Tellure (Tellurium)", "category": "Rare • Archwing", "location": "Uranus (Ophelia - Survie Submersible)", "drop": "Survie Ophelia sur Uranus (Ennemis Drekar) ~1-3 toutes les 15m avec Nekros"},
+    {"name": "Oxium", "category": "Inhabituel • Corpus", "location": "Jupiter (Io), Vénus, Pluton", "drop": "Drones Oxium (100% de drop si détruits avant autodestruction, 7-12 par Drone)"},
+    {"name": "Plastides (Plastids)", "category": "Inhabituel • Infesté", "location": "Saturne (Piscinas), Uranus (Ophelia), Phobos", "drop": "Survie Sombre Piscinas (Saturne) ou Carapaces de Plastides (~300-600 par 15m)"},
+    {"name": "Cryotique (Cryotic)", "category": "Commun • Excavation", "location": "Terre (Everest), Pluton (Hieracon)", "drop": "100 Cryotiques garantis par Excavateur terminé (200 avec Booster de ressources)"},
+    {"name": "Gallium", "category": "Rare • Mars / Uranus", "location": "Mars (War), Uranus (Assur)", "drop": "Boss Le Sergent / Lt. Lech Kril sur Mars ou Survie Assur (Uranus)"},
+    {"name": "Morphics", "category": "Rare • Mars / Mercure", "location": "Mars (Hellas, War), Mercure (Tolstoj)", "drop": "Boss Capitaine Vor (Mercure) ou dépôts de Morphics sur Mars (~40% par boss)"},
+    {"name": "Spores Nano (Nano Spores)", "category": "Commun • Infesté", "location": "Saturne (Piscinas), Deimos, Éris (Akkad)", "drop": "Défense Akkad (Éris) ou Survie Piscinas (5 000 à 15 000 par mission)"},
+    {"name": "Pack Polymère (Polymer Bundle)", "category": "Inhabituel • Corpus / Grineer", "location": "Uranus (Assur), Vénus, Mercure", "drop": "Survie Assur (Uranus) avec Khora/Nekros (2 000 à 5 000 en 20 minutes)"},
+    {"name": "Rubedo", "category": "Inhabituel • Cristal", "location": "Phobos, Terre, Pluton, Le Néant", "drop": "Formations de Rubedo dans le Néant et sur Phobos (300-800 par mission)"},
+    {"name": "Plaque d'Alliage (Alloy Plate)", "category": "Commun • Grineer", "location": "Vénus, Cérès (Gabii), Sedna, Phobos", "drop": "Survie Gabii sur Cérès (+35% bonus de ressources)"},
+    {"name": "Ferrite", "category": "Commun • Grineer / Néant", "location": "Terre, Mercure, Le Néant (Ani)", "drop": "Caisses et ennemis du Néant ou de la Terre (1 500+ par mission)"},
+    {"name": "Toroïde Vega / Calda / Sola", "category": "Rare • Vallée Orbis (Vénus)", "location": "Port Spatial, Labo d'Enrichissement, Temple du Profit", "drop": "Ennemis Corpus avec niveau d'alerte 4 dans les 3 bases (2% de drop) + grottes"},
+    {"name": "Lanterne Entrati (Entrati Lanthorn)", "category": "Rare • Zariman / Sanctum", "location": "Zariman Ten Zero, Sanctum Anatomica (Deimos)", "drop": "Destruction de caisses avec Xaku/Carrier sur le Zariman ou Netracells (100% garanti)"},
+    {"name": "Essence d'Acier (Steel Essence)", "category": "Rare • Route de l'Acier", "location": "Toutes les planètes (Mode Route de l'Acier)", "drop": "Acolytes (2 Essences garanties toutes les 5m) + Incursions quotidiennes (5 Essences)"},
+    {"name": "Kuva", "category": "Inhabituel • Forteresse Kuva", "location": "Survie Kuva (Taveuni), Boutique d'Honneurs de Teshin", "drop": "Moissonneuses Kuva (200 par capsule) ou 10 000 Kuva contre 15 Essences d'Acier / Riven Slivers"}
+  ],
+  "mods": [
+    {"name": "Adaptation", "category": "Warframe • Survie (Exilus/Défense)", "location": "Arbitrages (Boutique des Arbitres de Hexis ou Rotations)", "drop": "Rotation A (2.0%) / Rotation B (2.5%) en Arbitrage ou 20 Essences Vitus"},
+    {"name": "Roulade Parade (Rolling Guard)", "category": "Warframe • Invulnérabilité", "location": "Boutique d'Arbitrage (Arbitres de Hexis - Relais)", "drop": "Achat garanti contre 20 Essences Vitus auprès du marchand d'Arbitrage"},
+    {"name": "Continuité Accrue (Primed Continuity)", "category": "Warframe • +55% Durée de Pouvoir", "location": "Marchand du Néant — Baro Ki'Teer", "drop": "Inventaire cyclique de Baro Ki'Teer (350 Ducats + 100 000 Crédits)"},
+    {"name": "Flux Accru (Primed Flow)", "category": "Warframe • +185% Énergie Max", "location": "Marchand du Néant — Baro Ki'Teer", "drop": "Inventaire cyclique de Baro Ki'Teer (350 Ducats + 110 000 Crédits)"},
+    {"name": "Rage Aveugle (Blind Rage)", "category": "Warframe • Corrompu (+99% Puissance)", "location": "Soutes Orokin sur Deimos (Horend - Capture)", "drop": "Ouverture de la Soute avec les 4 Clés de Dragon équipées (~4.17% de drop)"},
+    {"name": "Courage Passager (Transient Fortitude)", "category": "Warframe • Corrompu (+55% Puissance)", "location": "Soutes Orokin sur Deimos (Horend - Capture)", "drop": "Ouverture de la Soute Orokin avec Clés de Dragon (~4.17% de drop)"},
+    {"name": "Expertise Éphémère (Fleeting Expertise)", "category": "Warframe • Corrompu (+60% Efficacité)", "location": "Soutes Orokin sur Deimos (Horend - Capture)", "drop": "Ouverture de la Soute Orokin avec Clés de Dragon (~4.17% de drop)"},
+    {"name": "Super-Étendu (Overextended)", "category": "Warframe • Corrompu (+90% Portée)", "location": "Soutes Orokin sur Deimos (Horend - Capture)", "drop": "Ouverture de la Soute Orokin avec Clés de Dragon (~4.17% de drop)"},
+    {"name": "Étroitesse d'Esprit (Narrow Minded)", "category": "Warframe • Corrompu (+99% Durée)", "location": "Soutes Orokin sur Deimos (Horend - Capture)", "drop": "Ouverture de la Soute Orokin avec Clés de Dragon (~4.17% de drop)"},
+    {"name": "Chambre Galvanisée (Galvanized Chamber)", "category": "Fusil • Tir Multiple Galvanisé", "location": "Boutique d'Arbitrage (Arbitres de Hexis)", "drop": "Achat garanti contre 20 Essences Vitus (débloqué en terminant la Carte Céleste)"},
+    {"name": "Aptitude Galvanisée (Galvanized Aptitude)", "category": "Fusil • Chances de Statut & Dégâts", "location": "Boutique d'Arbitrage (Arbitres de Hexis)", "drop": "Achat garanti contre 20 Essences Vitus"},
+    {"name": "Diffusion Galvanisée (Galvanized Diffusion)", "category": "Pistolet • Tir Multiple Galvanisé", "location": "Boutique d'Arbitrage (Arbitres de Hexis)", "drop": "Achat garanti contre 20 Essences Vitus"},
+    {"name": "Surcharge d'État (Condition Overload)", "category": "Mêlée • +80% Dégâts par Statut", "location": "Deimos (Puy de Cambion) & Uranus (Ophelia)", "drop": "Ennemis Infestés de Deimos / Bouchers Drekar sur Uranus (0.02% à 0.05%)"},
+    {"name": "Blessure Sanglante (Blood Rush)", "category": "Mêlée • Chances Critiques / Combo", "location": "Plaines d'Eidolon (Cetus) — Mises à Prix Niv. 30-50", "drop": "Mises à prix Cetus (Rotation A/B/C selon la semaine ~11% à 14% de drop)"},
+    {"name": "Blessures Suintantes (Weeping Wounds)", "category": "Mêlée • Chances de Statut / Combo", "location": "Puy de Cambion (Deimos) — Mises à Prix", "drop": "Mises à prix de Mère sur Deimos (11% à 19% sur les étapes de contrat)"},
+    {"name": "Intensifier Umbra (Umbral Intensify)", "category": "Warframe • Set Umbra (+44% à +77% Puissance)", "location": "Quête Principale : Le Sacrifice", "drop": "Récompense 100% garantie à la fin de la quête Le Sacrifice (ou Simaris)"},
+    {"name": "Équilibre (Equilibrium)", "category": "Warframe • Conversion Santé <-> Énergie", "location": "Deimos (Magnacidium — Boss Lephantis)", "drop": "Têtes du Boss Lephantis (33% de drop d'un mod par tête, ~10% pour Équilibre)"}
+  ],
+  "warframes": [
+    {"name": "Excalibur", "category": "Guerrier d'Épée • Starter", "location": "Mars (War — Lt. Lech Kril) ou Circuit Duviri (Sem. 1)", "drop": "Boss Lt. Lech Kril : Neuroptiques (38.7%), Châssis (38.7%), Systèmes (22.5%)"},
+    {"name": "Rhino", "category": "Tank & Buff (Rugissement)", "location": "Vénus (Fossa — Le Jackal) ou Circuit Duviri (Sem. 2)", "drop": "Boss Jackal : Neuroptiques (38.7%), Châssis (38.7%), Systèmes (22.5%)"},
+    {"name": "Volt", "category": "Vitesse & Électricité • Starter", "location": "Dojo de Clan (Laboratoire Tenno)", "drop": "100% achetable en Crédits dans le Laboratoire Tenno de ton Clan"},
+    {"name": "Wukong", "category": "Survie & Jumeau Céleste", "location": "Dojo de Clan (Laboratoire Tenno)", "drop": "100% achetable en Crédits dans le Laboratoire Tenno (nécessite du Nitain)"},
+    {"name": "Zephyr", "category": "Contrôle de foule & Critique Aérien", "location": "Dojo de Clan (Laboratoire Tenno)", "drop": "100% achetable en Crédits dans le Laboratoire Tenno (nécessite de l'Oxium)"},
+    {"name": "Nezha", "category": "Tank Rapide & Feu", "location": "Dojo de Clan (Laboratoire Tenno)", "drop": "100% achetable en Crédits dans le Laboratoire Tenno"},
+    {"name": "Wisp", "category": "Soutien Ultime (Réservoirs)", "location": "Jupiter (Le Ropalolyste — Assassinat)", "drop": "Boss Ropalolyste : Schéma (22.5%), Neuroptiques/Châssis/Systèmes (25.8% chacun)"},
+    {"name": "Gauss", "category": "Supersonique • Perturbation", "location": "Sedna (Kelpie — Perturbation Rotation C)", "drop": "Rotation C de Perturbation sur Sedna (7.84% par pièce à partir du Tour 3)"},
+    {"name": "Saryn", "category": "DPS Poison de Zone • Spore", "location": "Sedna (Merrow — Boss Kela De Thaym) ou Duviri (Sem. 4)", "drop": "Boss Kela De Thaym (nécessite 25 Points de Jugement en Arène Rathuum)"},
+    {"name": "Nekros", "category": "Roi du Farm (Profanation)", "location": "Deimos (Magnacidium — Boss Lephantis) ou Duviri (Sem. 5)", "drop": "Boss Lephantis : Neuroptiques (38.7%), Châssis (38.7%), Systèmes (22.5%)"},
+    {"name": "Khora", "category": "Dôme d'Étranglement & Farm", "location": "Assaut du Sanctuaire (Standard) ou Circuit Duviri (Sem. 10)", "drop": "Rotation A/B/C de l'Assaut du Sanctuaire (Zone 8 = 11.28%) ou Circuit Duviri"},
+    {"name": "Mesa", "category": "Pistolero (Pacificateurs)", "location": "Éris (Assassinat Alad V Mutaliste) ou Duviri (Sem. 7)", "drop": "Recommandé : Circuit de Duviri Semaine 7 (évite de fabriquer les clés Mutalistes)"},
+    {"name": "Revenant", "category": "Immortel (Linceul Mesmer)", "location": "Plaines d'Eidolon (Cetus) ou Circuit Duviri (Sem. 10)", "drop": "Quête Le Masque du Revenant (Rang 2 Les Plumes) + Mises à prix Cetus"},
+    {"name": "Protea", "category": "Artillerie & Dispensaire", "location": "Néant de Granum (Vaisseaux Corpus)", "drop": "Quête Le Protocole : Impasse + Couronnes de Granum (Normale, Exemplaire, Zénith)"},
+    {"name": "Dante", "category": "Scribe & Garde Renforcée", "location": "Sanctum Anatomica — Deimos (Armatus - Perturbation)", "drop": "Rotation C de Perturbation Armatus (5% à 7.5%) + achat garanti en Capillaires de Loid"},
+    {"name": "Citrine", "category": "Soutien Cristallin & Statuts", "location": "Mars (Col de Tyana — Défense Miroir)", "drop": "Rotation C de Défense Miroir + achat garanti auprès d'Otak (Necralisk) contre des Cristaux"},
+    {"name": "Voruna", "category": "Meute de Loups & Mêlée", "location": "Lua (Yuvarium / Circulus — Survie Conjonction)", "drop": "Rotation C de Survie Conjonction + achat garanti auprès de l'Archimédienne Yonta"}
+  ],
+  "bounties": [
+    {
+      "hub": "🌍 Plaines d'Eidolon (Cetus — Konzu)",
+      "rot_a": "Mod : Blessure Sanglante (Blood Rush) • Mod : Vigile Armements • Reliques Meso/Neo • Schémas Gara & Revenant",
+      "rot_b": "Mod : Gladiator Vice • Mod : Augure Pacte • Furax Wraith (Pièces) • Souffle d'Eidolon x5",
+      "rot_c": "Mod : Vigile Ferveur • Mod : Gladiator Finesse • Lentilles Eidolon • Reliques Axi"
+    },
+    {
+      "hub": "🪐 Vallée Orbis (Fortuna — Eudico)",
+      "rot_a": "Mod : Synthèse Déconstruction • Obligations de Dettes (Médicales/Avancées) • Schémas Garuda",
+      "rot_b": "Mod : Mecha Surcharge • Mod : Tek Gravité • Gilding Kitgun • Reliques Neo/Axi",
+      "rot_c": "Mod : Strain Éruption • Obligations Familiales • Tellure / Noyaux Synthétiques"
+    },
+    {
+      "hub": "☄️ Puy de Cambion (Deimos — Mère)",
+      "rot_a": "Mod : Blessures Suintantes (Weeping Wounds) • Jetons de la Mère (x100+) • Schémas Xaku",
+      "rot_b": "Mod : Carnis Mandibule • Mod : Jugulus Épines • Scintillant • Matrices Orokin",
+      "rot_c": "Mod : Saxum Thorax • Arme Quassus (Schéma) • Reliques Aya / Axi"
+    },
+    {
+      "hub": "🚀 Zariman Ten Zero (Chrysalithe — Quinn)",
+      "rot_a": "Plumes du Néant (Rémiges/Pennes) • Schéma Gyre • Arme Alternox • Lanternes Entrati",
+      "rot_b": "Plumes du Néant • Schéma Hespar (Lame Lourde) • Endo (x3000 - x4000)",
+      "rot_c": "Plumes du Néant (Huppées) • Schéma Aeolak (Fusil) • Arcanes du Zariman"
+    },
+    {
+      "hub": "🏛️ Sanctum Anatomica (Deimos — Fibonacci)",
+      "rot_a": "Schémas Qorvex • Mod : Nexus d'Énergie (Energy Nexus) • Stèles Vosfor • Endo",
+      "rot_b": "Mod : Intensification de Précision • Schéma Mandonel (Archgun) • Lanternes Entrati",
+      "rot_c": "Arcanes de Mêlée • Tomes Cantiques • Shards d'Archonte (via Netracells)"
+    }
+  ]
+}

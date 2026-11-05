@@ -1,4 +1,4 @@
-"""Module app_window : Fenêtre principale avec arrondi DWM, support FR/EN et zoom central."""
+"""Module app_window : Fenêtre principale complète assemblant toutes les vues de WireFrame."""
 
 import ctypes
 import customtkinter as ctk
@@ -8,13 +8,15 @@ from ui.components.titlebar import CustomTitleBar
 from ui.live_panel import LivePanel
 from ui.sidebar import Sidebar
 from ui.views.baro_view import BaroView
+from ui.views.bounties_view import BountiesView
+from ui.views.codex_view import CodexView
 from ui.views.duviri_view import DuviriView
 from ui.views.welcome_view import WelcomeView
 from ui.views.worlds_view import WorldsView
 
 
 class WireframeApp(ctk.CTk):
-    """Fenêtre principale de WireFrame V1 avec coins arrondis DWM, FR/EN et zoom central."""
+    """Fenêtre principale de WireFrame (Ressources, Mods, Warframes, Planètes, Mises à Prix, Duviri, Baro)."""
 
     def __init__(self) -> None:
         super().__init__()
@@ -26,8 +28,7 @@ class WireframeApp(ctk.CTk):
         self.configure(fg_color="#090C14")
 
         self.overrideredirect(True)
-        self.update_idletasks()
-        self._apply_native_dwm_rounding()
+        self.after(50, self._apply_native_dwm_rounding)
 
         self.grid_columnconfigure(0, weight=0)
         self.grid_columnconfigure(1, weight=1)
@@ -39,7 +40,7 @@ class WireframeApp(ctk.CTk):
         self.duviri_state: dict = {}
         self.current_view_key: str = "welcome"
 
-        # 0. Barre supérieure personnalisée (avec FR/EN et Zoom central)
+        # 0. Barre supérieure personnalisée (FR/EN + Zoom central)
         self.titlebar = CustomTitleBar(
             self,
             app=self,
@@ -48,7 +49,7 @@ class WireframeApp(ctk.CTk):
         )
         self.titlebar.grid(row=0, column=0, columnspan=3, sticky="ew")
 
-        # 1. Colonne gauche : Sidebar (taille fixe)
+        # 1. Colonne gauche : Sidebar complète
         self.sidebar = Sidebar(
             self,
             on_navigate=self.show_view,
@@ -56,7 +57,7 @@ class WireframeApp(ctk.CTk):
         )
         self.sidebar.grid(row=1, column=0, sticky="nsew")
 
-        # 2. Colonne centrale : Conteneur des Vues (seul élément affecté par le zoom)
+        # 2. Colonne centrale : Conteneur des Vues
         self.center_container = ctk.CTkFrame(
             self,
             corner_radius=10,
@@ -68,13 +69,18 @@ class WireframeApp(ctk.CTk):
         self.center_container.grid_columnconfigure(0, weight=1)
         self.center_container.grid_rowconfigure(0, weight=1)
 
-        # 3. Colonne droite : Panneau Live 'Cycles & Événements' (taille fixe)
+        # 3. Colonne droite : Panneau Live 'Cycles & Événements'
         self.live_panel = LivePanel(self)
         self.live_panel.grid(row=1, column=2, sticky="nsew", padx=(4, 12), pady=12)
 
+        # Instanciation modulaire de toutes nos vues (en réutilisant CodexView 3 fois !)
         self.views: dict[str, ctk.CTkFrame] = {
             "welcome": WelcomeView(self.center_container, on_navigate=self.sidebar.select_tab),
+            "resources": CodexView(self.center_container, "resources", "res_page_title"),
+            "mods": CodexView(self.center_container, "mods", "mod_page_title"),
+            "warframes": CodexView(self.center_container, "warframes", "wf_page_title"),
             "worlds": WorldsView(self.center_container),
+            "bounties": BountiesView(self.center_container),
             "duviri": DuviriView(self.center_container),
             "baro": BaroView(self.center_container),
         }
@@ -84,7 +90,6 @@ class WireframeApp(ctk.CTk):
         self._tick_timers()
 
     def _apply_native_dwm_rounding(self) -> None:
-        """Utilise le compositeur matériel Windows (DWM) pour des coins arrondis 100% lisses."""
         try:
             dwmapi = ctypes.windll.dwmapi
             user32 = ctypes.windll.user32
@@ -114,7 +119,6 @@ class WireframeApp(ctk.CTk):
                 view.update_language()
 
     def apply_center_zoom(self, scale: float) -> None:
-        """Applique le zoom uniquement aux vues situées dans le cadre du milieu."""
         for view in self.views.values():
             if hasattr(view, "apply_zoom"):
                 view.apply_zoom(scale)

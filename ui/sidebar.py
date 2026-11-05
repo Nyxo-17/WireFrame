@@ -1,4 +1,4 @@
-"""Module sidebar : Barre latérale gauche bilingue FR/EN au style 'WireFrame by Nyxo_17'."""
+"""Module sidebar : Barre latérale gauche complète avec Inventaire & Cycles."""
 
 from typing import Callable
 import customtkinter as ctk
@@ -6,7 +6,7 @@ from core.i18n import tr
 
 
 class Sidebar(ctk.CTkFrame):
-    """Menu latéral contenant l'en-tête créateur Nyxo_17 et les sections de navigation."""
+    """Menu latéral contenant l'en-tête Nyxo_17, Accueil, Inventaire & Codex, et Cycles."""
 
     def __init__(
         self,
@@ -20,23 +20,26 @@ class Sidebar(ctk.CTkFrame):
         self.nav_buttons: dict[str, ctk.CTkButton] = {}
         self.nav_keys_map = {
             "welcome": "nav_welcome",
+            "resources": "nav_resources",
+            "mods": "nav_mods",
+            "warframes": "nav_warframes",
             "worlds": "nav_worlds",
+            "bounties": "nav_bounties",
             "duviri": "nav_duviri",
             "baro": "nav_baro",
         }
 
         self.grid_propagate(False)
         self.grid_columnconfigure(0, weight=1)
-        self.grid_rowconfigure(10, weight=1)
+        self.grid_rowconfigure(14, weight=1)
 
         self._build_creator_badge()
         self._build_navigation()
         self._build_footer()
 
     def _build_creator_badge(self) -> None:
-        """Affiche l'encart 'Nyxo_17 - Créateur de WireFrame' en haut à gauche."""
         profile_box = ctk.CTkFrame(self, fg_color="transparent")
-        profile_box.grid(row=0, column=0, padx=14, pady=(14, 12), sticky="ew")
+        profile_box.grid(row=0, column=0, padx=14, pady=(14, 8), sticky="ew")
 
         emblem = ctk.CTkLabel(
             profile_box,
@@ -68,35 +71,37 @@ class Sidebar(ctk.CTkFrame):
         self.role_lbl.grid(row=1, column=1, sticky="w")
 
     def _build_navigation(self) -> None:
-        """Construit les catégories et boutons de navigation."""
-        self.sec_home_lbl = ctk.CTkLabel(
+        # Section 1 : ACCUEIL
+        self.sec_home_lbl = self._make_section_header("sec_home", row=1)
+        self._create_nav_btn("welcome", row=2)
+
+        # Section 2 : INVENTAIRE & CODEX
+        self.sec_inv_lbl = self._make_section_header("sec_inventory", row=3)
+        for key, row_idx in [("resources", 4), ("mods", 5), ("warframes", 6)]:
+            self._create_nav_btn(key, row=row_idx)
+
+        # Section 3 : CYCLES & ROTATIONS
+        self.sec_cycles_lbl = self._make_section_header("sec_cycles", row=7)
+        for key, row_idx in [("worlds", 8), ("bounties", 9), ("duviri", 10), ("baro", 11)]:
+            self._create_nav_btn(key, row=row_idx)
+
+    def _make_section_header(self, tr_key: str, row: int) -> ctk.CTkLabel:
+        lbl = ctk.CTkLabel(
             self,
-            text=tr("sec_home"),
+            text=tr(tr_key),
             font=ctk.CTkFont(size=10, weight="bold"),
             text_color="#6E7681",
             anchor="w",
         )
-        self.sec_home_lbl.grid(row=1, column=0, padx=18, pady=(10, 4), sticky="ew")
-        self._create_nav_btn("welcome", tr("nav_welcome"), row=2)
+        lbl.grid(row=row, column=0, padx=18, pady=(10, 2), sticky="ew")
+        return lbl
 
-        self.sec_cycles_lbl = ctk.CTkLabel(
-            self,
-            text=tr("sec_cycles"),
-            font=ctk.CTkFont(size=10, weight="bold"),
-            text_color="#6E7681",
-            anchor="w",
-        )
-        self.sec_cycles_lbl.grid(row=3, column=0, padx=18, pady=(12, 4), sticky="ew")
-
-        for key, row_idx in [("worlds", 4), ("duviri", 5), ("baro", 6)]:
-            self._create_nav_btn(key, tr(self.nav_keys_map[key]), row=row_idx)
-
-    def _create_nav_btn(self, key: str, text: str, row: int) -> None:
+    def _create_nav_btn(self, key: str, row: int) -> None:
         btn = ctk.CTkButton(
             self,
-            text=text,
+            text=tr(self.nav_keys_map[key]),
             anchor="w",
-            height=38,
+            height=35,
             corner_radius=7,
             border_width=1,
             border_color="#0D111A",
@@ -106,7 +111,7 @@ class Sidebar(ctk.CTkFrame):
             font=ctk.CTkFont(size=13),
             command=lambda k=key: self.select_tab(k),
         )
-        btn.grid(row=row, column=0, padx=12, pady=3, sticky="ew")
+        btn.grid(row=row, column=0, padx=12, pady=2, sticky="ew")
         self.nav_buttons[key] = btn
 
     def _build_footer(self) -> None:
@@ -117,12 +122,12 @@ class Sidebar(ctk.CTkFrame):
             text_color="#7D8590",
             anchor="w",
         )
-        self.status_label.grid(row=11, column=0, padx=16, pady=(4, 6), sticky="ew")
+        self.status_label.grid(row=15, column=0, padx=16, pady=(4, 4), sticky="ew")
 
         self.refresh_btn = ctk.CTkButton(
             self,
             text=tr("btn_refresh"),
-            height=36,
+            height=34,
             corner_radius=7,
             fg_color="#161E31",
             border_width=1,
@@ -132,7 +137,7 @@ class Sidebar(ctk.CTkFrame):
             font=ctk.CTkFont(size=12, weight="bold"),
             command=self.on_refresh,
         )
-        self.refresh_btn.grid(row=12, column=0, padx=12, pady=(0, 14), sticky="ew")
+        self.refresh_btn.grid(row=16, column=0, padx=12, pady=(0, 14), sticky="ew")
 
     def select_tab(self, active_key: str) -> None:
         for key, btn in self.nav_buttons.items():
@@ -146,9 +151,9 @@ class Sidebar(ctk.CTkFrame):
         self.status_label.configure(text=f"📡 {source_text}")
 
     def update_language(self) -> None:
-        """Met à jour tous les textes de la barre latérale lors du changement FR/EN."""
         self.role_lbl.configure(text=tr("creator_role"))
         self.sec_home_lbl.configure(text=tr("sec_home"))
+        self.sec_inv_lbl.configure(text=tr("sec_inventory"))
         self.sec_cycles_lbl.configure(text=tr("sec_cycles"))
         self.refresh_btn.configure(text=tr("btn_refresh"))
         for key, btn in self.nav_buttons.items():

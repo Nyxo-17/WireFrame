@@ -1,4 +1,4 @@
-"""Module welcome_view : Page centrale d'accueil bilingue FR/EN et zoomable."""
+"""Module welcome_view : Page centrale d'accueil avec grille des 6 fonctionnalités."""
 
 from typing import Callable
 import customtkinter as ctk
@@ -6,7 +6,7 @@ from core.i18n import tr
 
 
 class WelcomeView(ctk.CTkFrame):
-    """Vue d'accueil présentant la bannière et la grille de cartes de navigation rapide."""
+    """Vue d'accueil présentant la bannière et la grille 2x3 des cartes de navigation."""
 
     def __init__(self, master: ctk.CTkBaseClass, on_navigate: Callable[[str], None]) -> None:
         super().__init__(master, fg_color="transparent")
@@ -23,7 +23,7 @@ class WelcomeView(ctk.CTkFrame):
             text_color="#F0F6FC",
             anchor="w",
         )
-        self.page_title.grid(row=0, column=0, padx=4, pady=(0, 12), sticky="ew")
+        self.page_title.grid(row=0, column=0, padx=4, pady=(0, 8), sticky="ew")
 
         self._build_hero_banner()
         self._build_feature_cards()
@@ -37,16 +37,16 @@ class WelcomeView(ctk.CTkFrame):
             border_width=1,
             border_color="#23304C",
         )
-        banner.grid(row=1, column=0, pady=(0, 14), sticky="ew")
+        banner.grid(row=1, column=0, pady=(0, 10), sticky="ew")
         banner.grid_columnconfigure(0, weight=1)
 
         self.banner_title = ctk.CTkLabel(
             banner,
             text=tr("welcome_banner_title"),
-            font=ctk.CTkFont(size=20, weight="bold"),
+            font=ctk.CTkFont(size=19, weight="bold"),
             text_color="#FFFFFF",
         )
-        self.banner_title.grid(row=0, column=0, padx=20, pady=(16, 6))
+        self.banner_title.grid(row=0, column=0, padx=20, pady=(12, 4))
 
         self.banner_desc = ctk.CTkLabel(
             banner,
@@ -55,7 +55,7 @@ class WelcomeView(ctk.CTkFrame):
             text_color="#8B949E",
             justify="center",
         )
-        self.banner_desc.grid(row=1, column=0, padx=20, pady=(0, 16))
+        self.banner_desc.grid(row=1, column=0, padx=20, pady=(0, 12))
 
     def _build_feature_cards(self) -> None:
         grid = ctk.CTkFrame(self, fg_color="transparent")
@@ -63,10 +63,12 @@ class WelcomeView(ctk.CTkFrame):
         grid.grid_columnconfigure((0, 1), weight=1, uniform="feat_col")
 
         cards_data = [
-            ("card1_title", "card1_desc", "worlds", 0, 0),
-            ("card2_title", "card2_desc", "duviri", 0, 1),
-            ("card3_title", "card3_desc", "duviri", 1, 0),
-            ("card4_title", "card4_desc", "baro", 1, 1),
+            ("card_res_title", "card_res_desc", "resources", 0, 0),
+            ("card_mod_title", "card_mod_desc", "mods", 0, 1),
+            ("card_wf_title", "card_wf_desc", "warframes", 1, 0),
+            ("card_wld_title", "card_wld_desc", "worlds", 1, 1),
+            ("card_bnt_title", "card_bnt_desc", "bounties", 2, 0),
+            ("card_duv_title", "card_duv_desc", "duviri", 2, 1),
         ]
 
         for t_key, d_key, target_key, r, c in cards_data:
@@ -82,17 +84,17 @@ class WelcomeView(ctk.CTkFrame):
             border_width=1,
             border_color="#212C42",
         )
-        card.grid(row=r, column=c, padx=6, pady=6, sticky="nsew")
+        card.grid(row=r, column=c, padx=5, pady=5, sticky="nsew")
         card.grid_columnconfigure(0, weight=1)
 
         top = ctk.CTkFrame(card, fg_color="transparent")
-        top.grid(row=0, column=0, padx=14, pady=(14, 6), sticky="ew")
+        top.grid(row=0, column=0, padx=12, pady=(10, 4), sticky="ew")
         top.grid_columnconfigure(0, weight=1)
 
         title_lbl = ctk.CTkLabel(
             top,
             text=tr(t_key),
-            font=ctk.CTkFont(size=14, weight="bold"),
+            font=ctk.CTkFont(size=13, weight="bold"),
             text_color="#58A6FF",
             anchor="w",
         )
@@ -101,8 +103,8 @@ class WelcomeView(ctk.CTkFrame):
         open_btn = ctk.CTkButton(
             top,
             text=tr("open_btn"),
-            width=76,
-            height=26,
+            width=72,
+            height=24,
             corner_radius=6,
             fg_color="transparent",
             hover_color="#1C273E",
@@ -115,18 +117,18 @@ class WelcomeView(ctk.CTkFrame):
         desc_lbl = ctk.CTkLabel(
             card,
             text=tr(d_key),
-            font=ctk.CTkFont(size=12),
+            font=ctk.CTkFont(size=11),
             text_color="#8B949E",
             justify="left",
             anchor="w",
-            wraplength=260,
+            wraplength=265,
         )
-        desc_lbl.grid(row=1, column=0, padx=14, pady=(0, 16), sticky="ew")
+        desc_lbl.grid(row=1, column=0, padx=12, pady=(0, 10), sticky="ew")
         self.card_widgets.append((title_lbl, desc_lbl, open_btn, t_key, d_key))
 
     def _build_signature(self) -> None:
         sig_frame = ctk.CTkFrame(self, fg_color="transparent")
-        sig_frame.grid(row=3, column=0, pady=(8, 0), sticky="e")
+        sig_frame.grid(row=3, column=0, pady=(4, 0), sticky="e")
 
         self.created_lbl = ctk.CTkLabel(
             sig_frame,
@@ -155,13 +157,12 @@ class WelcomeView(ctk.CTkFrame):
             open_btn.configure(text=tr("open_btn"))
 
     def apply_zoom(self, scale: float) -> None:
-        """Ajuste dynamiquement la taille des textes et cartes de la page Bienvenue."""
         self.page_title.configure(font=ctk.CTkFont(size=int(22 * scale), weight="bold"))
-        self.banner_title.configure(font=ctk.CTkFont(size=int(20 * scale), weight="bold"))
+        self.banner_title.configure(font=ctk.CTkFont(size=int(19 * scale), weight="bold"))
         self.banner_desc.configure(font=ctk.CTkFont(size=int(12 * scale)))
         self.created_lbl.configure(font=ctk.CTkFont(size=int(13 * scale)))
         self.author_lbl.configure(font=ctk.CTkFont(size=int(14 * scale), weight="bold", slant="italic"))
         for title_lbl, desc_lbl, open_btn, _, _ in self.card_widgets:
-            title_lbl.configure(font=ctk.CTkFont(size=int(14 * scale), weight="bold"))
-            desc_lbl.configure(font=ctk.CTkFont(size=int(12 * scale)), wraplength=int(260 * scale))
+            title_lbl.configure(font=ctk.CTkFont(size=int(13 * scale), weight="bold"))
+            desc_lbl.configure(font=ctk.CTkFont(size=int(11 * scale)), wraplength=int(265 * scale))
             open_btn.configure(font=ctk.CTkFont(size=int(12 * scale), weight="bold"))
