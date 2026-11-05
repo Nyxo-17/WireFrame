@@ -1,0 +1,25 @@
+{
+  "warframes_weeks": [
+    ["Excalibur", "Trinity", "Ember"],
+    ["Loki", "Mag", "Rhino"],
+    ["Ash", "Frost", "Nyx"],
+    ["Saryn", "Vauban", "Nova"],
+    ["Nekros", "Valkyr", "Oberon"],
+    ["Hydroid", "Mirage", "Limbo"],
+    ["Mesa", "Chroma", "Atlas"],
+    ["Ivara", "Inaros", "Titania"],
+    ["Nidus", "Octavia", "Harrow"],
+    ["Gara", "Khora", "Revenant"],
+    ["Garuda", "Baruuk", "Hildryn"]
+  ],
+  "incarnon_weeks": [
+    ["Braton", "Lato", "Skana", "Paris", "Kunai"],
+    ["Bo", "Latron", "Furis", "Furax", "Strun"],
+    ["Lex", "Magistar", "Boltor", "Bronco", "Ceramic Dagger"],
+    ["Torid", "Dual Toxocyst", "Dual Ichor", "Miter", "Atomos"],
+    ["Ack & Brunt", "Soma", "Vasto", "Nami Solo", "Burston"],
+    ["Zylok", "Sibear", "Dread", "Despair", "Hate"],
+    ["Dera", "Sybaris", "Cestra", "Sicarus", "Okina"],
+    ["Gorgon", "Anku", "Angstrum", "Boar", "Gammacor"]
+  ]
+}

@@ -111,16 +111,16 @@ flowchart TD
 Nous avancerons pas à pas en cochant cette liste au fur et à mesure :
 
 ### Phase 0 : Initialisation de l'environnement et de Git
-- [ ] **0.1.** Ouvrir le dossier `wireframe_v1` comme espace de travail (Workspace) dans Antigravity.
-- [ ] **0.2.** Créer l'environnement virtuel Python : `python -m venv .venv` et l'activer.
-- [ ] **0.3.** Créer le fichier `.gitignore` (excluant `.venv/`, `__pycache__/`, `data/cache.json`).
-- [ ] **0.4.** Créer le fichier `requirements.txt` (`customtkinter`, `requests`) et installer les paquets.
-- [ ] **0.5.** Initialiser Git (`git init`) et réaliser le premier commit (`docs: ajout du CDC et configuration initiale`).
+- [x] **0.1.** Ouvrir le dossier `wireframe_v1` comme espace de travail (Workspace) dans Antigravity.
+- [x] **0.2.** Créer l'environnement virtuel Python : `python -m venv .venv` et l'activer.
+- [x] **0.3.** Créer le fichier `.gitignore` (excluant `.venv/`, `__pycache__/`, `data/cache.json`).
+- [x] **0.4.** Créer le fichier `requirements.txt` (`customtkinter`, `requests`) et installer les paquets.
+- [x] **0.5.** Initialiser Git (`git init`) et réaliser le premier commit (`docs: ajout du CDC et configuration initiale`).
 
 ### Phase 1 : La Couche Données (`data/`)
-- [ ] **1.1.** Créer `data/duviri_rotations.json` avec le calendrier officiel des 11 semaines de Warframes et 8 semaines d'Incarnons.
-- [ ] **1.2.** Coder `data/data_manager.py` (fonctions pour lire `duviri_rotations.json` et lire/écrire `cache.json`).
-- [ ] **1.3.** Tester `data_manager.py` dans le terminal et faire un commit Git.
+- [x] **1.1.** Créer `data/duviri_rotations.json` avec le calendrier officiel des 11 semaines de Warframes et 8 semaines d'Incarnons.
+- [x] **1.2.** Coder `data/data_manager.py` (fonctions pour lire `duviri_rotations.json` et lire/écrire `cache.json`).
+- [x] **1.3.** Tester `data_manager.py` dans le terminal et faire un commit Git.
 
 ### Phase 2 : Le Cerveau / Logique Métier (`core/`)
 - [ ] **2.1.** Coder `core/timer_engine.py` (convertir une date de fin UTC en texte `HHh MMm SSs` restant).
