@@ -181,3 +181,4 @@ class NotificationsView(ctk.CTkFrame):
         for sw, _ in self.switches.values():
             sw.configure(font=ctk.CTkFont(size=int(13 * scale), weight="bold"))
         self.refresh_history()
+

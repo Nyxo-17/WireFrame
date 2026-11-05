@@ -1,12 +1,17 @@
 """Module notification_manager : Surveillance des cycles et envoi de notifications Windows & UI."""
 
 from datetime import datetime
+from pathlib import Path
 import subprocess
 import threading
 from typing import Any, Callable
 import winsound
 from core.codex_service import get_current_bounty_rotation
 from data.data_manager import load_notification_settings, save_notification_settings
+
+DEFAULT_SOUND_FILE = (
+    Path(__file__).resolve().parent.parent / "data" / "sounds" / "default_notify.wav"
+)
 
 
 class NotificationManager:
@@ -40,7 +45,6 @@ class NotificationManager:
             "wf_list": " • ".join(duviri_state.get("warframes", [])),
         }
 
-        # Premier appel au démarrage : on mémorise l'état initial sans spammer
         if not self._prev_snapshot:
             self._prev_snapshot = current_snap
             return
@@ -106,17 +110,28 @@ class NotificationManager:
 
         self._prev_snapshot = current_snap
 
+    def play_notification_sound(self) -> None:
+        """Joue le fichier WAV par défaut de façon asynchrone sans bloquer l'interface."""
+        if not self.settings.get("sound_enabled", True):
+            return
+        try:
+            if DEFAULT_SOUND_FILE.exists():
+                winsound.PlaySound(
+                    str(DEFAULT_SOUND_FILE),
+                    winsound.SND_FILENAME | winsound.SND_ASYNC,
+                )
+            else:
+                winsound.MessageBeep(winsound.MB_ICONASTERISK)
+        except Exception:
+            pass
+
     def trigger_notification(self, title: str, message: str) -> None:
-        """Enregistre l'alerte, joue le son système, affiche la bannière UI et le Toast Windows."""
+        """Enregistre l'alerte, joue le son .wav, affiche la bannière UI et le Toast Windows."""
         timestamp = datetime.now().strftime("%H:%M:%S")
         self.history.insert(0, {"time": timestamp, "title": title, "message": message})
         self.history = self.history[:30]
 
-        if self.settings.get("sound_enabled", True):
-            try:
-                winsound.MessageBeep(winsound.MB_ICONASTERISK)
-            except Exception:
-                pass
+        self.play_notification_sound()
 
         if self.on_alert_callback:
             self.on_alert_callback(title, message)
