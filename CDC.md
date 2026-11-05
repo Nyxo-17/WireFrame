@@ -130,9 +130,9 @@ Nous avancerons pas à pas en cochant cette liste au fur et à mesure :
 
 ### Phase 3 : L'Interface Graphique Modulaire (`ui/` & `main.py`)
 - [x] **3.1.** Coder la coquille vide : `ui/sidebar.py`, `ui/app_window.py` et `main.py` pour afficher la fenêtre et tester les boutons du menu. (Commit Git).
-- [ ] **3.2.** Coder le composant réutilisable `ui/components/cycle_card.py` puis la vue `ui/views/worlds_view.py` connectée aux timers en direct. (Commit Git).
-- [ ] **3.3.** Coder la vue `ui/views/duviri_view.py` pour afficher les rotations de la semaine. (Commit Git).
-- [ ] **3.4.** Coder la vue `ui/views/baro_view.py` pour afficher l'état et l'inventaire de Baro Ki'Teer. (Commit Git).
+- [x] **3.2.** Coder le composant réutilisable `ui/components/cycle_card.py` puis la vue `ui/views/worlds_view.py` et le panneau droit `ui/live_panel.py` connectés aux timers en direct. (Commit Git).
+- [x] **3.3.** Coder la vue `ui/views/duviri_view.py` et `ui/views/welcome_view.py` (style maquette Nyxo_17). (Commit Git).
+- [x] **3.4.** Coder la vue `ui/views/baro_view.py` pour afficher l'état et l'inventaire de Baro Ki'Teer. (Commit Git).
 
 ### Phase 4 : Finitions & Publication GitHub
 - [ ] **4.1.** Vérification générale (coupure Internet simulée pour tester le cache, fluidité des timers).

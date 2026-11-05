@@ -23,7 +23,7 @@ def get_next_monday_utc() -> str:
 
 
 def get_current_duviri_rotation() -> dict[str, Any]:
-    """Retourne les Warframes, les Armes Incarnon et la date de fin de la semaine actuelle."""
+    """Retourne les rotations Actuelle et Suivante de Duviri (Warframes + Incarnon)."""
     rotations_data = load_duviri_rotations()
     warframes_list = rotations_data.get("warframes_weeks", [])
     incarnon_list = rotations_data.get("incarnon_weeks", [])
@@ -32,14 +32,23 @@ def get_current_duviri_rotation() -> dict[str, Any]:
     elapsed_seconds = (now - DUVIRI_EPOCH).total_seconds()
     weeks_since_epoch = int(elapsed_seconds // SECONDS_PER_WEEK)
 
-    wf_index = weeks_since_epoch % len(warframes_list) if warframes_list else 0
-    inc_index = weeks_since_epoch % len(incarnon_list) if incarnon_list else 0
+    wf_count = len(warframes_list)
+    inc_count = len(incarnon_list)
+
+    wf_index = weeks_since_epoch % wf_count if wf_count else 0
+    wf_next_index = (wf_index + 1) % wf_count if wf_count else 0
+
+    inc_index = weeks_since_epoch % inc_count if inc_count else 0
+    inc_next_index = (inc_index + 1) % inc_count if inc_count else 0
 
     return {
         "warframe_week_number": wf_index + 1,
-        "warframes": warframes_list[wf_index] if warframes_list else [],
+        "warframes": warframes_list[wf_index] if wf_count else [],
+        "next_warframes": warframes_list[wf_next_index] if wf_count else [],
         "incarnon_week_number": inc_index + 1,
-        "incarnon_weapons": incarnon_list[inc_index] if incarnon_list else [],
+        "incarnon_weapons": incarnon_list[inc_index] if inc_count else [],
+        "next_incarnon_weapons": incarnon_list[inc_next_index] if inc_count else [],
+        "all_warframes_weeks": warframes_list,
+        "all_incarnon_weeks": incarnon_list,
         "expiry": get_next_monday_utc(),
     }
-

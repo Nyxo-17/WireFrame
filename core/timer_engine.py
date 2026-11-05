@@ -26,23 +26,38 @@ def get_remaining_seconds(expiry_iso: str) -> int:
 
 
 def format_countdown(seconds: int) -> str:
-    """Transforme un nombre de secondes en texte lisible (ex: '02j 04h 12m 09s' ou '42m 15s')."""
+    """Transforme un nombre de secondes en texte complet (ex: '02j 04h 12m 09s' ou '42m 15s')."""
     if seconds <= 0:
-        return "Rotation en cours..."
+        return "Rotation..."
 
     days, remainder = divmod(seconds, 86400)
     hours, remainder = divmod(remainder, 3600)
     minutes, secs = divmod(remainder, 60)
 
     if days > 0:
-        return f"{days:02d}j {hours:02d}h {minutes:02d}m {secs:02d}s"
+        return f"{days}j {hours:02d}h {minutes:02d}m {secs:02d}s"
     if hours > 0:
-        return f"{hours:02d}h {minutes:02d}m {secs:02d}s"
-    return f"{minutes:02d}m {secs:02d}s"
+        return f"{hours}h {minutes:02d}m {secs:02d}s"
+    return f"{minutes}m {secs:02d}s"
 
 
-def get_formatted_timer(expiry_iso: str) -> str:
-    """Fonction tout-en-un : prend une date ISO et retourne directement le texte du timer."""
+def format_short_countdown(seconds: int) -> str:
+    """Format compact pour le panneau latéral droit (ex: '3j 8h' ou '57m 26s')."""
+    if seconds <= 0:
+        return "0m 00s"
+
+    days, remainder = divmod(seconds, 86400)
+    hours, remainder = divmod(remainder, 3600)
+    minutes, secs = divmod(remainder, 60)
+
+    if days > 0:
+        return f"{days}j {hours}h"
+    if hours > 0:
+        return f"{hours}h {minutes:02d}m {secs:02d}s"
+    return f"{minutes}m {secs:02d}s"
+
+
+def get_formatted_timer(expiry_iso: str, short: bool = False) -> str:
+    """Prend une date ISO et retourne directement le texte du timer (complet ou compact)."""
     remaining = get_remaining_seconds(expiry_iso)
-    return format_countdown(remaining)
-
+    return format_short_countdown(remaining) if short else format_countdown(remaining)
