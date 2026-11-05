@@ -4,9 +4,9 @@ import json
 from pathlib import Path
 from typing import Any
 
-# Chemin absolu vers le dossier data/ (peu importe d'où l'application est lancée)
 DATA_DIR = Path(__file__).resolve().parent
 DUVIRI_FILE = DATA_DIR / "duviri_rotations.json"
+TRANSLATIONS_FILE = DATA_DIR / "translations.json"
 CACHE_FILE = DATA_DIR / "cache.json"
 
 
@@ -21,6 +21,19 @@ def load_duviri_rotations() -> dict[str, list[list[str]]]:
     except (json.JSONDecodeError, OSError) as error:
         print(f"[Erreur Data] Impossible de lire {DUVIRI_FILE.name} : {error}")
         return {"warframes_weeks": [], "incarnon_weeks": []}
+
+
+def load_translations() -> dict[str, dict[str, str]]:
+    """Charge le dictionnaire de traductions FR / EN depuis data/translations.json."""
+    if not TRANSLATIONS_FILE.exists():
+        return {"fr": {}, "en": {}}
+
+    try:
+        with open(TRANSLATIONS_FILE, "r", encoding="utf-8") as file:
+            return json.load(file)
+    except (json.JSONDecodeError, OSError) as error:
+        print(f"[Erreur Data] Impossible de lire {TRANSLATIONS_FILE.name} : {error}")
+        return {"fr": {}, "en": {}}
 
 
 def save_api_cache(data: dict[str, Any]) -> bool:
@@ -45,4 +58,3 @@ def load_api_cache() -> dict[str, Any] | None:
     except (json.JSONDecodeError, OSError) as error:
         print(f"[Erreur Data] Cache corrompu ou illisible : {error}")
         return None
-

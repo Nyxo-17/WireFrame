@@ -1,30 +1,30 @@
-"""Module titlebar : Barre de titre personnalisée sombre (sans la barre blanche Windows)."""
+"""Module titlebar : Barre de titre personnalisée sombre avec sélecteur FR/EN et coins arrondis."""
 
+from typing import Callable
 import webbrowser
 import customtkinter as ctk
+from core.i18n import get_lang, set_lang
 
 
 class CustomTitleBar(ctk.CTkFrame):
-    """Barre supérieure sombre avec titre WireFrame, FR/EN, Zoom, Discord et boutons — ▢ ✕."""
+    """Barre supérieure sombre avec titre WireFrame, boutons FR/EN actifs, Zoom, Discord et — ▢ ✕."""
 
-    def __init__(self, master: ctk.CTk) -> None:
+    def __init__(self, master: ctk.CTkBaseClass, app: ctk.CTk, on_lang_change: Callable[[], None]) -> None:
         super().__init__(
             master,
             height=44,
-            corner_radius=0,
+            corner_radius=14,
             fg_color="#0D111A",
-            border_width=1,
-            border_color="#1A2234",
         )
-        self.app = master
+        self.app = app
+        self.on_lang_change = on_lang_change
         self.grid_propagate(False)
         self.grid_columnconfigure(1, weight=1)
 
-        # Variables pour le déplacement de la fenêtre à la souris et l'état agrandi/zoom
         self._drag_x = 0
         self._drag_y = 0
         self._is_maximized = False
-        self._normal_geometry = "1280x720+100+80"
+        self._normal_geometry = "1280x740+100+60"
         self._zoom_level = 100
 
         self._build_left_title()
@@ -41,36 +41,45 @@ class CustomTitleBar(ctk.CTkFrame):
         )
         self.title_lbl.grid(row=0, column=0, padx=18, pady=8, sticky="w")
 
-        # Zone vide centrale qui permet de déplacer la fenêtre à la souris
         self.drag_space = ctk.CTkLabel(self, text="", fg_color="transparent")
         self.drag_space.grid(row=0, column=1, sticky="nsew")
 
     def _build_right_controls(self) -> None:
         """Construit les capsules [FR|EN], [🔍 100%], [Discord] et les boutons [— ▢ ✕]."""
         right = ctk.CTkFrame(self, fg_color="transparent")
-        right.grid(row=0, column=2, padx=(0, 6), pady=5, sticky="e")
+        right.grid(row=0, column=2, padx=(0, 8), pady=5, sticky="e")
 
-        # 1. Sélecteur [ 🌐 FR | EN ]
+        # 1. Sélecteur interactif [ 🌐 FR | EN ]
         lang_box = ctk.CTkFrame(
             right, fg_color="#131926", corner_radius=6, border_width=1, border_color="#232F46"
         )
         lang_box.grid(row=0, column=0, padx=5, pady=2)
         ctk.CTkLabel(lang_box, text="🌐", font=ctk.CTkFont(size=11), text_color="#58A6FF").grid(
-            row=0, column=0, padx=(8, 4), pady=3
+            row=0, column=0, padx=(8, 2), pady=2
         )
-        ctk.CTkLabel(
+
+        self.fr_btn = ctk.CTkButton(
             lang_box,
             text="FR",
-            font=ctk.CTkFont(size=11, weight="bold"),
-            text_color="#FFFFFF",
-            fg_color="#1F2D48",
+            width=30,
+            height=22,
             corner_radius=4,
-            padx=6,
-            pady=1,
-        ).grid(row=0, column=1, padx=2, pady=3)
-        ctk.CTkLabel(
-            lang_box, text="EN", font=ctk.CTkFont(size=11, weight="bold"), text_color="#7D8590"
-        ).grid(row=0, column=2, padx=(4, 8), pady=3)
+            font=ctk.CTkFont(size=11, weight="bold"),
+            command=lambda: self._switch_language("fr"),
+        )
+        self.fr_btn.grid(row=0, column=1, padx=2, pady=3)
+
+        self.en_btn = ctk.CTkButton(
+            lang_box,
+            text="EN",
+            width=30,
+            height=22,
+            corner_radius=4,
+            font=ctk.CTkFont(size=11, weight="bold"),
+            command=lambda: self._switch_language("en"),
+        )
+        self.en_btn.grid(row=0, column=2, padx=(2, 6), pady=3)
+        self._refresh_lang_buttons()
 
         # 2. Sélecteur de zoom [ 🔍- 100% 🔍+ ]
         zoom_box = ctk.CTkFrame(
@@ -111,7 +120,7 @@ class CustomTitleBar(ctk.CTkFrame):
         ).grid(row=0, column=2, padx=(2, 4), pady=2)
 
         # 3. Bouton [ 💬 Discord ]
-        discord_btn = ctk.CTkButton(
+        ctk.CTkButton(
             right,
             text="💬  Discord",
             width=92,
@@ -124,8 +133,7 @@ class CustomTitleBar(ctk.CTkFrame):
             text_color="#D0D7DE",
             font=ctk.CTkFont(size=12, weight="bold"),
             command=lambda: webbrowser.open("https://github.com/Nyxo-17"),
-        )
-        discord_btn.grid(row=0, column=2, padx=(5, 10), pady=2)
+        ).grid(row=0, column=2, padx=(5, 10), pady=2)
 
         # 4. Boutons fenêtre Windows : — (Réduire), ▢ (Agrandir), ✕ (Fermer)
         for col, txt, hover_bg, cmd in [
@@ -146,8 +154,28 @@ class CustomTitleBar(ctk.CTkFrame):
                 command=cmd,
             ).grid(row=0, column=col, padx=1)
 
+    def _switch_language(self, lang_code: str) -> None:
+        """Change la langue dans i18n, met à jour les boutons FR/EN et rafraîchit toute l'UI."""
+        if get_lang() != lang_code:
+            set_lang(lang_code)
+            self._refresh_lang_buttons()
+            self.on_lang_change()
+
+    def _refresh_lang_buttons(self) -> None:
+        """Met en surbrillance le bouton FR ou EN actif."""
+        is_fr = get_lang() == "fr"
+        self.fr_btn.configure(
+            fg_color="#253659" if is_fr else "transparent",
+            text_color="#FFFFFF" if is_fr else "#7D8590",
+            hover_color="#2D426B",
+        )
+        self.en_btn.configure(
+            fg_color="#253659" if not is_fr else "transparent",
+            text_color="#FFFFFF" if not is_fr else "#7D8590",
+            hover_color="#2D426B",
+        )
+
     def _bind_drag_events(self) -> None:
-        """Permet de déplacer la fenêtre en maintenant le clic gauche sur la barre du haut."""
         for widget in (self, self.title_lbl, self.drag_space):
             widget.bind("<ButtonPress-1>", self._start_move)
             widget.bind("<B1-Motion>", self._do_move)
@@ -160,12 +188,9 @@ class CustomTitleBar(ctk.CTkFrame):
     def _do_move(self, event) -> None:
         if self._is_maximized:
             return
-        new_x = event.x_root - self._drag_x
-        new_y = event.y_root - self._drag_y
-        self.app.geometry(f"+{new_x}+{new_y}")
+        self.app.geometry(f"+{event.x_root - self._drag_x}+{event.y_root - self._drag_y}")
 
     def _minimize_window(self) -> None:
-        """Réduit temporairement la fenêtre dans la barre des tâches Windows."""
         self.app.overrideredirect(False)
         self.app.iconify()
         self.app.bind("<Map>", self._restore_from_minimize)
@@ -176,7 +201,6 @@ class CustomTitleBar(ctk.CTkFrame):
             self.app.unbind("<Map>")
 
     def _toggle_maximize(self) -> None:
-        """Bascule entre le mode plein écran fenêtré et la taille normale."""
         if not self._is_maximized:
             self._normal_geometry = self.app.geometry()
             w, h = self.app.winfo_screenwidth(), self.app.winfo_screenheight() - 40
@@ -187,7 +211,6 @@ class CustomTitleBar(ctk.CTkFrame):
             self._is_maximized = False
 
     def _change_zoom(self, delta: int) -> None:
-        """Ajuste le niveau de zoom global de l'interface entre 80% et 120%."""
         self._zoom_level = max(80, min(120, self._zoom_level + delta))
         self.zoom_lbl.configure(text=f"{self._zoom_level}%")
         ctk.set_widget_scaling(self._zoom_level / 100.0)

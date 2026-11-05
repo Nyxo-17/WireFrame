@@ -1,6 +1,7 @@
-"""Module duviri_view : Vue centrale du Circuit de Duviri (Warframes & Armes Incarnon)."""
+"""Module duviri_view : Vue centrale du Circuit de Duviri bilingue FR/EN."""
 
 import customtkinter as ctk
+from core.i18n import tr
 from core.timer_engine import get_formatted_timer
 
 
@@ -13,26 +14,27 @@ class DuviriView(ctk.CTkFrame):
         self.grid_rowconfigure(2, weight=1)
 
         self.expiry_iso: str = ""
+        self.last_duviri_state: dict = {}
         self._build_header()
         self._build_columns()
 
     def _build_header(self) -> None:
-        """En-tête avec le titre et le compte à rebours avant le reset du lundi."""
         top = ctk.CTkFrame(self, fg_color="transparent")
         top.grid(row=0, column=0, columnspan=2, padx=4, pady=(0, 12), sticky="ew")
         top.grid_columnconfigure(0, weight=1)
 
-        ctk.CTkLabel(
+        self.title_lbl = ctk.CTkLabel(
             top,
-            text="⚔️  Le Circuit de Duviri — Calendrier des Rotations",
+            text=tr("duviri_page_title"),
             font=ctk.CTkFont(size=22, weight="bold"),
             text_color="#F0F6FC",
             anchor="w",
-        ).grid(row=0, column=0, sticky="w")
+        )
+        self.title_lbl.grid(row=0, column=0, sticky="w")
 
         self.timer_badge = ctk.CTkLabel(
             top,
-            text="Reset dans : --j --h",
+            text="...",
             font=ctk.CTkFont(size=14, weight="bold"),
             text_color="#4ADE80",
             fg_color="#141A29",
@@ -43,10 +45,9 @@ class DuviriView(ctk.CTkFrame):
         self.timer_badge.grid(row=0, column=1, sticky="e")
 
     def _build_columns(self) -> None:
-        """Crée deux colonnes : Armes Incarnon (8 semaines) et Warframes (11 semaines)."""
         self.inc_scroll = ctk.CTkScrollableFrame(
             self,
-            label_text="⚔️ Armes Incarnon (Route de l'Acier — 8 Semaines)",
+            label_text=tr("duviri_inc_col"),
             label_font=ctk.CTkFont(size=14, weight="bold"),
             label_text_color="#58A6FF",
             fg_color="#121826",
@@ -59,7 +60,7 @@ class DuviriView(ctk.CTkFrame):
 
         self.wf_scroll = ctk.CTkScrollableFrame(
             self,
-            label_text="🛡️ Warframes du Circuit (Normal — 11 Semaines)",
+            label_text=tr("duviri_wf_col"),
             label_font=ctk.CTkFont(size=14, weight="bold"),
             label_text_color="#58A6FF",
             fg_color="#121826",
@@ -71,7 +72,7 @@ class DuviriView(ctk.CTkFrame):
         self.wf_scroll.grid_columnconfigure(0, weight=1)
 
     def load_state(self, _world_state: dict, duviri_state: dict) -> None:
-        """Affiche toutes les semaines et met en surbrillance la semaine active."""
+        self.last_duviri_state = duviri_state
         self.expiry_iso = duviri_state.get("expiry", "")
         inc_active = duviri_state.get("incarnon_week_number", 1)
         wf_active = duviri_state.get("warframe_week_number", 1)
@@ -91,7 +92,6 @@ class DuviriView(ctk.CTkFrame):
     def _populate_list(
         self, container: ctk.CTkScrollableFrame, weeks: list[list[str]], active_week: int
     ) -> None:
-        """Remplit une colonne déroulante en illuminant la semaine actuelle en bleu/vert."""
         for child in container.winfo_children():
             child.destroy()
 
@@ -107,8 +107,8 @@ class DuviriView(ctk.CTkFrame):
             row_box.grid(row=idx, column=0, padx=6, pady=4, sticky="ew")
             row_box.grid_columnconfigure(0, weight=1)
 
-            tag = "  ● EN COURS" if is_current else ""
-            header_txt = f"Semaine {idx}{tag}"
+            tag = tr("active_tag") if is_current else ""
+            header_txt = f"{tr('week_label')} {idx}{tag}"
             ctk.CTkLabel(
                 row_box,
                 text=header_txt,
@@ -125,8 +125,14 @@ class DuviriView(ctk.CTkFrame):
                 anchor="w",
             ).grid(row=1, column=0, padx=10, pady=(0, 8), sticky="ew")
 
-    def update_timers(self) -> None:
-        """Met à jour le timer du reset hebdomadaire."""
-        txt = get_formatted_timer(self.expiry_iso, short=False)
-        self.timer_badge.configure(text=f"⏳ Reset dans : {txt}")
+    def update_language(self) -> None:
+        """Traduit tous les textes de la vue Duviri en FR ou EN."""
+        self.title_lbl.configure(text=tr("duviri_page_title"))
+        self.inc_scroll.configure(label_text=tr("duviri_inc_col"))
+        self.wf_scroll.configure(label_text=tr("duviri_wf_col"))
+        if self.last_duviri_state:
+            self.load_state({}, self.last_duviri_state)
 
+    def update_timers(self) -> None:
+        txt = get_formatted_timer(self.expiry_iso, short=False)
+        self.timer_badge.configure(text=f"{tr('duviri_reset_prefix')} {txt}")

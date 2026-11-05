@@ -1,6 +1,7 @@
-"""Module live_panel : Panneau latéral droit 'Cycles & Événements En direct'."""
+"""Module live_panel : Panneau latéral droit 'Cycles & Événements En direct' bilingue FR/EN."""
 
 import customtkinter as ctk
+from core.i18n import tr
 from core.timer_engine import get_formatted_timer
 from ui.components.cycle_card import CycleCard
 
@@ -22,6 +23,8 @@ class LivePanel(ctk.CTkFrame):
 
         self.duviri_expiry: str = ""
         self.baro_target_iso: str = ""
+        self.last_world_state: dict = {}
+        self.last_duviri_state: dict = {}
         self.world_cards: dict[str, CycleCard] = {}
 
         self._build_header()
@@ -30,73 +33,67 @@ class LivePanel(ctk.CTkFrame):
         self._build_baro_card()
 
     def _build_header(self) -> None:
-        """Bandeau supérieur [ ● Cycles & Événements ] | [ En direct ]."""
         header = ctk.CTkFrame(self, fg_color="#141A29", corner_radius=8, height=36)
         header.grid(row=0, column=0, padx=12, pady=(12, 10), sticky="ew")
         header.grid_columnconfigure(0, weight=1)
 
-        badge = ctk.CTkLabel(
+        self.badge_lbl = ctk.CTkLabel(
             header,
-            text="  ● Cycles & Événements",
+            text=tr("live_badge"),
             font=ctk.CTkFont(size=12, weight="bold"),
             text_color="#F0F6FC",
         )
-        badge.grid(row=0, column=0, padx=8, pady=6, sticky="w")
+        self.badge_lbl.grid(row=0, column=0, padx=8, pady=6, sticky="w")
 
         self.live_lbl = ctk.CTkLabel(
             header,
-            text="📡 En direct",
+            text=tr("live_tag"),
             font=ctk.CTkFont(size=11),
             text_color="#8A94A6",
         )
         self.live_lbl.grid(row=0, column=1, padx=10, pady=6, sticky="e")
 
     def _build_worlds_grid(self) -> None:
-        """Grille 2x2 des 4 Cycles des Mondes utilisant notre composant CycleCard."""
-        sec_title = ctk.CTkLabel(
+        self.worlds_sec_lbl = ctk.CTkLabel(
             self,
-            text="Cycles des Mondes",
+            text=tr("live_worlds_title"),
             font=ctk.CTkFont(size=13, weight="bold"),
             text_color="#D0D7DE",
         )
-        sec_title.grid(row=1, column=0, padx=14, pady=(2, 6), sticky="w")
+        self.worlds_sec_lbl.grid(row=1, column=0, padx=14, pady=(2, 6), sticky="w")
 
         grid_frame = ctk.CTkFrame(self, fg_color="transparent")
         grid_frame.grid(row=2, column=0, padx=10, pady=(0, 10), sticky="ew")
         grid_frame.grid_columnconfigure((0, 1), weight=1, uniform="world_col")
 
         specs = [
-            ("cetus", "🌍", "Terre (Cetus)", "Cycle Cetus", 0, 0),
-            ("vallis", "🪐", "Orb Vallis", "Vénus", 0, 1),
-            ("cambion", "☄️", "Cambion Drift", "Deimos", 1, 0),
-            ("earth", "🌲", "Terre (Forêts)", "Cycle 4h", 1, 1),
+            ("cetus", "🌍", "w_cetus_short", "w_cetus_sub", 0, 0),
+            ("vallis", "🪐", "w_vallis_short", "w_vallis_sub", 0, 1),
+            ("cambion", "☄️", "w_cambion_short", "w_cambion_sub", 1, 0),
+            ("earth", "🌲", "w_earth_short", "w_earth_sub", 1, 1),
         ]
-        for key, icon, title, sub, r, c in specs:
-            card = CycleCard(grid_frame, icon=icon, title=title, subtitle=sub, compact=True)
+        for key, icon, t_key, s_key, r, c in specs:
+            card = CycleCard(grid_frame, icon=icon, title_key=t_key, sub_key=s_key, compact=True)
             card.grid(row=r, column=c, padx=4, pady=4, sticky="nsew")
             self.world_cards[key] = card
 
     def _build_duviri_section(self) -> None:
-        """Section 'Le Circuit // Duviri' (Incarnon Acier + Warframes Circuit)."""
-        sec_title = ctk.CTkLabel(
+        self.duv_sec_lbl = ctk.CTkLabel(
             self,
-            text="Le Circuit // Duviri",
+            text=tr("live_duviri_title"),
             font=ctk.CTkFont(size=13, weight="bold"),
             text_color="#D0D7DE",
         )
-        sec_title.grid(row=3, column=0, padx=14, pady=(4, 6), sticky="w")
+        self.duv_sec_lbl.grid(row=3, column=0, padx=14, pady=(4, 6), sticky="w")
 
-        # Carte 1 : Incarnon (Acier)
-        self.inc_card, self.inc_timer, self.inc_cur, self.inc_next = self._make_duviri_box(
-            row=4, title="⚔️  Incarnon (Acier)"
+        self.inc_title_lbl, self.inc_timer, self.inc_cur, self.inc_next = self._make_duviri_box(
+            row=4, title_key="live_inc_title"
         )
-        # Carte 2 : Warframes (Circuit)
-        self.wf_card, self.wf_timer, self.wf_cur, self.wf_next = self._make_duviri_box(
-            row=5, title="🛡️  Warframes (Circuit)"
+        self.wf_title_lbl, self.wf_timer, self.wf_cur, self.wf_next = self._make_duviri_box(
+            row=5, title_key="live_wf_title"
         )
 
-    def _make_duviri_box(self, row: int, title: str) -> tuple:
-        """Crée une boîte Duviri avec Titre, Timer vert, ligne Actuel et ligne Suivant."""
+    def _make_duviri_box(self, row: int, title_key: str) -> tuple:
         box = ctk.CTkFrame(
             self, corner_radius=8, fg_color="#141A29", border_width=1, border_color="#232F46"
         )
@@ -107,9 +104,10 @@ class LivePanel(ctk.CTkFrame):
         top.grid(row=0, column=0, padx=10, pady=(8, 2), sticky="ew")
         top.grid_columnconfigure(0, weight=1)
 
-        ctk.CTkLabel(
-            top, text=title, font=ctk.CTkFont(size=12, weight="bold"), text_color="#60A5FA"
-        ).grid(row=0, column=0, sticky="w")
+        title_lbl = ctk.CTkLabel(
+            top, text=tr(title_key), font=ctk.CTkFont(size=12, weight="bold"), text_color="#60A5FA"
+        )
+        title_lbl.grid(row=0, column=0, sticky="w")
 
         timer_lbl = ctk.CTkLabel(
             top, text="3j 8h", font=ctk.CTkFont(size=12, weight="bold"), text_color="#4ADE80"
@@ -117,18 +115,17 @@ class LivePanel(ctk.CTkFrame):
         timer_lbl.grid(row=0, column=1, sticky="e")
 
         cur_lbl = ctk.CTkLabel(
-            box, text="Actuel : ...", font=ctk.CTkFont(size=12, weight="bold"), text_color="#F0F6FC", anchor="w"
+            box, text="...", font=ctk.CTkFont(size=12, weight="bold"), text_color="#F0F6FC", anchor="w"
         )
         cur_lbl.grid(row=1, column=0, padx=10, pady=1, sticky="ew")
 
         nxt_lbl = ctk.CTkLabel(
-            box, text="Suivant : ...", font=ctk.CTkFont(size=11), text_color="#7D8590", anchor="w"
+            box, text="...", font=ctk.CTkFont(size=11), text_color="#7D8590", anchor="w"
         )
         nxt_lbl.grid(row=2, column=0, padx=10, pady=(0, 8), sticky="ew")
-        return box, timer_lbl, cur_lbl, nxt_lbl
+        return title_lbl, timer_lbl, cur_lbl, nxt_lbl
 
     def _build_baro_card(self) -> None:
-        """Carte résumée pour Baro Ki'Teer en bas du panneau."""
         box = ctk.CTkFrame(
             self, corner_radius=8, fg_color="#141A29", border_width=1, border_color="#232F46"
         )
@@ -139,9 +136,10 @@ class LivePanel(ctk.CTkFrame):
         top.grid(row=0, column=0, padx=10, pady=(8, 2), sticky="ew")
         top.grid_columnconfigure(0, weight=1)
 
-        ctk.CTkLabel(
-            top, text="💎  Baro Ki'Teer (Néant)", font=ctk.CTkFont(size=12, weight="bold"), text_color="#60A5FA"
-        ).grid(row=0, column=0, sticky="w")
+        self.baro_title_lbl = ctk.CTkLabel(
+            top, text=tr("live_baro_title"), font=ctk.CTkFont(size=12, weight="bold"), text_color="#60A5FA"
+        )
+        self.baro_title_lbl.grid(row=0, column=0, sticky="w")
 
         self.baro_timer = ctk.CTkLabel(
             top, text="--j --h", font=ctk.CTkFont(size=12, weight="bold"), text_color="#4ADE80"
@@ -149,12 +147,14 @@ class LivePanel(ctk.CTkFrame):
         self.baro_timer.grid(row=0, column=1, sticky="e")
 
         self.baro_info = ctk.CTkLabel(
-            box, text="Relais : ...", font=ctk.CTkFont(size=12, weight="bold"), text_color="#F0F6FC", anchor="w"
+            box, text="...", font=ctk.CTkFont(size=12, weight="bold"), text_color="#F0F6FC", anchor="w"
         )
         self.baro_info.grid(row=1, column=0, padx=10, pady=(1, 8), sticky="ew")
 
     def load_state(self, world_state: dict, duviri_state: dict) -> None:
-        """Alimente toutes les cartes du panneau droit avec les données fraîches."""
+        self.last_world_state = world_state
+        self.last_duviri_state = duviri_state
+
         for key, card in self.world_cards.items():
             info = world_state.get(key, {})
             card.set_data(info.get("state", "..."), info.get("expiry", ""))
@@ -165,25 +165,36 @@ class LivePanel(ctk.CTkFrame):
         wf_now = " • ".join(duviri_state.get("warframes", []))
         wf_nxt = " • ".join(duviri_state.get("next_warframes", []))
 
-        self.inc_cur.configure(text=f"Actuel : {inc_now}")
-        self.inc_next.configure(text=f"Suivant : {inc_nxt}")
-        self.wf_cur.configure(text=f"Actuel : {wf_now}")
-        self.wf_next.configure(text=f"Suivant : {wf_nxt}")
+        self.inc_cur.configure(text=f"{tr('lbl_current')} : {inc_now}")
+        self.inc_next.configure(text=f"{tr('lbl_next')} : {inc_nxt}")
+        self.wf_cur.configure(text=f"{tr('lbl_current')} : {wf_now}")
+        self.wf_next.configure(text=f"{tr('lbl_next')} : {wf_nxt}")
 
         baro = world_state.get("baro", {})
         is_here = baro.get("active", False)
         self.baro_target_iso = baro.get("expiry", "") if is_here else baro.get("activation", "")
-        status_prefix = "Présent" if is_here else "Arrive"
+        status_prefix = tr("baro_present") if is_here else tr("baro_arrives")
         self.baro_info.configure(text=f"{status_prefix} ➔ {baro.get('location', 'Relais')}")
         self.update_timers()
 
+    def update_language(self) -> None:
+        """Met à jour tous les intitulés du panneau de droite lors d'un clic sur FR/EN."""
+        self.badge_lbl.configure(text=tr("live_badge"))
+        self.live_lbl.configure(text=tr("live_tag"))
+        self.worlds_sec_lbl.configure(text=tr("live_worlds_title"))
+        self.duv_sec_lbl.configure(text=tr("live_duviri_title"))
+        self.inc_title_lbl.configure(text=tr("live_inc_title"))
+        self.wf_title_lbl.configure(text=tr("live_wf_title"))
+        self.baro_title_lbl.configure(text=tr("live_baro_title"))
+        for card in self.world_cards.values():
+            card.update_language()
+        if self.last_world_state and self.last_duviri_state:
+            self.load_state(self.last_world_state, self.last_duviri_state)
+
     def update_timers(self) -> None:
-        """Rafraîchit tous les timers du panneau droit chaque seconde."""
         for card in self.world_cards.values():
             card.refresh_timer()
-
         duv_txt = get_formatted_timer(self.duviri_expiry, short=True)
         self.inc_timer.configure(text=duv_txt)
         self.wf_timer.configure(text=duv_txt)
         self.baro_timer.configure(text=get_formatted_timer(self.baro_target_iso, short=True))
-

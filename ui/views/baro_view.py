@@ -1,6 +1,7 @@
-"""Module baro_view : Vue centrale dédiée au marchand du Néant Baro Ki'Teer."""
+"""Module baro_view : Vue centrale dédiée au marchand du Néant Baro Ki'Teer bilingue FR/EN."""
 
 import customtkinter as ctk
+from core.i18n import tr
 from core.timer_engine import get_formatted_timer
 
 
@@ -14,23 +15,23 @@ class BaroView(ctk.CTkFrame):
 
         self.target_iso: str = ""
         self.is_active: bool = False
+        self.last_world_state: dict = {}
 
         self._build_header()
         self._build_status_banner()
         self._build_inventory_box()
 
     def _build_header(self) -> None:
-        """Titre principal de la vue Baro Ki'Teer."""
-        ctk.CTkLabel(
+        self.title_lbl = ctk.CTkLabel(
             self,
-            text="💎  Marchand du Néant — Baro Ki'Teer",
+            text=tr("baro_page_title"),
             font=ctk.CTkFont(size=22, weight="bold"),
             text_color="#F0F6FC",
             anchor="w",
-        ).grid(row=0, column=0, padx=4, pady=(0, 12), sticky="ew")
+        )
+        self.title_lbl.grid(row=0, column=0, padx=4, pady=(0, 12), sticky="ew")
 
     def _build_status_banner(self) -> None:
-        """Carte supérieure résumant la présence, le Relais et le compte à rebours."""
         banner = ctk.CTkFrame(
             self,
             corner_radius=10,
@@ -43,7 +44,7 @@ class BaroView(ctk.CTkFrame):
 
         self.status_title = ctk.CTkLabel(
             banner,
-            text="Chargement du statut de Baro Ki'Teer...",
+            text="...",
             font=ctk.CTkFont(size=18, weight="bold"),
             text_color="#58A6FF",
             anchor="w",
@@ -52,7 +53,7 @@ class BaroView(ctk.CTkFrame):
 
         self.relay_label = ctk.CTkLabel(
             banner,
-            text="📍 Destination : ...",
+            text="...",
             font=ctk.CTkFont(size=14),
             text_color="#D0D7DE",
             anchor="w",
@@ -68,10 +69,9 @@ class BaroView(ctk.CTkFrame):
         self.timer_label.grid(row=0, column=1, rowspan=2, padx=20, pady=16, sticky="e")
 
     def _build_inventory_box(self) -> None:
-        """Zone déroulante pour l'inventaire de Baro Ki'Teer."""
         self.inv_scroll = ctk.CTkScrollableFrame(
             self,
-            label_text="📦 Inventaire du Néant (Mods Accrus, Armes Prisma & Cosmétiques)",
+            label_text=tr("baro_inv_title"),
             label_font=ctk.CTkFont(size=14, weight="bold"),
             label_text_color="#58A6FF",
             fg_color="#121826",
@@ -83,34 +83,29 @@ class BaroView(ctk.CTkFrame):
         self.inv_scroll.grid_columnconfigure(0, weight=1)
 
     def load_state(self, world_state: dict, _duviri_state: dict) -> None:
-        """Met à jour les informations de Baro Ki'Teer."""
+        self.last_world_state = world_state
         baro = world_state.get("baro", {})
         self.is_active = bool(baro.get("active", False))
-        location = baro.get("location", "Relais inconnu")
+        location = baro.get("location", "Relay")
         self.target_iso = baro.get("expiry", "") if self.is_active else baro.get("activation", "")
 
         if self.is_active:
-            self.status_title.configure(text="🟢 Baro Ki'Teer est PRÉSENT sur le Relais !", text_color="#4ADE80")
+            self.status_title.configure(text=tr("baro_status_here"), text_color="#4ADE80")
         else:
-            self.status_title.configure(text="⏳ Baro Ki'Teer voyage dans le Néant (Absent)", text_color="#58A6FF")
+            self.status_title.configure(text=tr("baro_status_away"), text_color="#58A6FF")
 
-        self.relay_label.configure(text=f"📍 Destination : {location}")
+        self.relay_label.configure(text=f"{tr('baro_dest_prefix')} {location}")
         self._populate_inventory(baro.get("inventory", []))
         self.update_timers()
 
     def _populate_inventory(self, items: list[dict]) -> None:
-        """Remplit la liste des objets vendus par Baro (ou affiche un message s'il est absent)."""
         for child in self.inv_scroll.winfo_children():
             child.destroy()
 
         if not items:
-            msg = (
-                "Baro Ki'Teer n'est pas encore arrivé.\n"
-                "Son inventaire s'affichera automatiquement ici dès son arrivée le vendredi à 13h00 UTC !"
-            )
             ctk.CTkLabel(
                 self.inv_scroll,
-                text=msg,
+                text=tr("baro_empty_msg"),
                 font=ctk.CTkFont(size=13),
                 text_color="#8B949E",
                 justify="center",
@@ -124,13 +119,13 @@ class BaroView(ctk.CTkFrame):
 
             ctk.CTkLabel(
                 row,
-                text=item.get("item", "Objet"),
+                text=item.get("item", "Item"),
                 font=ctk.CTkFont(size=13, weight="bold"),
                 text_color="#F0F6FC",
                 anchor="w",
             ).grid(row=0, column=0, padx=12, pady=8, sticky="w")
 
-            price = f"🪙 {item.get('ducats', 0)} Ducats   •   💳 {item.get('credits', 0):,} Crédits"
+            price = f"🪙 {item.get('ducats', 0)} Ducats   •   💳 {item.get('credits', 0):,} Credits"
             ctk.CTkLabel(
                 row,
                 text=price,
@@ -138,8 +133,13 @@ class BaroView(ctk.CTkFrame):
                 text_color="#E5C158",
             ).grid(row=0, column=1, padx=12, pady=8, sticky="e")
 
-    def update_timers(self) -> None:
-        """Met à jour le compte à rebours d'arrivée ou de départ."""
-        prefix = "Départ dans :" if self.is_active else "Arrivée dans :"
-        self.timer_label.configure(text=f"{prefix} {get_formatted_timer(self.target_iso)}")
+    def update_language(self) -> None:
+        """Traduit tous les textes de la vue Baro Ki'Teer en FR ou EN."""
+        self.title_lbl.configure(text=tr("baro_page_title"))
+        self.inv_scroll.configure(label_text=tr("baro_inv_title"))
+        if self.last_world_state:
+            self.load_state(self.last_world_state, {})
 
+    def update_timers(self) -> None:
+        prefix = tr("baro_leaves_in") if self.is_active else tr("baro_arrives_in")
+        self.timer_label.configure(text=f"{prefix} {get_formatted_timer(self.target_iso)}")
