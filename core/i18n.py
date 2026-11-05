@@ -43,3 +43,4 @@ def tr_state(raw_state: str) -> str:
     clean = raw_state.strip().lower()
     state_key = _STATE_MAP.get(clean)
     return tr(state_key) if state_key else raw_state
+

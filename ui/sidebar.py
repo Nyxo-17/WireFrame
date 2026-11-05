@@ -14,7 +14,7 @@ class Sidebar(ctk.CTkFrame):
         on_navigate: Callable[[str], None],
         on_refresh: Callable[[], None],
     ) -> None:
-        super().__init__(master, width=220, corner_radius=12, fg_color="#0D111A")
+        super().__init__(master, width=220, corner_radius=0, fg_color="#0D111A")
         self.on_navigate = on_navigate
         self.on_refresh = on_refresh
         self.nav_buttons: dict[str, ctk.CTkButton] = {}

@@ -13,8 +13,10 @@ class CustomTitleBar(ctk.CTkFrame):
         super().__init__(
             master,
             height=44,
-            corner_radius=14,
+            corner_radius=0,
             fg_color="#0D111A",
+            border_width=1,
+            border_color="#1A2234",
         )
         self.app = app
         self.on_lang_change = on_lang_change

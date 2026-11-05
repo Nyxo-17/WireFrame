@@ -1,4 +1,4 @@
-"""Module app_window : Fenêtre principale aux coins arrondis, barre sombre et support FR/EN."""
+"""Module app_window : Fenêtre principale avec arrondi matériel natif Windows DWM et support FR/EN."""
 
 import ctypes
 import customtkinter as ctk
@@ -12,11 +12,9 @@ from ui.views.duviri_view import DuviriView
 from ui.views.welcome_view import WelcomeView
 from ui.views.worlds_view import WorldsView
 
-TRANSPARENT_KEY = "#000001"
-
 
 class WireframeApp(ctk.CTk):
-    """Fenêtre principale de WireFrame V1 avec coins arrondis et traduction dynamique FR/EN."""
+    """Fenêtre principale de WireFrame V1 avec coins arrondis lisses (DWM) et traduction FR/EN."""
 
     def __init__(self) -> None:
         super().__init__()
@@ -25,30 +23,19 @@ class WireframeApp(ctk.CTk):
         self.title("WireFrame")
         self.geometry("1280x740+100+60")
         self.minsize(1100, 640)
+        self.configure(fg_color="#090C14")
 
-        # Configuration sans bordure Windows + coins transparents pour le rendu arrondi
+        # Supprime la barre blanche Windows et active l'arrondi matériel lisse de Windows (DWM)
         self.overrideredirect(True)
-        self.configure(fg_color=TRANSPARENT_KEY)
-        self.wm_attributes("-transparentcolor", TRANSPARENT_KEY)
-        self._enable_win11_rounded_corners()
+        self.update_idletasks()
+        self._apply_native_dwm_rounding()
 
-        self.grid_columnconfigure(0, weight=1)
-        self.grid_rowconfigure(0, weight=1)
-
-        # Coquille principale aux coins arrondis (corner_radius=16) et fine bordure bleutée
-        self.window_shell = ctk.CTkFrame(
-            self,
-            corner_radius=16,
-            fg_color="#090C14",
-            border_width=1,
-            border_color="#232F46",
-        )
-        self.window_shell.grid(row=0, column=0, sticky="nsew", padx=2, pady=2)
-        self.window_shell.grid_columnconfigure(0, weight=0)
-        self.window_shell.grid_columnconfigure(1, weight=1)
-        self.window_shell.grid_columnconfigure(2, weight=0)
-        self.window_shell.grid_rowconfigure(0, weight=0)
-        self.window_shell.grid_rowconfigure(1, weight=1)
+        # Grille : Ligne 0 = CustomTitleBar, Ligne 1 = Les 3 colonnes principales
+        self.grid_columnconfigure(0, weight=0)
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_columnconfigure(2, weight=0)
+        self.grid_rowconfigure(0, weight=0)
+        self.grid_rowconfigure(1, weight=1)
 
         self.world_state: dict = {}
         self.duviri_state: dict = {}
@@ -56,33 +43,33 @@ class WireframeApp(ctk.CTk):
 
         # 0. Barre supérieure personnalisée (avec sélecteur FR/EN actif)
         self.titlebar = CustomTitleBar(
-            self.window_shell, app=self, on_lang_change=self.apply_language
+            self, app=self, on_lang_change=self.apply_language
         )
-        self.titlebar.grid(row=0, column=0, columnspan=3, sticky="ew", padx=2, pady=(2, 0))
+        self.titlebar.grid(row=0, column=0, columnspan=3, sticky="ew")
 
         # 1. Colonne gauche : Sidebar
         self.sidebar = Sidebar(
-            self.window_shell,
+            self,
             on_navigate=self.show_view,
             on_refresh=self.refresh_all_data,
         )
-        self.sidebar.grid(row=1, column=0, sticky="nsew", padx=(4, 0), pady=(0, 6))
+        self.sidebar.grid(row=1, column=0, sticky="nsew")
 
         # 2. Colonne centrale : Conteneur des Vues
         self.center_container = ctk.CTkFrame(
-            self.window_shell,
+            self,
             corner_radius=10,
             fg_color="#0E131F",
             border_width=1,
             border_color="#1A2234",
         )
-        self.center_container.grid(row=1, column=1, sticky="nsew", padx=(10, 8), pady=10)
+        self.center_container.grid(row=1, column=1, sticky="nsew", padx=(12, 8), pady=12)
         self.center_container.grid_columnconfigure(0, weight=1)
         self.center_container.grid_rowconfigure(0, weight=1)
 
         # 3. Colonne droite : Panneau Live 'Cycles & Événements'
-        self.live_panel = LivePanel(self.window_shell)
-        self.live_panel.grid(row=1, column=2, sticky="nsew", padx=(4, 12), pady=10)
+        self.live_panel = LivePanel(self)
+        self.live_panel.grid(row=1, column=2, sticky="nsew", padx=(4, 12), pady=12)
 
         # Instanciation des 4 vues centrales
         self.views: dict[str, ctk.CTkFrame] = {
@@ -96,13 +83,20 @@ class WireframeApp(ctk.CTk):
         self.sidebar.select_tab("welcome")
         self._tick_timers()
 
-    def _enable_win11_rounded_corners(self) -> None:
-        """Active le lissage natif des coins arrondis Windows 11 via DWM API si disponible."""
+    def _apply_native_dwm_rounding(self) -> None:
+        """Utilise le compositeur matériel Windows (DWM) pour des coins arrondis 100% lisses."""
         try:
-            hwnd = ctypes.windll.user32.GetParent(self.winfo_id())
-            ctypes.windll.dwmapi.DwmSetWindowAttribute(
-                hwnd, 33, ctypes.byref(ctypes.c_int(2)), 4
-            )
+            dwmapi = ctypes.windll.dwmapi
+            user32 = ctypes.windll.user32
+            # DWMWA_WINDOW_CORNER_PREFERENCE = 33 (2 = DWMWCP_ROUND)
+            # DWMWA_BORDER_COLOR = 34 (0x00462F23 = #232F46 en format BGR Windows)
+            corner_pref = ctypes.c_int(2)
+            border_color = ctypes.c_int(0x00462F23)
+
+            for hwnd in (self.winfo_id(), user32.GetParent(self.winfo_id())):
+                if hwnd:
+                    dwmapi.DwmSetWindowAttribute(hwnd, 33, ctypes.byref(corner_pref), 4)
+                    dwmapi.DwmSetWindowAttribute(hwnd, 34, ctypes.byref(border_color), 4)
         except Exception:
             pass
 
