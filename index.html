@@ -22,11 +22,11 @@
     </div>
   </div>
 
-  <!-- 2. BARRE SUPÉRIEURE PERSONNALISÉE -->
-  <header class="topbar">
+  <!-- 2. BARRE SUPÉRIEURE FUSIONNÉE (STYLE ALECAFRAME) -->
+  <header class="topbar" onmousedown="onTopbarMouseDown(event)" ondblclick="onTopbarDblClick(event)">
     <div class="topbar-left">
+      <img src="data/app_logo.png" alt="WireFrame" class="topbar-logo" />
       <span class="topbar-title">WireFrame</span>
-      <span class="topbar-tag">HTML5 • 144 FPS</span>
     </div>
     <div class="topbar-right">
       <!-- Sélecteur FR | EN -->
@@ -41,11 +41,17 @@
         <span id="zoom-label">100%</span>
         <button class="zoom-btn" onclick="changeZoom(10)">🔍+</button>
       </div>
-      <!-- Bouton Discord officiel -->
-      <a href="https://discord.gg/DhGwHPf82n" target="_blank" class="discord-btn">
+      <!-- Bouton Discord officiel intégré -->
+      <a href="https://discord.gg/DhGwHPf82n" target="_blank" class="discord-btn" title="Rejoindre le Discord WireFrame">
         <img src="data/icons/discord_logo.png" alt="Discord" />
         <span>Discord</span>
       </a>
+      <!-- Boutons de fenêtre intégrés (Minimiser / Agrandir / Fermer) -->
+      <div class="window-controls">
+        <button class="win-btn" onclick="windowControl('minimize')" title="Réduire">&#x2015;</button>
+        <button class="win-btn" onclick="windowControl('maximize')" title="Agrandir / Restaurer">&#x25A1;</button>
+        <button class="win-btn win-close" onclick="windowControl('close')" title="Fermer">&#x2715;</button>
+      </div>
     </div>
   </header>
 

@@ -1028,6 +1028,27 @@ async function checkForUpdatesManual() {
 }
 
 /* ==========================================================================
+   6B. CONTRÔLES DE FENÊTRE NATIFS (BARRE SUPÉRIEURE FUSIONNÉE)
+   ========================================================================== */
+function windowControl(action) {
+  fetch(`http://127.0.0.1:49172/${action}?t=${Date.now()}`, { mode: "no-cors" }).catch(() => {});
+  if (action === "close") {
+    setTimeout(() => window.close(), 120);
+  }
+}
+
+function onTopbarMouseDown(e) {
+  if (e.button !== 0) return;
+  if (e.target.closest("button, a, .control-pill, .window-controls")) return;
+  fetch(`http://127.0.0.1:49172/drag?t=${Date.now()}`, { mode: "no-cors" }).catch(() => {});
+}
+
+function onTopbarDblClick(e) {
+  if (e.target.closest("button, a, .control-pill, .window-controls")) return;
+  windowControl("maximize");
+}
+
+/* ==========================================================================
    7. INITIALISATION AU DÉMARRAGE & ANIMATION DU SPLASH SCREEN
    ========================================================================== */
 window.addEventListener("DOMContentLoaded", async () => {
