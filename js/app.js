@@ -737,35 +737,30 @@ function formatGridBadge(rawCat) {
     .replace("Warframe Prime • ", "⭐ Prime • ");
 }
 
-function renderCodexView(container, categoryKey, title) {
+function getFilteredCodexItems(categoryKey) {
   const st = codexState[categoryKey];
   const allItems = WF_DATA.codex[categoryKey] || [];
   const q = (st.query || "").trim().toLowerCase();
+  if (!q) return allItems;
+  return allItems.filter(
+    (it) =>
+      (it.name || "").toLowerCase().includes(q) ||
+      (it.category || "").toLowerCase().includes(q) ||
+      (it.location || "").toLowerCase().includes(q) ||
+      (it.drop || "").toLowerCase().includes(q)
+  );
+}
 
-  const filtered = q
-    ? allItems.filter(
-        (it) =>
-          (it.name || "").toLowerCase().includes(q) ||
-          (it.category || "").toLowerCase().includes(q) ||
-          (it.location || "").toLowerCase().includes(q) ||
-          (it.drop || "").toLowerCase().includes(q)
-      )
-    : allItems;
-
-  const perPage = 36;
-  const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
-  if (st.page >= totalPages) st.page = totalPages - 1;
-  if (st.page < 0) st.page = 0;
-
-  const start = st.page * perPage;
-  const pageItems = filtered.slice(start, start + perPage);
+function renderCodexView(container, categoryKey, title) {
+  const st = codexState[categoryKey];
+  const filtered = getFilteredCodexItems(categoryKey);
   window._currentCodexFiltered = filtered;
 
   container.innerHTML = `
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
       <div class="view-header-title" style="margin-bottom:0;">${title}</div>
-      <div style="font-size:12px; font-weight:700; color:#58A6FF;">
-        ${filtered.length} résultats (Page ${st.page + 1}/${totalPages})
+      <div id="codex-count-label" style="font-size:12px; font-weight:700; color:#58A6FF;">
+        ${filtered.length} ${currentLang === "fr" ? "éléments affichés" : "items displayed"}
       </div>
     </div>
 
@@ -781,19 +776,7 @@ function renderCodexView(container, categoryKey, title) {
     </div>
 
     <div id="codex-results-list" class="codex-grid">
-      ${renderCodexGridHTML(pageItems, start)}
-    </div>
-
-    <div class="pagination-bar">
-      <button class="btn-open" ${st.page <= 0 ? "disabled style='opacity:0.4;cursor:default;'" : ""} onclick="changeCodexPage('${categoryKey}', -1)">
-        ◀ Précédent
-      </button>
-      <span style="font-size:12.5px; font-weight:700; color:#E6EDF3;">
-        Page ${st.page + 1} / ${totalPages}
-      </span>
-      <button class="btn-open" ${st.page >= totalPages - 1 ? "disabled style='opacity:0.4;cursor:default;'" : ""} onclick="changeCodexPage('${categoryKey}', 1)">
-        Suivant ▶
-      </button>
+      ${renderCodexGridHTML(filtered, 0)}
     </div>
   `;
 }
@@ -889,23 +872,17 @@ window.addEventListener("keydown", (e) => {
 
 function onCodexSearch(categoryKey, val) {
   codexState[categoryKey].query = val;
-  codexState[categoryKey].page = 0;
-  const container = document.getElementById("center-zoom-content");
-  const input = document.getElementById("codex-search-input");
-  const pos = input ? input.selectionStart : val.length;
-  renderCurrentTab();
-  const newInput = document.getElementById("codex-search-input");
-  if (newInput) {
-    newInput.focus();
-    newInput.setSelectionRange(pos, pos);
-  }
-}
+  const filtered = getFilteredCodexItems(categoryKey);
+  window._currentCodexFiltered = filtered;
 
-function changeCodexPage(categoryKey, delta) {
-  codexState[categoryKey].page += delta;
-  renderCurrentTab();
-  const center = document.querySelector(".center-container");
-  if (center) center.scrollTop = 0;
+  const listEl = document.getElementById("codex-results-list");
+  if (listEl) {
+    listEl.innerHTML = renderCodexGridHTML(filtered, 0);
+  }
+  const countEl = document.getElementById("codex-count-label");
+  if (countEl) {
+    countEl.textContent = `${filtered.length} ${currentLang === "fr" ? "éléments affichés" : "items displayed"}`;
+  }
 }
 
 /* --- VUE 6 : TEMPS DES PLANÈTES --- */
