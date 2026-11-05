@@ -46,8 +46,7 @@ class WireframeApp(ctk.CTk):
 
         self.overrideredirect(True)
 
-        # Colonne 0 réservée à 64px (taille de la Sidebar repliée) : le centre ne bouge jamais !
-        self.grid_columnconfigure(0, minsize=64, weight=0)
+        self.grid_columnconfigure(0, weight=0)
         self.grid_columnconfigure(1, weight=1)
         self.grid_columnconfigure(2, weight=0)
         self.grid_rowconfigure(0, weight=0)
@@ -61,7 +60,6 @@ class WireframeApp(ctk.CTk):
         self._is_refreshing: bool = False
 
         self.notif_manager = NotificationManager(on_alert_callback=self.show_in_app_toast)
-        self._sidebar_visible: bool = True
 
         # 0. Barre supérieure personnalisée
         self.titlebar = CustomTitleBar(
@@ -69,11 +67,18 @@ class WireframeApp(ctk.CTk):
             app=self,
             on_lang_change=self.apply_language,
             on_zoom_change=self.apply_center_zoom,
-            on_toggle_sidebar=self.toggle_sidebar,
         )
         self.titlebar.grid(row=0, column=0, columnspan=3, sticky="ew")
 
-        # 1. Colonne centrale : Conteneur des Vues (fixe, ne se redimensionne pas à l'ouverture du menu)
+        # 1. Colonne gauche : Sidebar fixe
+        self.sidebar = Sidebar(
+            self,
+            on_navigate=self.show_view,
+            on_refresh=lambda: self.refresh_all_data(show_overlay=True),
+        )
+        self.sidebar.grid(row=1, column=0, sticky="nsew")
+
+        # 2. Colonne centrale : Conteneur des Vues + InAppLoader
         self.center_container = ctk.CTkFrame(
             self,
             corner_radius=10,
@@ -81,24 +86,15 @@ class WireframeApp(ctk.CTk):
             border_width=1,
             border_color="#1A2234",
         )
-        self.center_container.grid(row=1, column=1, sticky="nsew", padx=(8, 8), pady=12)
+        self.center_container.grid(row=1, column=1, sticky="nsew", padx=(12, 8), pady=12)
         self.center_container.grid_columnconfigure(0, weight=1)
         self.center_container.grid_rowconfigure(0, weight=1)
 
         self.in_app_loader = InAppLoader(self.center_container)
 
-        # 2. Colonne droite : Panneau Live
+        # 3. Colonne droite : Panneau Live
         self.live_panel = LivePanel(self)
         self.live_panel.grid(row=1, column=2, sticky="nsew", padx=(4, 12), pady=12)
-
-        # 3. Colonne gauche en superposition (Overlay Drawer) : flotte par-dessus le centre quand ouverte !
-        self.sidebar = Sidebar(
-            self,
-            on_navigate=self.show_view,
-            on_refresh=lambda: self.refresh_all_data(show_overlay=True),
-        )
-        self.sidebar.place(x=0, y=44, relheight=1.0)
-        self.sidebar.lift()
 
         self.views: dict[str, ctk.CTkFrame] = {
             "welcome": WelcomeView(self.center_container, on_navigate=self.sidebar.select_tab),
@@ -117,7 +113,6 @@ class WireframeApp(ctk.CTk):
             self.refresh_all_data(show_overlay=False)
             self.sidebar.select_tab("welcome")
             self._tick_timers()
-            self._check_sidebar_hover()
         else:
             # Masque la fenêtre principale pendant le Splash Screen de démarrage
             self.withdraw()
@@ -146,26 +141,6 @@ class WireframeApp(ctk.CTk):
         self.deiconify()
         self.after(40, self._apply_native_dwm_rounding)
         self._tick_timers()
-        self._check_sidebar_hover()
-
-    def toggle_sidebar(self) -> None:
-        """Épingle ou désépingle manuellement la colonne de gauche via le bouton ☰."""
-        self._sidebar_pinned = not getattr(self, "_sidebar_pinned", False)
-        self.sidebar.set_collapsed(not self._sidebar_pinned)
-
-    def _check_sidebar_hover(self) -> None:
-        """Déploie la colonne de gauche quand la souris la survole, et la range dès qu'elle la quitte."""
-        try:
-            if self.state() == "normal" and not getattr(self, "_sidebar_pinned", False):
-                rel_x = self.winfo_pointerx() - self.winfo_rootx()
-                rel_y = self.winfo_pointery() - self.winfo_rooty()
-                win_h = self.winfo_height()
-                sb_w = max(68, self.sidebar.winfo_width() + 6)
-                inside_sidebar = (0 <= rel_x <= sb_w) and (0 <= rel_y <= win_h)
-                self.sidebar.set_collapsed(not inside_sidebar)
-        except Exception:
-            pass
-        self.after(30, self._check_sidebar_hover)
 
     def _apply_native_dwm_rounding(self) -> None:
         try:
@@ -173,7 +148,7 @@ class WireframeApp(ctk.CTk):
             user32 = ctypes.windll.user32
             for hwnd in (self.winfo_id(), user32.GetParent(self.winfo_id())):
                 if hwnd:
-                    dwmapi.DwmSetWindowAttribute(hwnd, 33, ctypes.byref(corner_pref := ctypes.c_int(2)), 4)
+                    dwmapi.DwmSetWindowAttribute(hwnd, 33, ctypes.byref(ctypes.c_int(2)), 4)
                     dwmapi.DwmSetWindowAttribute(hwnd, 34, ctypes.byref(ctypes.c_int(0x00462F23)), 4)
         except Exception:
             pass
@@ -238,8 +213,8 @@ class WireframeApp(ctk.CTk):
     def _apply_fetched_data(self, w_state: dict, d_state: dict) -> None:
         self.world_state = w_state
         self.duviri_state = d_state
-        self._is_refreshing = False
         self.in_app_loader.hide_loading()
+        self._is_refreshing = False
 
         self.notif_manager.check_transitions(self.world_state, self.duviri_state)
         self.sidebar.update_status(self.world_state.get("source", "Live"))
