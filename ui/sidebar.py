@@ -1,16 +1,14 @@
-"""Module sidebar : Barre latérale gauche fixe avec effet Neon Glow (Gaussian Blur) sur l'onglet actif."""
+"""Module sidebar : Barre latérale gauche fixe avec icônes/textes alignés et double anneau Neon Glow."""
 
 from pathlib import Path
 from typing import Callable
 import customtkinter as ctk
-from PIL import Image, ImageChops, ImageDraw, ImageFilter
+from PIL import Image
 from core.i18n import tr
 
 LOGO_PATH = Path(__file__).resolve().parent.parent / "data" / "app_logo.png"
 
 BG_SIDEBAR = "#0D111A"
-BG_ACTIVE_INNER = "#172544"
-BG_HOVER_INNER = "#141D30"
 
 NAV_ITEMS_CONFIG = [
     ("welcome", "🏠", "nav_welcome", 2, "home"),
@@ -31,59 +29,8 @@ def _clean_label(raw_text: str) -> str:
     return parts[1].strip() if len(parts) > 1 else raw_text.strip()
 
 
-def _build_nav_backgrounds() -> tuple[ctk.CTkImage, ctk.CTkImage, ctk.CTkImage]:
-    """Génère en 2x Retina les 3 états du bouton : inactif, survolé et sélectionné avec Halo Glow."""
-    w, h = 408, 84  # 2x supersampling pour un affichage 204x42 ultra net
-    base_rgb = (13, 17, 26)  # #0D111A
-
-    # 1. État inactif
-    img_idle = Image.new("RGBA", (w, h), (*base_rgb, 255))
-
-    # 2. État survol (Hover)
-    img_hover = Image.new("RGBA", (w, h), (*base_rgb, 255))
-    draw_h = ImageDraw.Draw(img_hover)
-    draw_h.rounded_rectangle((14, 12, w - 15, h - 13), radius=14, fill=(20, 29, 48, 255), outline=(38, 56, 92, 255), width=2)
-
-    # 3. État actif avec Halo Neon Glow externe (GaussianBlur) + Intérieur uniforme sans couture
-    img_active = Image.new("RGBA", (w, h), (*base_rgb, 255))
-
-    # Couche A : Double halo externe diffus bleu/cyan électrique autour du bouton
-    halo_outer = Image.new("RGBA", (w, h), (0, 0, 0, 0))
-    ImageDraw.Draw(halo_outer).rounded_rectangle(
-        (10, 8, w - 11, h - 9), radius=18, fill=(37, 99, 235, 190), outline=(96, 165, 250, 255), width=8
-    )
-    halo_outer = halo_outer.filter(ImageFilter.GaussianBlur(radius=9))
-    img_active = Image.alpha_composite(img_active, halo_outer)
-
-    halo_inner = Image.new("RGBA", (w, h), (0, 0, 0, 0))
-    ImageDraw.Draw(halo_inner).rounded_rectangle(
-        (13, 11, w - 14, h - 12), radius=15, outline=(147, 197, 253, 255), width=4
-    )
-    halo_inner = halo_inner.filter(ImageFilter.GaussianBlur(radius=4))
-    img_active = Image.alpha_composite(img_active, halo_inner)
-
-    # Couche B : Corps interne uniforme (#172544) + double bordure néon nette
-    draw_act = ImageDraw.Draw(img_active)
-    draw_act.rounded_rectangle(
-        (14, 12, w - 15, h - 13), radius=14, fill=(23, 37, 68, 255), outline=(121, 192, 255, 255), width=2
-    )
-    draw_act.rounded_rectangle(
-        (16, 14, w - 17, h - 15), radius=12, outline=(45, 85, 155, 255), width=1
-    )
-
-    # Couche C : Barre verticale lumineuse à gauche (x=22..28 en 2x, soit x=11..14 en 1x)
-    draw_act.rounded_rectangle((22, 24, 28, h - 25), radius=3, fill=(147, 197, 253, 255))
-
-    size = (204, 42)
-    return (
-        ctk.CTkImage(light_image=img_idle, dark_image=img_idle, size=size),
-        ctk.CTkImage(light_image=img_hover, dark_image=img_hover, size=size),
-        ctk.CTkImage(light_image=img_active, dark_image=img_active, size=size),
-    )
-
-
 class Sidebar(ctk.CTkFrame):
-    """Menu latéral fixe avec alignement strict et effet Glow lumineux sur la section sélectionnée."""
+    """Menu latéral fixe avec alignement strict des textes et effet Neon Glow sur l'onglet actif."""
 
     def __init__(
         self,
@@ -96,9 +43,9 @@ class Sidebar(ctk.CTkFrame):
         self.on_refresh = on_refresh
         self.active_key: str = "welcome"
 
-        self._bg_idle, self._bg_hover, self._bg_active = _build_nav_backgrounds()
-
-        self.nav_rows: dict[str, ctk.CTkLabel] = {}
+        self.nav_outer_glows: dict[str, ctk.CTkFrame] = {}
+        self.nav_rows: dict[str, ctk.CTkFrame] = {}
+        self.nav_pills: dict[str, ctk.CTkFrame] = {}
         self.nav_icons: dict[str, ctk.CTkLabel] = {}
         self.nav_labels: dict[str, tuple[ctk.CTkLabel, str]] = {}
         self.nav_section_map: dict[str, str] = {}
@@ -176,66 +123,104 @@ class Sidebar(ctk.CTkFrame):
         return lbl
 
     def _create_aligned_nav_item(self, key: str, icon: str, tr_key: str, row: int) -> None:
-        """Crée une ligne de menu avec support d'image Glow en arrière-plan et 2 colonnes strictement alignées."""
-        item_box = ctk.CTkLabel(
+        """Crée un bouton avec anneau externe Halo Glow + cadre interne Néon + barre lumineuse + Icône & Texte."""
+        # 1. Anneau externe (Halo diffus autour du bouton actif)
+        glow_outer = ctk.CTkFrame(
             self,
-            text="",
-            image=self._bg_idle,
-            width=204,
-            height=42,
-            fg_color=BG_SIDEBAR,
+            height=40,
+            corner_radius=10,
+            border_width=2,
+            border_color=BG_SIDEBAR,
+            fg_color="transparent",
+        )
+        glow_outer.grid(row=row, column=0, padx=9, pady=1, sticky="ew")
+        glow_outer.grid_propagate(False)
+        glow_outer.grid_columnconfigure(0, weight=1)
+        glow_outer.grid_rowconfigure(0, weight=1)
+
+        # 2. Cadre interne du bouton (Néon lumineux quand sélectionné)
+        item_frame = ctk.CTkFrame(
+            glow_outer,
+            height=34,
+            corner_radius=8,
+            border_width=2,
+            border_color=BG_SIDEBAR,
+            fg_color="transparent",
             cursor="hand2",
         )
-        item_box.grid(row=row, column=0, padx=8, pady=0)
-        item_box.grid_propagate(False)
-        item_box.grid_columnconfigure(0, minsize=40, weight=0)
-        item_box.grid_columnconfigure(1, weight=1)
-        item_box.grid_rowconfigure(0, weight=1)
+        item_frame.grid(row=0, column=0, padx=2, pady=2, sticky="nsew")
+        item_frame.grid_propagate(False)
+        item_frame.grid_columnconfigure(0, minsize=8, weight=0)
+        item_frame.grid_columnconfigure(1, minsize=30, weight=0)
+        item_frame.grid_columnconfigure(2, weight=1)
+        item_frame.grid_rowconfigure(0, weight=1)
 
+        # 3. Barre verticale néon à gauche
+        pill = ctk.CTkFrame(
+            item_frame,
+            width=4,
+            height=18,
+            corner_radius=2,
+            fg_color=BG_SIDEBAR,
+        )
+        pill.grid(row=0, column=0, padx=(5, 1), pady=7)
+
+        # 4. Icône alignée (pady=4 pour ne jamais couper la bordure)
         icon_lbl = ctk.CTkLabel(
-            item_box,
+            item_frame,
             text=icon,
             width=26,
             height=24,
-            fg_color=BG_SIDEBAR,
             font=ctk.CTkFont(size=13),
             text_color="#B1BAC4",
             anchor="center",
         )
-        icon_lbl.grid(row=0, column=0, padx=(16, 2), pady=9)
+        icon_lbl.grid(row=0, column=1, padx=(2, 2), pady=4)
 
+        # 5. Texte aligné (pady=4 pour garder la bordure supérieure/inférieure intacte)
         text_lbl = ctk.CTkLabel(
-            item_box,
+            item_frame,
             text=_clean_label(tr(tr_key)),
             height=24,
-            fg_color=BG_SIDEBAR,
             font=ctk.CTkFont(size=13),
             text_color="#B1BAC4",
             anchor="w",
         )
-        text_lbl.grid(row=0, column=1, padx=(2, 14), pady=9, sticky="ew")
+        text_lbl.grid(row=0, column=2, padx=(4, 8), pady=4, sticky="ew")
 
-        for widget in (item_box, icon_lbl, text_lbl):
+        for widget in (glow_outer, item_frame, pill, icon_lbl, text_lbl):
             widget.bind("<Button-1>", lambda _e, k=key: self.select_tab(k))
             widget.bind("<Enter>", lambda _e, k=key: self._on_hover(k, True))
             widget.bind("<Leave>", lambda _e, k=key: self._on_hover(k, False))
 
-        self.nav_rows[key] = item_box
+        self.nav_outer_glows[key] = glow_outer
+        self.nav_rows[key] = item_frame
+        self.nav_pills[key] = pill
         self.nav_icons[key] = icon_lbl
         self.nav_labels[key] = (text_lbl, tr_key)
 
     def _on_hover(self, key: str, entering: bool) -> None:
         if key == self.active_key:
             return
-        box = self.nav_rows.get(key)
+        outer = self.nav_outer_glows.get(key)
+        frame = self.nav_rows.get(key)
+        pill = self.nav_pills.get(key)
         icon_lbl = self.nav_icons.get(key)
         text_lbl, _ = self.nav_labels[key]
-        if not box or not icon_lbl:
+        if not frame or not outer or not pill or not icon_lbl:
             return
-        inner_bg = BG_HOVER_INNER if entering else BG_SIDEBAR
-        box.configure(image=self._bg_hover if entering else self._bg_idle)
-        icon_lbl.configure(fg_color=inner_bg, text_color="#E6EDF3" if entering else "#B1BAC4")
-        text_lbl.configure(fg_color=inner_bg, text_color="#E6EDF3" if entering else "#B1BAC4")
+        if entering:
+            outer.configure(fg_color="#101829", border_color="#192845")
+            frame.configure(fg_color="#162035", border_color="#2A4374")
+            pill.configure(fg_color="#3B82F6")
+            icon_lbl.configure(text_color="#E6EDF3")
+            text_lbl.configure(text_color="#E6EDF3")
+        else:
+            outer.configure(fg_color="transparent", border_color=BG_SIDEBAR)
+            frame.configure(fg_color="transparent", border_color=BG_SIDEBAR)
+            pill.configure(fg_color=BG_SIDEBAR)
+            icon_lbl.configure(text_color="#B1BAC4")
+            text_lbl.configure(text_color="#B1BAC4")
 
     def _build_footer(self) -> None:
         self.status_label = ctk.CTkLabel(
@@ -266,26 +251,31 @@ class Sidebar(ctk.CTkFrame):
         self.active_key = active_key
         active_sec = self.nav_section_map.get(active_key, "home")
 
-        # Illumine également l'en-tête de la catégorie active
+        # Illumine l'en-tête de la catégorie active
         for sec_id, hdr_lbl in self.section_headers.items():
             hdr_lbl.configure(text_color="#58A6FF" if sec_id == active_sec else "#6E7681")
 
-        for key, box in self.nav_rows.items():
+        for key, frame in self.nav_rows.items():
+            outer = self.nav_outer_glows[key]
+            pill = self.nav_pills[key]
             icon_lbl = self.nav_icons[key]
             text_lbl, _ = self.nav_labels[key]
             if key == active_key:
-                box.configure(image=self._bg_active)
-                icon_lbl.configure(fg_color=BG_ACTIVE_INNER, text_color="#79C0FF")
+                # Double anneau lumineux (Halo externe bleu + Coeur néon cyan)
+                outer.configure(fg_color="#132347", border_color="#2563EB")
+                frame.configure(fg_color="#1B3160", border_color="#79C0FF")
+                pill.configure(fg_color="#BAE6FD")
+                icon_lbl.configure(text_color="#79C0FF")
                 text_lbl.configure(
-                    fg_color=BG_ACTIVE_INNER,
                     text_color="#FFFFFF",
                     font=ctk.CTkFont(size=13, weight="bold"),
                 )
             else:
-                box.configure(image=self._bg_idle)
-                icon_lbl.configure(fg_color=BG_SIDEBAR, text_color="#B1BAC4")
+                outer.configure(fg_color="transparent", border_color=BG_SIDEBAR)
+                frame.configure(fg_color="transparent", border_color=BG_SIDEBAR)
+                pill.configure(fg_color=BG_SIDEBAR)
+                icon_lbl.configure(text_color="#B1BAC4")
                 text_lbl.configure(
-                    fg_color=BG_SIDEBAR,
                     text_color="#B1BAC4",
                     font=ctk.CTkFont(size=13, weight="normal"),
                 )
