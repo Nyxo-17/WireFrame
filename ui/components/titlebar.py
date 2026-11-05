@@ -126,7 +126,7 @@ class CustomTitleBar(ctk.CTkFrame):
             command=lambda: self._change_zoom(10),
         ).grid(row=0, column=2, padx=(2, 4), pady=2)
 
-        # 3. Bouton [ 💬 Discord ]
+        # 3. Bouton [ 💬 Discord ] -> Serveur Discord officiel de Nyxo_17
         ctk.CTkButton(
             right,
             text="💬  Discord",
@@ -139,7 +139,7 @@ class CustomTitleBar(ctk.CTkFrame):
             hover_color="#1F2D48",
             text_color="#D0D7DE",
             font=ctk.CTkFont(size=12, weight="bold"),
-            command=lambda: webbrowser.open("https://github.com/Nyxo-17"),
+            command=lambda: webbrowser.open("https://discord.gg/DhGwHPf82n"),
         ).grid(row=0, column=2, padx=(5, 10), pady=2)
 
         # 4. Boutons fenêtre Windows : — (Réduire), ▢ (Agrandir), ✕ (Fermer)
