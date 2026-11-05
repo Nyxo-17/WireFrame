@@ -1,0 +1,18 @@
+# Environnement virtuel Python
+.venv/
+venv/
+ENV/
+
+# Fichiers compilés et cache Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Cache local de l'application (généré automatiquement)
+data/cache.json
+
+# Fichiers système et IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
