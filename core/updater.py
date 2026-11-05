@@ -128,3 +128,4 @@ def restart_application() -> None:
     python_exe = sys.executable
     main_script = str(ROOT_DIR / "main.py")
     os.execl(python_exe, python_exe, main_script)
+

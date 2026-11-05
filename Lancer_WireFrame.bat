@@ -19,3 +19,4 @@ if not exist ".venv\Scripts\python.exe" (
 echo Lancement de WireFrame...
 start "" ".venv\Scripts\pythonw.exe" "main.py"
 exit
+
