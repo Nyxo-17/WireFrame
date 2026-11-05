@@ -717,14 +717,24 @@ function sendTestNotification() {
   triggerAlert("WireFrame — Test d'Alerte", msg);
 }
 
-/* --- VUES 3, 4, 5 : CODEX (RESSOURCES EN GRILLE + MODALE, MODS, WARFRAMES) --- */
+/* --- VUES 3, 4, 5 : CODEX EN GRILLE (RESSOURCES, MODS, WARFRAMES) + MODALE --- */
 function cleanDropText(rawDrop) {
   if (!rawDrop) return "";
-  // Corrige les pourcentages qui ont été multipliés par 100 dans les données brutes (ex: 3333.00% -> 33.33%)
-  return rawDrop.replace(/(\d{3,5})\.(\d{2})%/g, (match, intPart) => {
-    const num = parseFloat(match) / 100;
-    return num.toFixed(num % 1 === 0 ? 0 : 2) + "%";
-  });
+  return rawDrop
+    // Supprime les balises internes Warframe (ex: <DT_PUNCTURE_COLOR>)
+    .replace(/<[^>]+>/g, "")
+    // Corrige les pourcentages multipliés par 100 dans les données brutes (ex: 3333.00% -> 33.33%)
+    .replace(/(\d{3,5})\.(\d{2})%/g, (match) => {
+      const num = parseFloat(match) / 100;
+      return num.toFixed(num % 1 === 0 ? 0 : 2) + "%";
+    });
+}
+
+function formatGridBadge(rawCat) {
+  if (!rawCat) return "Codex";
+  return rawCat
+    .replace("Warframe Standard • ", "")
+    .replace("Warframe Prime • ", "⭐ Prime • ");
 }
 
 function renderCodexView(container, categoryKey, title) {
@@ -742,9 +752,7 @@ function renderCodexView(container, categoryKey, title) {
       )
     : allItems;
 
-  const isGrid = categoryKey === "resources";
-  const perPage = isGrid ? 36 : ITEMS_PER_PAGE;
-
+  const perPage = 36;
   const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
   if (st.page >= totalPages) st.page = totalPages - 1;
   if (st.page < 0) st.page = 0;
@@ -772,8 +780,8 @@ function renderCodexView(container, categoryKey, title) {
       />
     </div>
 
-    <div id="codex-results-list" class="${isGrid ? "codex-grid" : "codex-list"}">
-      ${isGrid ? renderResourcesGridHTML(pageItems, start) : renderCodexItemsHTML(pageItems, start)}
+    <div id="codex-results-list" class="codex-grid">
+      ${renderCodexGridHTML(pageItems, start)}
     </div>
 
     <div class="pagination-bar">
@@ -790,7 +798,7 @@ function renderCodexView(container, categoryKey, title) {
   `;
 }
 
-function renderResourcesGridHTML(items, startOffset = 0) {
+function renderCodexGridHTML(items, startOffset = 0) {
   if (!items.length) {
     return `<div style="grid-column: 1 / -1; padding:24px; text-align:center; color:#8B949E;">Aucun résultat trouvé.</div>`;
   }
@@ -800,38 +808,12 @@ function renderResourcesGridHTML(items, startOffset = 0) {
         ? `https://cdn.warframestat.us/img/${item.image}`
         : "data/app_logo.png";
       const globalIdx = startOffset + idx;
+      const badgeTxt = formatGridBadge(item.category);
       return `
-        <div class="codex-grid-card" onclick="openCodexModal(${globalIdx})" title="Cliquer pour voir où farmer ${item.name.replace(/"/g, "&quot;")}">
-          <span class="codex-grid-badge">${item.category || "Resource"}</span>
+        <div class="codex-grid-card" onclick="openCodexModal(${globalIdx})" title="Cliquer pour voir les détails de ${item.name.replace(/"/g, "&quot;")}">
+          <span class="codex-grid-badge">${badgeTxt}</span>
           <img src="${imgUrl}" alt="${item.name}" class="codex-grid-img" loading="lazy" onerror="this.onerror=null;this.src='data/app_logo.png';" />
           <div class="codex-grid-name">${item.name}</div>
-        </div>
-      `;
-    })
-    .join("");
-}
-
-function renderCodexItemsHTML(items, startOffset = 0) {
-  if (!items.length) {
-    return `<div style="padding:24px; text-align:center; color:#8B949E;">Aucun résultat trouvé.</div>`;
-  }
-  return items
-    .map((item, idx) => {
-      const imgUrl = item.image
-        ? `https://cdn.warframestat.us/img/${item.image}`
-        : "data/app_logo.png";
-      const globalIdx = startOffset + idx;
-      return `
-        <div class="codex-item" style="cursor:pointer;" onclick="openCodexModal(${globalIdx})">
-          <img src="${imgUrl}" alt="${item.name}" class="codex-thumb" loading="lazy" onerror="this.onerror=null;this.src='data/app_logo.png';" />
-          <div>
-            <div class="codex-head">
-              <span class="codex-name">${item.name}</span>
-              <span class="codex-cat">[${item.category || ""}]</span>
-            </div>
-            <div class="codex-loc">${tr("lbl_location")} ${item.location || "Système Origine"}</div>
-            <div class="codex-drop">${tr("lbl_drop_method")} ${cleanDropText(item.drop || "")}</div>
-          </div>
         </div>
       `;
     })
