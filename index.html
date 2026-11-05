@@ -120,6 +120,14 @@
 
       <!-- Contenu zoomable -->
       <div id="center-zoom-content"></div>
+
+      <!-- Fenêtre Modale de Détails (Ressource / Mod / Warframe) -->
+      <div id="codex-modal" class="codex-modal-overlay hidden" onclick="closeCodexModal(event)">
+        <div class="codex-modal-card" onclick="event.stopPropagation()">
+          <button class="codex-modal-close" onclick="closeCodexModal()">✕</button>
+          <div id="codex-modal-body"></div>
+        </div>
+      </div>
     </main>
 
     <!-- COLONNE DROITE : PANNEAU EN DIRECT -->

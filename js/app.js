@@ -717,7 +717,16 @@ function sendTestNotification() {
   triggerAlert("WireFrame — Test d'Alerte", msg);
 }
 
-/* --- VUES 3, 4, 5 : CODEX (RESSOURCES, MODS, WARFRAMES) --- */
+/* --- VUES 3, 4, 5 : CODEX (RESSOURCES EN GRILLE + MODALE, MODS, WARFRAMES) --- */
+function cleanDropText(rawDrop) {
+  if (!rawDrop) return "";
+  // Corrige les pourcentages qui ont été multipliés par 100 dans les données brutes (ex: 3333.00% -> 33.33%)
+  return rawDrop.replace(/(\d{3,5})\.(\d{2})%/g, (match, intPart) => {
+    const num = parseFloat(match) / 100;
+    return num.toFixed(num % 1 === 0 ? 0 : 2) + "%";
+  });
+}
+
 function renderCodexView(container, categoryKey, title) {
   const st = codexState[categoryKey];
   const allItems = WF_DATA.codex[categoryKey] || [];
@@ -733,12 +742,16 @@ function renderCodexView(container, categoryKey, title) {
       )
     : allItems;
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
+  const isGrid = categoryKey === "resources";
+  const perPage = isGrid ? 36 : ITEMS_PER_PAGE;
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
   if (st.page >= totalPages) st.page = totalPages - 1;
   if (st.page < 0) st.page = 0;
 
-  const start = st.page * ITEMS_PER_PAGE;
-  const pageItems = filtered.slice(start, start + ITEMS_PER_PAGE);
+  const start = st.page * perPage;
+  const pageItems = filtered.slice(start, start + perPage);
+  window._currentCodexFiltered = filtered;
 
   container.innerHTML = `
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
@@ -759,8 +772,8 @@ function renderCodexView(container, categoryKey, title) {
       />
     </div>
 
-    <div id="codex-results-list" class="codex-list">
-      ${renderCodexItemsHTML(pageItems)}
+    <div id="codex-results-list" class="${isGrid ? "codex-grid" : "codex-list"}">
+      ${isGrid ? renderResourcesGridHTML(pageItems, start) : renderCodexItemsHTML(pageItems, start)}
     </div>
 
     <div class="pagination-bar">
@@ -777,17 +790,39 @@ function renderCodexView(container, categoryKey, title) {
   `;
 }
 
-function renderCodexItemsHTML(items) {
+function renderResourcesGridHTML(items, startOffset = 0) {
+  if (!items.length) {
+    return `<div style="grid-column: 1 / -1; padding:24px; text-align:center; color:#8B949E;">Aucun résultat trouvé.</div>`;
+  }
+  return items
+    .map((item, idx) => {
+      const imgUrl = item.image
+        ? `https://cdn.warframestat.us/img/${item.image}`
+        : "data/app_logo.png";
+      const globalIdx = startOffset + idx;
+      return `
+        <div class="codex-grid-card" onclick="openCodexModal(${globalIdx})" title="Cliquer pour voir où farmer ${item.name.replace(/"/g, "&quot;")}">
+          <span class="codex-grid-badge">${item.category || "Resource"}</span>
+          <img src="${imgUrl}" alt="${item.name}" class="codex-grid-img" loading="lazy" onerror="this.onerror=null;this.src='data/app_logo.png';" />
+          <div class="codex-grid-name">${item.name}</div>
+        </div>
+      `;
+    })
+    .join("");
+}
+
+function renderCodexItemsHTML(items, startOffset = 0) {
   if (!items.length) {
     return `<div style="padding:24px; text-align:center; color:#8B949E;">Aucun résultat trouvé.</div>`;
   }
   return items
-    .map((item) => {
+    .map((item, idx) => {
       const imgUrl = item.image
         ? `https://cdn.warframestat.us/img/${item.image}`
         : "data/app_logo.png";
+      const globalIdx = startOffset + idx;
       return `
-        <div class="codex-item">
+        <div class="codex-item" style="cursor:pointer;" onclick="openCodexModal(${globalIdx})">
           <img src="${imgUrl}" alt="${item.name}" class="codex-thumb" loading="lazy" onerror="this.onerror=null;this.src='data/app_logo.png';" />
           <div>
             <div class="codex-head">
@@ -795,13 +830,80 @@ function renderCodexItemsHTML(items) {
               <span class="codex-cat">[${item.category || ""}]</span>
             </div>
             <div class="codex-loc">${tr("lbl_location")} ${item.location || "Système Origine"}</div>
-            <div class="codex-drop">${tr("lbl_drop_method")} ${item.drop || ""}</div>
+            <div class="codex-drop">${tr("lbl_drop_method")} ${cleanDropText(item.drop || "")}</div>
           </div>
         </div>
       `;
     })
     .join("");
 }
+
+function openCodexModal(indexInFiltered) {
+  const list = window._currentCodexFiltered || [];
+  const item = list[indexInFiltered];
+  if (!item) return;
+
+  const modal = document.getElementById("codex-modal");
+  const body = document.getElementById("codex-modal-body");
+  if (!modal || !body) return;
+
+  const imgUrl = item.image
+    ? `https://cdn.warframestat.us/img/${item.image}`
+    : "data/app_logo.png";
+
+  const locParts = (item.location || "Système Origine").split("•").map((s) => s.trim()).filter(Boolean);
+  const dropParts = cleanDropText(item.drop || "").split("|").map((s) => s.trim()).filter(Boolean);
+
+  body.innerHTML = `
+    <div class="modal-top">
+      <img src="${imgUrl}" alt="${item.name}" class="modal-img" onerror="this.onerror=null;this.src='data/app_logo.png';" />
+      <div>
+        <span class="codex-grid-badge" style="font-size:11px; padding:2px 10px;">${item.category || "Resource"}</span>
+        <div style="font-size:21px; font-weight:800; color:#F0F6FC; margin-top:6px;">${item.name}</div>
+      </div>
+    </div>
+
+    <div class="modal-sec-box">
+      <div class="modal-sec-label">${tr("lbl_location")}</div>
+      <div class="modal-sec-text">
+        ${
+          locParts.length > 1
+            ? `<ul style="padding-left:18px; margin:0;">${locParts.map((l) => `<li style="margin-bottom:3px;">${l}</li>`).join("")}</ul>`
+            : locParts[0] || "Système Origine"
+        }
+      </div>
+    </div>
+
+    <div class="modal-sec-box" style="margin-bottom:16px;">
+      <div class="modal-sec-label">${tr("lbl_drop_method")}</div>
+      <div class="modal-sec-text" style="color:#C9D1D9;">
+        ${
+          dropParts.length > 1
+            ? `<ul style="padding-left:18px; margin:0;">${dropParts.map((d) => `<li style="margin-bottom:4px;">${d}</li>`).join("")}</ul>`
+            : dropParts[0] || "Disponible en mission ou auprès des syndicats."
+        }
+      </div>
+    </div>
+
+    <div style="display:flex; justify-content:flex-end;">
+      <button class="btn-open" style="font-size:12.5px; padding:6px 18px;" onclick="closeCodexModal()">
+        ${currentLang === "fr" ? "Fermer" : "Close"}
+      </button>
+    </div>
+  `;
+
+  modal.classList.remove("hidden");
+}
+
+function closeCodexModal(event) {
+  if (event && event.target && event.target.id !== "codex-modal") return;
+  const modal = document.getElementById("codex-modal");
+  if (modal) modal.classList.add("hidden");
+}
+
+window.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeCodexModal();
+});
 
 function onCodexSearch(categoryKey, val) {
   codexState[categoryKey].query = val;
