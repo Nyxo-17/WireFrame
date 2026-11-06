@@ -271,39 +271,61 @@ html {
 }
 
 /* ==========================================================================
-   3. DISPOSITION PRINCIPALE 3 COLONNES
+   3. DISPOSITION PRINCIPALE 3 COLONNES (SIDEBAR AUTO-RÉTRACTABLE AU SURVOL)
    ========================================================================== */
 .app-body {
   flex: 1;
-  display: grid;
-  grid-template-columns: 225px 1fr 330px;
+  display: flex;
   gap: 12px;
   padding: 0 12px 12px 0;
   overflow: hidden;
 }
 
-/* COLONNE GAUCHE : SIDEBAR */
+/* COLONNE GAUCHE : SIDEBAR RÉTRACTÉE PAR DÉFAUT (64px) -> ÉLARGIE AU SURVOL (228px) */
 .sidebar {
+  width: 64px;
+  flex-shrink: 0;
   background: var(--bg-sidebar);
   border-right: 1px solid var(--border-subtle);
   display: flex;
   flex-direction: column;
-  padding: 12px 10px;
+  padding: 12px 9px;
   overflow-y: auto;
+  overflow-x: hidden;
+  transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+  z-index: 20;
+}
+
+.sidebar:hover {
+  width: 228px;
+  box-shadow: 6px 0 24px rgba(0, 0, 0, 0.45);
 }
 
 .creator-box {
   display: flex;
   align-items: center;
   gap: 11px;
-  padding: 4px 6px 12px 6px;
+  padding: 4px 2px 12px 2px;
+  white-space: nowrap;
 }
 
 .creator-logo {
-  width: 42px;
-  height: 42px;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
   object-fit: contain;
   border-radius: 8px;
+}
+
+.creator-box > div {
+  opacity: 0;
+  transition: opacity 0.18s ease;
+  pointer-events: none;
+}
+
+.sidebar:hover .creator-box > div {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .creator-name {
@@ -321,9 +343,19 @@ html {
   font-size: 10px;
   font-weight: 700;
   color: var(--text-dim);
-  padding: 10px 8px 4px 8px;
+  padding: 0 8px;
+  height: 8px;
+  opacity: 0;
+  overflow: hidden;
+  white-space: nowrap;
   letter-spacing: 0.6px;
-  transition: color 0.2s ease, text-shadow 0.2s ease;
+  transition: all 0.2s ease;
+}
+
+.sidebar:hover .nav-section-title {
+  height: 24px;
+  padding: 10px 8px 4px 8px;
+  opacity: 1;
 }
 
 .nav-section-title.glow {
@@ -334,17 +366,30 @@ html {
 .nav-item {
   position: relative;
   display: grid;
-  grid-template-columns: 30px 1fr;
+  grid-template-columns: 28px 1fr;
   align-items: center;
-  height: 36px;
-  padding: 0 10px;
+  height: 38px;
+  padding: 0 8px;
   margin: 2px 0;
   border-radius: 8px;
   border: 1px solid transparent;
   color: #B1BAC4;
   font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
   cursor: pointer;
   transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nav-item > span:not(.nav-icon) {
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.sidebar:hover .nav-item > span:not(.nav-icon) {
+  opacity: 1;
+  transform: translateX(0);
 }
 
 .nav-item:hover {
@@ -365,7 +410,7 @@ html {
 .nav-item.active::before {
   content: "";
   position: absolute;
-  left: 5px;
+  left: 3px;
   top: 8px;
   bottom: 8px;
   width: 3.5px;
@@ -376,7 +421,7 @@ html {
 
 .nav-icon {
   text-align: center;
-  font-size: 14px;
+  font-size: 15px;
   transition: transform 0.18s ease;
 }
 
@@ -394,6 +439,15 @@ html {
   flex-direction: column;
   gap: 6px;
   padding-top: 8px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease;
+}
+
+.sidebar:hover .sidebar-footer {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .api-status {
@@ -442,6 +496,8 @@ html {
    4. COLONNE CENTRALE (VUES DYNAMIQUES & ZOOM)
    ========================================================================== */
 .center-container {
+  flex: 1;
+  min-width: 0;
   position: relative;
   background: var(--bg-center);
   border: 1px solid var(--border-subtle);
@@ -995,6 +1051,8 @@ html {
    5. COLONNE DROITE : PANNEAU EN DIRECT (LIVE PANEL)
    ========================================================================== */
 .live-panel {
+  width: 330px;
+  flex-shrink: 0;
   background: var(--bg-live);
   border: 1px solid #1E2738;
   border-radius: 10px;
