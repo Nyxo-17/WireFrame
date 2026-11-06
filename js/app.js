@@ -6,7 +6,7 @@ const WF_DATA = window.WIREFRAME_DATA || {
   codex: { warframes: [], weapons: [], resources: [], mods: [], relics: [], bounties: [] },
   duviri: { warframes_weeks: [], incarnon_weeks: [] },
   translations: { fr: {}, en: {} },
-  version: { version: "1.0.34" }
+  version: { version: "1.0.35" }
 };
 
 let currentLang = localStorage.getItem("wf_lang") || "fr";
@@ -1374,6 +1374,281 @@ function renderCodexGridHTML(items, startOffset = 0) {
     .join("");
 }
 
+const PLANET_VISUAL_RULES = [
+  { match: /lua|circulus|yuvarium|copernicus|tycho|plato/i, name: "Lua", img: "https://cdn.warframestat.us/img/EmoteLua.png" },
+  { match: /deimos|cambion|necralisk|albrecht|entrati lab|sanctum|cambire|munio|persto|armatus|effervo|magnacidium/i, name: "Deimos", img: "data/planets/deimos.png" },
+  { match: /venus|vénus|orb vallis|vallée orbis|fortuna|vesper|kiliken|tessera/i, name: "Vénus (Orb Vallis)", img: "data/planets/venus.png" },
+  { match: /earth|terre|cetus|eidolon|cervantes|everest|mariana|bendar|iota|korm/i, name: "Terre (Cetus)", img: "data/planets/earth.png" },
+  { match: /zariman|halako|everview|greenway/i, name: "Zariman Ten Zero", img: "data/planets/zariman.png" },
+  { match: /duviri|circuit|kullervo|isleweaver|orowyrm/i, name: "Duviri", img: "https://cdn.warframestat.us/img/EmoteDuviri.png" },
+  { match: /höllvania|1999|wf1999|scaldra|techrot|hex/i, name: "Höllvania (1999)", img: "https://cdn.warframestat.us/img/EmoteLasria.png" },
+  { match: /perita|dark refractory/i, name: "Dark Refractory (Perita)", img: "https://cdn.warframestat.us/img/EmotePerita.png" },
+  { match: /saturn|saturne|helene|hélène|piscinas|tethys|titan/i, name: "Saturne", img: "https://cdn.warframestat.us/img/EmoteSaturn.png" },
+  { match: /uranus|ophelia|assur|titania|brutus/i, name: "Uranus", img: "https://cdn.warframestat.us/img/EmoteUranus.png" },
+  { match: /neptune|salacia|psamathe/i, name: "Neptune", img: "https://cdn.warframestat.us/img/EmoteNeptune.png" },
+  { match: /pluto|pluton|hieracon/i, name: "Pluton", img: "https://cdn.warframestat.us/img/EmotePluto.png" },
+  { match: /eris|candiru|lepis|naeglar|akkad/i, name: "Éris", img: "https://cdn.warframestat.us/img/EmoteEris.png" },
+  { match: /mars|wahiba|war\b/i, name: "Mars", img: "https://cdn.warframestat.us/img/EmoteMars.png" },
+  { match: /jupiter|io\b|cameria|themisto|sinai/i, name: "Jupiter", img: "https://cdn.warframestat.us/img/EmoteJupiter.png" },
+  { match: /ceres|cérès|gabii|seimeni|exta|draco/i, name: "Cérès", img: "https://cdn.warframestat.us/img/EmoteCeres.png" },
+  { match: /sedna|hydron/i, name: "Sedna", img: "https://cdn.warframestat.us/img/EmoteSedna.png" },
+  { match: /phobos|zeugma|stickney/i, name: "Phobos", img: "https://cdn.warframestat.us/img/EmotePhobos.png" },
+  { match: /europa|europe|valefor|naamah/i, name: "Europe", img: "https://cdn.warframestat.us/img/EmoteEuropa.png" },
+  { match: /mercury|mercure|apollodorus|tolstoj/i, name: "Mercure", img: "https://cdn.warframestat.us/img/EmoteMercury.png" },
+  { match: /kuva fortress|forteresse kuva|taveuni|siphon.*kuva|déluge.*kuva|kuva flood/i, name: "Forteresse Kuva", img: "https://cdn.warframestat.us/img/EmoteKuvaFortress.png" },
+  { match: /void|néant|granum|ani\b|mot\b|hepit|ukko|teshub/i, name: "Le Néant (Void)", img: "https://cdn.warframestat.us/img/EmoteVoid.png" },
+  { match: /railjack|proxima|skirmish/i, name: "Railjack Proxima", img: "https://cdn.warframestat.us/img/EmoteDeepSpace.png" }
+];
+
+const MOB_VISUAL_RULES = [
+  // Reliques du Néant & Résurgence Prime
+  { match: /\blith\s+[a-z0-9]+/i, name: "Relique Lith", kind: "⬡ Relique Lith", img: "https://cdn.warframestat.us/img/RelicLithD.png", planetImg: "https://cdn.warframestat.us/img/EmoteVoid.png" },
+  { match: /\bmeso\s+[a-z0-9]+/i, name: "Relique Meso", kind: "⬡ Relique Meso", img: "https://cdn.warframestat.us/img/RelicMesoD.png", planetImg: "https://cdn.warframestat.us/img/EmoteVoid.png" },
+  { match: /\bneo\s+[a-z0-9]+/i, name: "Relique Neo", kind: "⬡ Relique Neo", img: "https://cdn.warframestat.us/img/RelicNeoD.png", planetImg: "https://cdn.warframestat.us/img/EmoteVoid.png" },
+  { match: /\baxi\s+[a-z0-9]+/i, name: "Relique Axi", kind: "⬡ Relique Axi", img: "https://cdn.warframestat.us/img/RelicAxiD.png", planetImg: "https://cdn.warframestat.us/img/EmoteVoid.png" },
+  { match: /\brequiem\b/i, name: "Relique Requiem", kind: "⬡ Relique Requiem", img: "https://cdn.warframestat.us/img/RelicImmortalA.png", planetImg: "https://cdn.warframestat.us/img/EmoteKuvaFortress.png" },
+  { match: /varzia|résurgence prime|soute prime|vaultée|\baya\b/i, name: "Varzia (Résurgence Prime)", kind: "❖ Résurgence Prime", img: "https://cdn.warframestat.us/img/Aya.png", planetImg: "https://cdn.warframestat.us/img/EmoteMars.png" },
+  { match: /reliques du néant/i, name: "Reliques du Néant", kind: "⬡ Reliques Prime", img: "https://cdn.warframestat.us/img/RelicAxiD.png", planetImg: "https://cdn.warframestat.us/img/EmoteVoid.png" },
+
+  // Syndicats, Marchands & Modes Spéciaux
+  { match: /new loka|nouveau loka/i, name: "Nouveau Loka", kind: "❖ Syndicat", img: "https://cdn.warframestat.us/img/NewLokaAvatar.png", planetImg: "data/planets/earth.png" },
+  { match: /perrin sequence|séquence perrin|ergo glast/i, name: "Séquence Perrin (Ergo Glast)", kind: "❖ Syndicat", img: "https://cdn.warframestat.us/img/PerrinSequenceAvatar.png", planetImg: "https://cdn.warframestat.us/img/EmoteNeptune.png" },
+  { match: /steel meridian|méridien d'acier/i, name: "Méridien d'Acier", kind: "❖ Syndicat", img: "https://cdn.warframestat.us/img/SteelMeridianAvatar.png", planetImg: "data/planets/earth.png" },
+  { match: /arbiters of hexis|arbitres de hexis|arbitration/i, name: "Arbitres de Hexis / Arbitrage", kind: "❖ Syndicat & Arbitrage", img: "https://cdn.warframestat.us/img/ArbitersHexisAvatar.png" },
+  { match: /cephalon suda|céphalon suda/i, name: "Céphalon Suda", kind: "❖ Syndicat", img: "https://cdn.warframestat.us/img/CephalonSudaAvatar.png" },
+  { match: /red veil|voile rouge/i, name: "Voile Rouge", kind: "❖ Syndicat", img: "https://cdn.warframestat.us/img/RedVeilAvatar.png" },
+  { match: /simaris|sanctuary onslaught|assaut du sanctuaire/i, name: "Céphalon Simaris", kind: "❖ Sanctuaire Simaris", img: "https://cdn.warframestat.us/img/CephalonSimarisAvatar.png" },
+  { match: /baro ki'teer|marchand du néant/i, name: "Baro Ki'Teer", kind: "◈ Marchand du Néant", img: "https://cdn.warframestat.us/img/BobbleheadBaroKiTeer.png", planetImg: "https://cdn.warframestat.us/img/EmoteVoid.png" },
+  { match: /nora night|ondes nocturnes|nightwave/i, name: "Nora Night (Ondes Nocturnes)", kind: "❖ Ondes Nocturnes", img: "https://cdn.warframestat.us/img/BobbleheadNoraNight.png" },
+  { match: /teshin|conclave|route de l'acier/i, name: "Teshin (Conclave / Acier)", kind: "⚔ Teshin", img: "https://cdn.warframestat.us/img/BobbleheadTeshin.png" },
+  { match: /cavalero|irréductibles|holdfasts/i, name: "Cavalero (Zariman)", kind: "❖ Syndicat Zariman", img: "data/planets/zariman.png" },
+  { match: /kahl|chipper/i, name: "Garnison de Kahl", kind: "❖ Camp du Voyageur", img: "https://cdn.warframestat.us/img/GrineerAtricula.png", planetImg: "data/planets/earth.png" },
+  { match: /nightmare mode|mode cauchemar/i, name: "Mission Mode Cauchemar", kind: "⚔ Mode Cauchemar", img: "https://cdn.warframestat.us/img/SkullBadgeBronze.png" },
+  { match: /salles orokin|clés de dragon|dragon key|corrupted vault|derelict vault/i, name: "Salles Orokin (Clés de Dragon)", kind: "⬡ Coffre Orokin Corrompu", img: "https://cdn.warframestat.us/img/FactionOrokin.png", planetImg: "data/planets/deimos.png" },
+  { match: /liche kuva|kuva lich|larvling/i, name: "Liche Kuva", kind: "⚔ Némésis Kuva", img: "https://cdn.warframestat.us/img/FactionKuva.png", planetImg: "https://cdn.warframestat.us/img/EmoteKuvaFortress.png" },
+  { match: /sœur de parvos|sister of parvos|hound/i, name: "Sœur de Parvos", kind: "⚔ Némésis Corpus", img: "https://cdn.warframestat.us/img/CorpusArticula.png", planetImg: "https://cdn.warframestat.us/img/EmoteNeptune.png" },
+  { match: /technocyte coda|eleanor|lettie|arthur|amir|aoi|quincy/i, name: "L'Hexagone / Technocyte Coda", kind: "⚔ Syndicat & Boss 1999", img: "https://cdn.warframestat.us/img/FactionTechrot.png", planetImg: "https://cdn.warframestat.us/img/EmoteLasria.png" },
+  { match: /dojo de clan|laboratoire|marché en jeu|recherche de clan/i, name: "Dojo de Clan / Marché", kind: "❖ Dojo & Marché", img: "https://cdn.warframestat.us/img/ClanEmblemHolo.png" },
+
+  // Bosses, Mobs & Faune
+  { match: /narmer thumper/i, name: "Narmer Thumper", kind: "⚔ Boss / Mob", img: "https://cdn.warframestat.us/img/PlushyThumperMediumDirty.png", planetImg: "data/planets/earth.png" },
+  { match: /tusk thumper doma/i, name: "Tusk Thumper Doma", kind: "⚔ Boss / Mob", img: "https://cdn.warframestat.us/img/PlushyThumperLarge.png", planetImg: "data/planets/earth.png" },
+  { match: /tusk thumper/i, name: "Tusk Thumper Bull", kind: "⚔ Boss / Mob", img: "https://cdn.warframestat.us/img/PlushyThumperMedium.png", planetImg: "data/planets/earth.png" },
+  { match: /profit-taker|preneur de profit/i, name: "Profit-Taker Orb", kind: "⚔ Boss Orbe", img: "https://cdn.warframestat.us/img/ArachnoidCamperAF.png", planetImg: "data/planets/venus.png" },
+  { match: /exploiter orb|orbe exploiteur/i, name: "Exploiter Orb", kind: "⚔ Boss Orbe", img: "https://cdn.warframestat.us/img/ArachnoidCamperTerraAF.png", planetImg: "data/planets/venus.png" },
+  { match: /raknoid/i, name: "Raknoid (Scyto / Kyta / Mite)", kind: "⚔ Mob Corpus", img: "https://cdn.warframestat.us/img/CrpArachnoidPowerCoreHunger.png", planetImg: "data/planets/venus.png" },
+  { match: /hydrolyst/i, name: "Eidolon Hydrolyst", kind: "⚔ Boss Eidolon", img: "https://cdn.warframestat.us/img/TeralystRainAF.png", planetImg: "data/planets/earth.png" },
+  { match: /gantulyst/i, name: "Eidolon Gantulyst", kind: "⚔ Boss Eidolon", img: "https://cdn.warframestat.us/img/TeralystBigAF.png", planetImg: "data/planets/earth.png" },
+  { match: /vomvalyst|teralyst|eidolon/i, name: "Eidolon (Teralyst / Vomvalyst)", kind: "⚔ Mob / Boss Eidolon", img: "https://cdn.warframestat.us/img/TeralystAF.png", planetImg: "data/planets/earth.png" },
+  { match: /orowyrm/i, name: "Orowyrm", kind: "⚔ Boss Duviri", img: "https://cdn.warframestat.us/img/DuviriDragonDisplayIcon.png", planetImg: "https://cdn.warframestat.us/img/EmoteDuviri.png" },
+  { match: /thrax|circulus|yuvarium/i, name: "Thrax (Centurion / Legatus)", kind: "⚔ Mob Thrax", img: "https://cdn.warframestat.us/img/Xmas23Thrax.png", planetImg: "https://cdn.warframestat.us/img/EmoteLua.png" },
+  { match: /void angel|ange du néant/i, name: "Ange du Néant (Void Angel)", kind: "⚔ Boss Zariman", img: "https://cdn.warframestat.us/img/VoidAngelGlyph.png", planetImg: "data/planets/zariman.png" },
+  { match: /\bdax\b/i, name: "Dax (Equitem / Gladius / Arcus)", kind: "⚔ Mob Dax", img: "https://cdn.warframestat.us/img/UmbraDaxPoster.png", planetImg: "https://cdn.warframestat.us/img/EmoteDuviri.png" },
+  { match: /battalyst|hunhullus|dactolyst|vanguard|sentient|mimic|brachiolyst|symbilyst|aerolyst/i, name: "Sentient / Battalyst", kind: "⚔ Mob Sentient", img: "https://cdn.warframestat.us/img/BobbleheadSentientWarrior.png" },
+  { match: /conculyst/i, name: "Conculyst Sentient", kind: "⚔ Mob Sentient", img: "https://cdn.warframestat.us/img/BobbleheadSentientMeleeWarrior.png" },
+  { match: /juggernaut|membroid|proto-infested|lephantis|jordas|boiler|charger|runner|leaper|brood mother|ancient|mutalist|crawler|infested|carnis|jugulus|saxum|deimos/i, name: "Mob / Boss Infesté", kind: "⚔ Mob Infesté", img: "https://cdn.warframestat.us/img/InfTacAlertPussAncient.png", planetImg: "data/planets/deimos.png" },
+  { match: /ambulas/i, name: "Ambulas", kind: "⚔ Boss Corpus", img: "https://cdn.warframestat.us/img/BobbleheadAmbulas.png", planetImg: "https://cdn.warframestat.us/img/EmotePluto.png" },
+  { match: /jackal/i, name: "Jackal", kind: "⚔ Boss Corpus", img: "https://cdn.warframestat.us/img/BobbleheadJackal.png", planetImg: "data/planets/venus.png" },
+  { match: /\bvor\b/i, name: "Corrupted Vor / Captain Vor", kind: "⚔ Boss", img: "https://cdn.warframestat.us/img/BobbleheadVor.png", planetImg: "https://cdn.warframestat.us/img/EmoteVoid.png" },
+  { match: /sargas ruk/i, name: "Général Sargas Ruk", kind: "⚔ Boss Grineer", img: "https://cdn.warframestat.us/img/BobbleheadSargusRuk.png", planetImg: "https://cdn.warframestat.us/img/EmoteSaturn.png" },
+  { match: /tyl regor/i, name: "Tyl Regor", kind: "⚔ Boss Grineer", img: "https://cdn.warframestat.us/img/BobbleheadTylRegor.png", planetImg: "https://cdn.warframestat.us/img/EmoteUranus.png" },
+  { match: /alad v/i, name: "Alad V", kind: "⚔ Boss Corpus", img: "https://cdn.warframestat.us/img/BobbleheadAladV.png", planetImg: "https://cdn.warframestat.us/img/EmoteJupiter.png" },
+  { match: /ropalolyst/i, name: "Ropalolyst", kind: "⚔ Boss Sentient", img: "https://cdn.warframestat.us/img/RopalolystAF.png", planetImg: "https://cdn.warframestat.us/img/EmoteJupiter.png" },
+  { match: /angst|acolyte|violence|malice|misery|torment|stalker/i, name: "Stalker / Acolyte", kind: "⚔ Boss Acolyte", img: "https://cdn.warframestat.us/img/BobbleheadAcolyteStriker.png" },
+  { match: /emperor condroc/i, name: "Emperor Condroc", kind: "⚔ Faune Cetus", img: "https://cdn.warframestat.us/img/PlushyCondrocRare.png", planetImg: "data/planets/earth.png" },
+  { match: /condroc/i, name: "Condroc (Plaines d'Eidolon)", kind: "⚔ Faune Cetus", img: "https://cdn.warframestat.us/img/PlushyCondrocCommon.png", planetImg: "data/planets/earth.png" },
+  { match: /ghost kuaka/i, name: "Ghost Kuaka", kind: "⚔ Faune Cetus", img: "https://cdn.warframestat.us/img/PlushyKuakaRare.png", planetImg: "data/planets/earth.png" },
+  { match: /kuaka/i, name: "Kuaka (Plaines d'Eidolon)", kind: "⚔ Faune Cetus", img: "https://cdn.warframestat.us/img/PlushyKuakaUncommon.png", planetImg: "data/planets/earth.png" },
+  { match: /mergoo/i, name: "Mergoo (Plaines d'Eidolon)", kind: "⚔ Faune Cetus", img: "https://cdn.warframestat.us/img/PlushyMergooCommon.png", planetImg: "data/planets/earth.png" },
+  { match: /kullervo/i, name: "Kullervo (Duviri)", kind: "⚔ Boss Duviri", img: "https://cdn.warframestat.us/img/BobbleKullervo.png", planetImg: "https://cdn.warframestat.us/img/EmoteDuviri.png" },
+  { match: /bonewidow/i, name: "Bonewidow Necramech", kind: "⚔ Necramech", img: "https://cdn.warframestat.us/img/ThanoMech.png", planetImg: "data/planets/deimos.png" },
+  { match: /voidrig|necramech|isolation vault/i, name: "Voidrig Necramech", kind: "⚔ Necramech", img: "https://cdn.warframestat.us/img/NechroMech.png", planetImg: "data/planets/deimos.png" },
+  { match: /scaldra/i, name: "Scaldra (1999)", kind: "⚔ Faction 1999", img: "https://cdn.warframestat.us/img/FactionScaldra.png", planetImg: "https://cdn.warframestat.us/img/EmoteLasria.png" },
+  { match: /techrot|h-09 apex|antivirus/i, name: "Techrot (1999)", kind: "⚔ Mob 1999", img: "https://cdn.warframestat.us/img/FactionTechrot.png", planetImg: "https://cdn.warframestat.us/img/EmoteLasria.png" },
+  { match: /murmur|netracell|entratilab|albrecht|culverin|arcocanid|anatomizer|gruzzling|fragmented/i, name: "La Murmure (Laboratoires Entrati)", kind: "⚔ Mob Murmure", img: "https://cdn.warframestat.us/img/FactionMurmur.png", planetImg: "data/planets/deimos.png" },
+  { match: /\bmother\b/i, name: "Mother (Entrati)", kind: "❖ Syndicat Deimos", img: "https://cdn.warframestat.us/img/Xmas20Mother.png", planetImg: "data/planets/deimos.png" },
+  { match: /\bfather\b/i, name: "Father (Entrati)", kind: "❖ Syndicat Deimos", img: "https://cdn.warframestat.us/img/Xmas20Father.png", planetImg: "data/planets/deimos.png" },
+  { match: /\bdaughter\b/i, name: "Daughter (Entrati)", kind: "❖ Syndicat Deimos", img: "https://cdn.warframestat.us/img/Xmas20Daughter.png", planetImg: "data/planets/deimos.png" },
+  { match: /grandmother/i, name: "Grandmother (Entrati)", kind: "❖ Syndicat Deimos", img: "https://cdn.warframestat.us/img/Xmas20GMother.png", planetImg: "data/planets/deimos.png" },
+  { match: /otak|necraloid|\bloid\b|entrati \(son\)|\bson\b/i, name: "Otak / Loid / Son (Necralisk)", kind: "❖ Syndicat Deimos", img: "https://cdn.warframestat.us/img/TwitchNecraloidGlyph.png", planetImg: "data/planets/deimos.png" },
+  { match: /kosma|gyre|gyrix|lech kril|grineer|grokdrul|iradite|butcher|seeker|lancer|trooper|bombard|gunner|nox|manic|bailiff|ghoul|drekar|tusk|kuva|executioner|hellion|ballista|eviscerator|napalm|commander|scorch|dargyn|drahk|hyekka|kela|vay hek/i, name: "Unité / Boss Grineer", kind: "⚔ Mob Grineer", img: "https://cdn.warframestat.us/img/GrineerAtricula.png" },
+  { match: /oxium|ramsled|spaceport|temple of profit|vox solaris|solaris|smokefinger|raptor|hyena|corpus|crewman|moa|osprey|nullifier|bursa|comba|scrambus|terra|vapos|juno|aurax|orm|machinist|amalgam|sniper|prod|detron|ranger|zanuka|demolisher|treasurer/i, name: "Unité / Boss Corpus", kind: "⚔ Mob Corpus", img: "https://cdn.warframestat.us/img/CorpusArticula.png" },
+  { match: /orokin|caches|suumbaat|ostron|quills|operational supply|corrupted|spy|espionnage/i, name: "Orokin / Caches / Ostron", kind: "⬡ Orokin / Syndicat", img: "https://cdn.warframestat.us/img/FactionOrokin.png" }
+];
+
+function resolvePrimeRewardIcon(rawText) {
+  if (!rawText) return null;
+  if (/\bforma\b/i.test(rawText)) {
+    return { src: "https://cdn.warframestat.us/img/GenericComponent.png", title: "Forma Blueprint" };
+  }
+  const allItems = [...(WF_DATA.codex?.warframes || []), ...(WF_DATA.codex?.weapons || [])];
+  const low = rawText.toLowerCase();
+  for (const it of allItems) {
+    const n = (it.name || "").toLowerCase();
+    if (n && n.includes("prime") && low.includes(n) && it.image) {
+      return { src: `https://cdn.warframestat.us/img/${it.image}`, title: it.name };
+    }
+  }
+  return null;
+}
+
+function resolveSourceVisuals(rawText, itemName = "") {
+  const combined = `${rawText || ""} ${itemName || ""}`;
+  let planet = null;
+  let mob = null;
+
+  // Si c'est une récompense Prime de Relique (ex: "Alternox Prime Blueprint — 2% ➔ 10%"), trouve l'image de l'arme/Warframe Prime !
+  const primeRewardIcon = currentTab === "relics" ? resolvePrimeRewardIcon(rawText) : null;
+
+  for (const p of PLANET_VISUAL_RULES) {
+    if (p.match.test(rawText) || (!planet && p.match.test(combined))) {
+      planet = p;
+      if (p.match.test(rawText)) break;
+    }
+  }
+  for (const m of MOB_VISUAL_RULES) {
+    if (m.match.test(rawText) || (!mob && m.match.test(itemName))) {
+      mob = m;
+      if (m.match.test(rawText)) break;
+    }
+  }
+
+  const icons = [];
+  if (primeRewardIcon) {
+    icons.push(primeRewardIcon);
+  }
+  if (mob && !icons.some((ic) => ic.src === mob.img)) {
+    icons.push({ src: mob.img, title: mob.name });
+  }
+  if (planet) {
+    if (!icons.some((ic) => ic.src === planet.img) && icons.length < 2) {
+      icons.push({ src: planet.img, title: planet.name });
+    }
+  } else if (mob && mob.planetImg && !icons.some((ic) => ic.src === mob.planetImg) && icons.length < 2) {
+    icons.push({ src: mob.planetImg, title: "Planète" });
+  }
+
+  if (!icons.length) {
+    icons.push({ src: "https://cdn.warframestat.us/img/EmoteVoid.png", title: "Système Origine" });
+  }
+
+  let badge = "◎ Planète & Mission";
+  if (primeRewardIcon) {
+    badge = `✦ Récompense Prime (${primeRewardIcon.title})`;
+  } else if (mob && planet) {
+    badge = `${mob.kind} • ◎ ${planet.name}`;
+  } else if (mob) {
+    badge = `${mob.kind} (${mob.name})`;
+  } else if (planet) {
+    badge = `◎ Planète : ${planet.name}`;
+  }
+
+  if (/mining|filon|lésion|vein|lesion/i.test(rawText)) {
+    badge = `⬡ Minage • ${planet ? planet.name : "Monde Ouvert"}`;
+  } else if (/bounty|mise à prix|rotation/i.test(rawText) && planet) {
+    badge = `⌖ Mission / Rotation • ◎ ${planet.name}`;
+  }
+
+  return { icons, badge, planet, mob };
+}
+
+function parseDropEntry(rawLine, itemName = "") {
+  const line = (rawLine || "").trim();
+
+  // Cas 1 : Récompense de Relique du type "... — 2% (Intacte) ➔ 10% (Éclatante)"
+  const relicMatch = line.match(/—\s*(\d+(?:\.\d+)?)%\s*\(Intacte\)\s*➔\s*(\d+(?:\.\d+)?)%\s*\(Éclatante\)/i);
+  if (relicMatch) {
+    const pIntact = parseFloat(relicMatch[1]);
+    const pRad = parseFloat(relicMatch[2]);
+    const cleanTitle = line
+      .replace(relicMatch[0], "")
+      .replace(/^[✦◈●]\s*(\[[^\]]+\]\s*)+/g, "")
+      .trim();
+
+    let color = "#4ADE80";
+    let bg = "rgba(74, 222, 128, 0.16)";
+    let border = "rgba(74, 222, 128, 0.55)";
+    let rarityLabel = "● Commun (Bronze)";
+
+    if (line.includes("Rare") || pIntact <= 5) {
+      color = "#FBBF24";
+      bg = "rgba(245, 158, 11, 0.2)";
+      border = "rgba(251, 191, 36, 0.7)";
+      rarityLabel = "✦ Rare (Or)";
+    } else if (line.includes("Inhabituel") || pIntact <= 15) {
+      color = "#38BDF8";
+      bg = "rgba(56, 189, 248, 0.18)";
+      border = "rgba(56, 189, 248, 0.6)";
+      rarityLabel = "◈ Inhabituel (Argent)";
+    }
+
+    const vis = resolveSourceVisuals(cleanTitle, itemName);
+    return {
+      title: cleanTitle,
+      pct: pRad,
+      pctText: `${pIntact}% ➔ ${pRad}%`,
+      barWidth: Math.max(12, Math.min(100, pRad * 3.5)),
+      color,
+      bg,
+      border,
+      rarityLabel,
+      icons: vis.icons,
+      badge: vis.badge
+    };
+  }
+
+  // Cas 2 : Pourcentage standard du type (33.36% Rare) ou (100% Common) ou (14.29%)
+  const pctMatch =
+    line.match(/\(\s*(\d+(?:\.\d+)?)%\s*([A-Za-zÀ-ÿ\s]*)\)/) ||
+    line.match(/(\d+(?:\.\d+)?)%\s*(Common|Uncommon|Rare|Legendary|Commun|Inhabituel|Légendaire)?/i);
+
+  let pct = null;
+  let rarityRaw = "";
+  let cleanTitle = line;
+
+  if (pctMatch) {
+    pct = parseFloat(pctMatch[1]);
+    if (pct > 100) pct = +(pct / 100).toFixed(2);
+    rarityRaw = (pctMatch[2] || "").trim();
+    cleanTitle = line.replace(pctMatch[0], "").replace(/\(\s*\)/g, "").trim();
+  }
+
+  let color = "#4ADE80";
+  let bg = "rgba(74, 222, 128, 0.16)";
+  let border = "rgba(74, 222, 128, 0.55)";
+  let rarityLabel = currentLang === "fr" ? "● Commun" : "● Common";
+
+  const rLow = rarityRaw.toLowerCase();
+  if (rLow.includes("rare") || rLow.includes("legend") || (pct !== null && pct < 10)) {
+    color = "#FBBF24";
+    bg = "rgba(245, 158, 11, 0.18)";
+    border = "rgba(251, 191, 36, 0.65)";
+    rarityLabel = currentLang === "fr" ? "✦ Rare" : "✦ Rare";
+  } else if (rLow.includes("uncommon") || rLow.includes("inhabituel") || (pct !== null && pct < 35)) {
+    color = "#38BDF8";
+    bg = "rgba(56, 189, 248, 0.16)";
+    border = "rgba(56, 189, 248, 0.55)";
+    rarityLabel = currentLang === "fr" ? "◆ Inhabituel" : "◆ Uncommon";
+  } else {
+    rarityLabel = currentLang === "fr" ? "● Commun / Garanti" : "● Common / Guaranteed";
+  }
+
+  const vis = resolveSourceVisuals(cleanTitle || line, itemName);
+
+  return {
+    title: cleanTitle || line,
+    pct,
+    pctText: pct !== null ? `${pct % 1 === 0 ? pct.toFixed(0) : pct.toFixed(2)}%` : (currentLang === "fr" ? "100%" : "100%"),
+    barWidth: pct !== null ? Math.max(8, Math.min(100, pct)) : 100,
+    color,
+    bg,
+    border,
+    rarityLabel,
+    icons: vis.icons,
+    badge: vis.badge
+  };
+}
+
 function openCodexModal(indexInFiltered) {
   const list = window._currentCodexFiltered || [];
   const item = list[indexInFiltered];
@@ -1387,42 +1662,182 @@ function openCodexModal(indexInFiltered) {
     ? `https://cdn.warframestat.us/img/${item.image}`
     : "data/app_logo.png";
 
-  const locParts = (item.location || "Système Origine").split("•").map((s) => s.trim()).filter(Boolean);
-  const dropParts = cleanDropText(item.drop || "").split("|").map((s) => s.trim()).filter(Boolean);
+  let rawLoc = item.location || "Système Origine";
+  const rawDropCleaned = cleanDropText(item.drop || "");
+  if (rawLoc.includes("Système Origine") && /Location:\s*([^.|]+)/i.test(rawDropCleaned)) {
+    const m = rawDropCleaned.match(/Location:\s*([^.|]+)/i);
+    if (m && m[1]) rawLoc = m[1].trim();
+  }
+
+  const locParts = rawLoc.split("•").map((s) => s.trim()).filter(Boolean);
+  const dropParts = rawDropCleaned.split("|").map((s) => s.trim()).filter(Boolean);
+
+  // Collecte toutes les icônes uniques de Planètes, Reliques & Mobs pour l'en-tête
+  const headerVisuals = [];
+  [...locParts, ...dropParts].forEach((part) => {
+    const v = resolveSourceVisuals(part, item.name);
+    v.icons.forEach((ic) => {
+      if (!headerVisuals.some((h) => h.src === ic.src) && headerVisuals.length < 6) {
+        headerVisuals.push(ic);
+      }
+    });
+  });
+
+  // Cartes visuelles "Où trouver" (affiche aussi un badge % si présent dans la localisation, ex: Reliques)
+  const locCardsHtml = locParts
+    .map((locStr) => {
+      const vis = resolveSourceVisuals(locStr, item.name);
+      const pctInLoc = locStr.match(/\(\s*(\d+(?:\.\d+)?)%\s*\)/);
+      const cleanLocTitle = pctInLoc ? locStr.replace(pctInLoc[0], "").trim() : locStr;
+      return `
+        <div class="modal-loc-card" style="justify-content:space-between;">
+          <div style="display:flex; align-items:center; gap:11px; min-width:0; flex:1;">
+            <div class="modal-source-icons">
+              ${vis.icons
+                .map(
+                  (ic) => `
+                <img src="${ic.src}" alt="${ic.title}" title="${ic.title}" class="modal-source-thumb" onerror="this.onerror=null;this.src='data/app_logo.png';" />
+              `
+                )
+                .join("")}
+            </div>
+            <div style="min-width:0; flex:1;">
+              <div style="font-size:11px; font-weight:800; color:var(--accent-cyan); margin-bottom:2px;">${vis.badge}</div>
+              <div style="font-size:13px; font-weight:700; color:var(--text-main); line-height:1.3;">${cleanLocTitle}</div>
+            </div>
+          </div>
+          ${
+            pctInLoc
+              ? `<span style="font-size:13.5px; font-weight:900; color:#38BDF8; background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.5); padding:3px 9px; border-radius:8px; flex-shrink:0;">${pctInLoc[1]}%</span>`
+              : ""
+          }
+        </div>
+      `;
+    })
+    .join("");
+
+  // Lignes visuelles "Comment l'avoir / Récompenses & % de Drop"
+  const dropRowsHtml = dropParts
+    .map((dropStr) => {
+      const parsed = parseDropEntry(dropStr, item.name);
+      return `
+        <div class="modal-drop-row">
+          <div class="modal-drop-left">
+            <div class="modal-source-icons">
+              ${parsed.icons
+                .map(
+                  (ic) => `
+                <img src="${ic.src}" alt="${ic.title}" title="${ic.title}" class="modal-source-thumb" onerror="this.onerror=null;this.src='data/app_logo.png';" />
+              `
+                )
+                .join("")}
+            </div>
+            <div class="modal-drop-info">
+              <div style="font-size:11px; font-weight:800; color:var(--accent-cyan); margin-bottom:2px;">${parsed.badge}</div>
+              <div class="modal-drop-title">${parsed.title}</div>
+              <div class="modal-drop-bar-bg">
+                <div class="modal-drop-bar-fill" style="width:${parsed.barWidth}%; background:${parsed.color}; box-shadow: 0 0 8px ${parsed.color};"></div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-drop-right">
+            <span class="drop-pct-badge" style="color:${parsed.color}; background:${parsed.bg}; border:1.5px solid ${parsed.border};">
+              ${parsed.pctText}
+            </span>
+            <span class="drop-rarity-tag" style="color:${parsed.color}; background:${parsed.bg};">
+              ${parsed.rarityLabel}
+            </span>
+          </div>
+        </div>
+      `;
+    })
+    .join("");
+
+  // Bloc optionnel de statistiques (Effet Max des Mods ou Statistiques de Combat des Armes)
+  let statsBannerHtml = "";
+  if (item.stats) {
+    if (currentTab === "weapons") {
+      const statChips = item.stats
+        .split("|")
+        .map((s) => s.trim())
+        .filter((s) => s.startsWith("⚔") || s.startsWith("⌖") || s.startsWith("⟡") || s.startsWith("✦"));
+      statsBannerHtml = `
+        <div class="modal-sec-box" style="background:rgba(56,189,248,0.08); border-color:rgba(56,189,248,0.35);">
+          <div class="modal-sec-label">⚔ Statistiques de Combat de l'Arme</div>
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(170px, 1fr)); gap:8px;">
+            ${statChips
+              .map(
+                (sc) => `
+              <div style="background:rgba(10,15,26,0.55); border:1px solid var(--border-subtle); border-radius:8px; padding:8px 10px; font-size:13px; font-weight:800; color:var(--text-main);">
+                ${sc}
+              </div>
+            `
+              )
+              .join("")}
+          </div>
+        </div>
+      `;
+    } else {
+      statsBannerHtml = `
+        <div class="modal-sec-box" style="background:rgba(251,191,36,0.08); border-color:rgba(251,191,36,0.4);">
+          <div class="modal-sec-label" style="color:#FBBF24;">✦ Effet & Bonus du Mod (Rang Max)</div>
+          <div style="font-size:14.5px; font-weight:800; color:var(--text-main); line-height:1.45;">
+            ${item.stats}
+          </div>
+        </div>
+      `;
+    }
+  }
 
   body.innerHTML = `
     <div class="modal-top">
       <img src="${imgUrl}" alt="${item.name}" class="modal-img" onerror="this.onerror=null;this.src='data/app_logo.png';" />
-      <div>
-        <span class="codex-grid-badge" style="font-size:11px; padding:2px 10px;">${item.category || "Resource"}</span>
-        <div style="font-size:21px; font-weight:800; color:#F0F6FC; margin-top:6px;">${item.name}</div>
+      <div style="flex:1; min-width:0;">
+        <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px;">
+          <span class="codex-grid-badge" style="font-size:12px; padding:3px 12px;">${item.category || "Codex"}</span>
+          <span style="font-size:11.5px; font-weight:700; color:var(--accent-cyan); background:rgba(88,166,255,0.12); border:1px solid rgba(88,166,255,0.3); padding:2px 10px; border-radius:10px;">
+            ⌖ ${locParts.length} ${currentLang === "fr" ? "Source(s) / Zone(s)" : "Source(s) / Zone(s)"}
+          </span>
+        </div>
+        <div style="font-size:26px; font-weight:900; color:var(--text-main, #F0F6FC); margin-top:6px; letter-spacing:0.2px;">${item.name}</div>
+        ${
+          item.desc
+            ? `<div style="font-size:12.5px; color:var(--text-muted); margin-top:4px; line-height:1.45;">${item.desc}</div>`
+            : ""
+        }
+        <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-top:10px;">
+          ${headerVisuals
+            .map(
+              (hv) => `
+            <div style="display:inline-flex; align-items:center; gap:6px; background:rgba(15,23,42,0.55); border:1px solid var(--border-subtle, #263554); padding:3px 10px 3px 5px; border-radius:20px;">
+              <img src="${hv.src}" alt="${hv.title}" style="width:24px; height:24px; object-fit:contain;" onerror="this.onerror=null;this.src='data/app_logo.png';" />
+              <span style="font-size:11.5px; font-weight:700; color:var(--text-main);">${hv.title}</span>
+            </div>
+          `
+            )
+            .join("")}
+        </div>
       </div>
     </div>
 
-    <div class="modal-sec-box" style="max-height:175px; overflow-y:auto;">
-      <div class="modal-sec-label">${tr("lbl_location")}</div>
-      <div class="modal-sec-text">
-        ${
-          locParts.length > 1
-            ? `<ul style="padding-left:18px; margin:0;">${locParts.map((l) => `<li style="margin-bottom:3px;">${l}</li>`).join("")}</ul>`
-            : locParts[0] || "Système Origine"
-        }
+    ${statsBannerHtml}
+
+    <div class="modal-sec-box">
+      <div class="modal-sec-label">${tr("lbl_location")} (Planètes, Boss, Reliques & Mobs Officiels)</div>
+      <div class="modal-loc-grid">
+        ${locCardsHtml}
       </div>
     </div>
 
-    <div class="modal-sec-box" style="margin-bottom:16px; max-height:190px; overflow-y:auto;">
-      <div class="modal-sec-label">${currentTab === "relics" ? tr("lbl_relic_rewards") : tr("lbl_drop_method")}</div>
-      <div class="modal-sec-text" style="color:#C9D1D9;">
-        ${
-          dropParts.length > 1
-            ? `<ul style="padding-left:18px; margin:0;">${dropParts.map((d) => `<li style="margin-bottom:4px;">${d}</li>`).join("")}</ul>`
-            : dropParts[0] || "Disponible en mission ou auprès des syndicats."
-        }
+    <div class="modal-sec-box" style="margin-bottom:18px;">
+      <div class="modal-sec-label">${currentTab === "relics" ? tr("lbl_relic_rewards") : tr("lbl_drop_method")} (% de Drop & Rareté)</div>
+      <div class="modal-drop-list">
+        ${dropRowsHtml}
       </div>
     </div>
 
     <div style="display:flex; justify-content:flex-end;">
-      <button class="btn-open" style="font-size:12.5px; padding:6px 18px;" onclick="closeCodexModal()">
+      <button class="btn-open" style="font-size:13.5px; padding:8px 24px; font-weight:800;" onclick="closeCodexModal()">
         ${currentLang === "fr" ? "Fermer" : "Close"}
       </button>
     </div>
@@ -1856,8 +2271,8 @@ async function refreshAllData(showLoader = false) {
 }
 
 function isNewerVersion(remoteVer, localVer) {
-  const r = String(remoteVer || "1.0.34").replace(/^v/i, "").split(".").map((n) => parseInt(n, 10) || 0);
-  const l = String(localVer || "1.0.34").replace(/^v/i, "").split(".").map((n) => parseInt(n, 10) || 0);
+  const r = String(remoteVer || "1.0.35").replace(/^v/i, "").split(".").map((n) => parseInt(n, 10) || 0);
+  const l = String(localVer || "1.0.35").replace(/^v/i, "").split(".").map((n) => parseInt(n, 10) || 0);
   for (let i = 0; i < Math.max(r.length, l.length); i++) {
     const rv = r[i] || 0;
     const lv = l[i] || 0;
@@ -1868,7 +2283,7 @@ function isNewerVersion(remoteVer, localVer) {
 }
 
 function getEffectiveLocalVersion() {
-  const bundledVer = WF_DATA.version?.version || "1.0.34";
+  const bundledVer = WF_DATA.version?.version || "1.0.35";
   const cachedVer = localStorage.getItem("wf_live_version");
   if (cachedVer && isNewerVersion(cachedVer, bundledVer)) {
     WF_DATA.version = { ...(WF_DATA.version || {}), version: cachedVer };
@@ -1899,7 +2314,7 @@ function applyLiveJsCode(jsText) {
 }
 
 function restoreCachedLiveUpdate() {
-  const bundledVer = WF_DATA.version?.version || "1.0.34";
+  const bundledVer = WF_DATA.version?.version || "1.0.35";
   const cachedVer = localStorage.getItem("wf_live_version");
   const effectiveVer = getEffectiveLocalVersion();
   const cachedCss = localStorage.getItem("wf_live_css");
