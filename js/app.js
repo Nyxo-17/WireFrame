@@ -3,10 +3,10 @@
    ========================================================================== */
 
 const WF_DATA = window.WIREFRAME_DATA || {
-  codex: { warframes: [], resources: [], mods: [], bounties: [] },
+  codex: { warframes: [], resources: [], mods: [], relics: [], bounties: [] },
   duviri: { warframes_weeks: [], incarnon_weeks: [] },
   translations: { fr: {}, en: {} },
-  version: { version: "1.0.2" }
+  version: { version: "1.0.3" }
 };
 
 let currentLang = localStorage.getItem("wf_lang") || "fr";
@@ -17,7 +17,8 @@ let currentTab = "welcome";
 const codexState = {
   resources: { query: "", page: 0 },
   mods: { query: "", page: 0 },
-  warframes: { query: "", page: 0 }
+  warframes: { query: "", page: 0 },
+  relics: { query: "", page: 0 }
 };
 const ITEMS_PER_PAGE = 20;
 
@@ -586,6 +587,9 @@ function renderCurrentTab() {
     case "warframes":
       renderCodexView(container, "warframes", tr("wf_page_title"));
       break;
+    case "relics":
+      renderCodexView(container, "relics", tr("rel_page_title"));
+      break;
     case "worlds":
       renderWorldsView(container);
       break;
@@ -828,7 +832,7 @@ function openCodexModal(indexInFiltered) {
       </div>
     </div>
 
-    <div class="modal-sec-box">
+    <div class="modal-sec-box" style="max-height:175px; overflow-y:auto;">
       <div class="modal-sec-label">${tr("lbl_location")}</div>
       <div class="modal-sec-text">
         ${
@@ -839,8 +843,8 @@ function openCodexModal(indexInFiltered) {
       </div>
     </div>
 
-    <div class="modal-sec-box" style="margin-bottom:16px;">
-      <div class="modal-sec-label">${tr("lbl_drop_method")}</div>
+    <div class="modal-sec-box" style="margin-bottom:16px; max-height:190px; overflow-y:auto;">
+      <div class="modal-sec-label">${currentTab === "relics" ? tr("lbl_relic_rewards") : tr("lbl_drop_method")}</div>
       <div class="modal-sec-text" style="color:#C9D1D9;">
         ${
           dropParts.length > 1
@@ -1100,13 +1104,14 @@ function setLanguage(lang) {
     "nav-resources": cleanNavText(tr("nav_resources")),
     "nav-mods": cleanNavText(tr("nav_mods")),
     "nav-warframes": cleanNavText(tr("nav_warframes")),
+    "nav-relics": cleanNavText(tr("nav_relics")),
     "sec-cycles": tr("sec_cycles"),
     "nav-worlds": cleanNavText(tr("nav_worlds")),
     "nav-bounties": cleanNavText(tr("nav_bounties")),
     "nav-duviri": cleanNavText(tr("nav_duviri")),
     "nav-baro": cleanNavText(tr("nav_baro")),
     "btn-refresh": tr("btn_refresh"),
-    "btn-check-update": `${tr("btn_check_update")} (v${WF_DATA.version?.version || "1.0.2"})`,
+    "btn-check-update": `${tr("btn_check_update")} (v${WF_DATA.version?.version || "1.0.3"})`,
     "live-badge": tr("live_badge"),
     "live-tag": tr("live_tag"),
     "live-worlds-title": tr("live_worlds_title"),
@@ -1151,7 +1156,7 @@ async function refreshAllData(showLoader = false) {
 }
 
 async function checkForUpdatesManual() {
-  const localVer = WF_DATA.version?.version || "1.0.2";
+  const localVer = WF_DATA.version?.version || "1.0.3";
   try {
     const res = await fetch("https://raw.githubusercontent.com/Nyxo-17/WireFrame/main/version.json?t=" + Date.now());
     if (!res.ok) throw new Error("HTTP " + res.status);
