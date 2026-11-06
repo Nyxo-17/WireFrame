@@ -6,7 +6,7 @@ const WF_DATA = window.WIREFRAME_DATA || {
   codex: { warframes: [], weapons: [], resources: [], mods: [], relics: [], bounties: [] },
   duviri: { warframes_weeks: [], incarnon_weeks: [] },
   translations: { fr: {}, en: {} },
-  version: { version: "1.0.27" }
+  version: { version: "1.0.28" }
 };
 
 let currentLang = localStorage.getItem("wf_lang") || "fr";
@@ -1785,8 +1785,8 @@ async function refreshAllData(showLoader = false) {
 }
 
 function isNewerVersion(remoteVer, localVer) {
-  const r = String(remoteVer || "1.0.27").replace(/^v/i, "").split(".").map((n) => parseInt(n, 10) || 0);
-  const l = String(localVer || "1.0.27").replace(/^v/i, "").split(".").map((n) => parseInt(n, 10) || 0);
+  const r = String(remoteVer || "1.0.28").replace(/^v/i, "").split(".").map((n) => parseInt(n, 10) || 0);
+  const l = String(localVer || "1.0.28").replace(/^v/i, "").split(".").map((n) => parseInt(n, 10) || 0);
   for (let i = 0; i < Math.max(r.length, l.length); i++) {
     const rv = r[i] || 0;
     const lv = l[i] || 0;
@@ -1797,7 +1797,7 @@ function isNewerVersion(remoteVer, localVer) {
 }
 
 function getEffectiveLocalVersion() {
-  const bundledVer = WF_DATA.version?.version || "1.0.27";
+  const bundledVer = WF_DATA.version?.version || "1.0.28";
   const cachedVer = localStorage.getItem("wf_live_version");
   if (cachedVer && isNewerVersion(cachedVer, bundledVer)) {
     WF_DATA.version = { ...(WF_DATA.version || {}), version: cachedVer };
@@ -1806,21 +1806,47 @@ function getEffectiveLocalVersion() {
   return bundledVer;
 }
 
+function applyLiveJsCode(jsText) {
+  if (!jsText) return;
+  try {
+    // Extrait toutes les fonctions et constantes (de la Section 1 jusqu'avant DOMContentLoaded)
+    const startIdx = jsText.indexOf("function tr(");
+    const endIdx = jsText.indexOf('window.addEventListener("DOMContentLoaded"');
+    if (startIdx === -1 || endIdx === -1) return;
+    const bodyCode = jsText
+      .slice(startIdx, endIdx)
+      .replace(/^(?:const|let|var)\s+([a-zA-Z0-9_$]+)\s*=/gm, "window.$1 =")
+      .replace(/^async\s+function\s+([a-zA-Z0-9_$]+)\s*\(/gm, "window.$1 = async function $1(")
+      .replace(/^function\s+([a-zA-Z0-9_$]+)\s*\(/gm, "window.$1 = function $1(");
+    const runner = new Function(bodyCode);
+    runner();
+  } catch (e) {
+    console.warn("Live JS hot-reload warning:", e);
+  }
+}
+
 function restoreCachedLiveUpdate() {
-  const bundledVer = WF_DATA.version?.version || "1.0.27";
+  const bundledVer = WF_DATA.version?.version || "1.0.28";
   const cachedVer = localStorage.getItem("wf_live_version");
   const effectiveVer = getEffectiveLocalVersion();
   const cachedCss = localStorage.getItem("wf_live_css");
-  if (cachedCss && cachedVer && isNewerVersion(cachedVer, bundledVer)) {
-    let styleTag = document.getElementById("wf-live-css");
-    if (!styleTag) {
-      styleTag = document.createElement("style");
-      styleTag.id = "wf-live-css";
-      document.head.appendChild(styleTag);
+  const cachedJs = localStorage.getItem("wf_live_js");
+  if (cachedVer && isNewerVersion(cachedVer, bundledVer)) {
+    if (cachedCss) {
+      let styleTag = document.getElementById("wf-live-css");
+      if (!styleTag) {
+        styleTag = document.createElement("style");
+        styleTag.id = "wf-live-css";
+        document.head.appendChild(styleTag);
+      }
+      styleTag.textContent = cachedCss;
     }
-    styleTag.textContent = cachedCss;
+    if (cachedJs) {
+      applyLiveJsCode(cachedJs);
+    }
   } else {
     localStorage.removeItem("wf_live_css");
+    localStorage.removeItem("wf_live_js");
   }
   const btnUpd = document.getElementById("btn-check-update");
   if (btnUpd) {
@@ -1832,8 +1858,9 @@ async function applyLiveUpdateZeroDownload(remote) {
   const baseUrl = "https://raw.githubusercontent.com/Nyxo-17/WireFrame/main/";
   const ts = "?t=" + Date.now();
   try {
-    const [cssRes, trRes, duvRes, codexRes] = await Promise.allSettled([
+    const [cssRes, jsRes, trRes, duvRes, codexRes] = await Promise.allSettled([
       fetch(baseUrl + "css/style.css" + ts, { cache: "no-store" }),
+      fetch(baseUrl + "js/app.js" + ts, { cache: "no-store" }),
       fetch(baseUrl + "data/translations.json" + ts, { cache: "no-store" }),
       fetch(baseUrl + "data/duviri_rotations.json" + ts, { cache: "no-store" }),
       fetch(baseUrl + "data/codex_data.json" + ts, { cache: "no-store" })
@@ -1850,6 +1877,14 @@ async function applyLiveUpdateZeroDownload(remote) {
       styleTag.textContent = cssText;
       try {
         localStorage.setItem("wf_live_css", cssText);
+      } catch (e) {}
+    }
+
+    if (jsRes.status === "fulfilled" && jsRes.value.ok) {
+      const jsText = await jsRes.value.text();
+      applyLiveJsCode(jsText);
+      try {
+        localStorage.setItem("wf_live_js", jsText);
       } catch (e) {}
     }
 
@@ -1874,6 +1909,7 @@ async function applyLiveUpdateZeroDownload(remote) {
       btnUpd.onclick = () => checkForUpdatesManual(false);
     }
 
+    setTheme(currentTheme);
     setLanguage(currentLang);
     renderCurrentTab();
 
