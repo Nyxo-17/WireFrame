@@ -6,7 +6,7 @@ const WF_DATA = window.WIREFRAME_DATA || {
   codex: { warframes: [], weapons: [], resources: [], mods: [], relics: [], bounties: [] },
   duviri: { warframes_weeks: [], incarnon_weeks: [] },
   translations: { fr: {}, en: {} },
-  version: { version: "1.0.26" }
+  version: { version: "1.0.27" }
 };
 
 let currentLang = localStorage.getItem("wf_lang") || "fr";
@@ -743,6 +743,8 @@ function setTheme(themeKey) {
     "full-white",
     "blue-dark",
     "blue-light",
+    "green-dark",
+    "green-light",
     "red-dark",
     "red-light",
     "orange-dark",
@@ -875,6 +877,16 @@ function renderSettingsView(container = document.getElementById("center-zoom-con
       sub: currentLang === "fr" ? "Glace de Fortuna & Azur" : "Fortuna Ice & Azure"
     },
     {
+      id: "green-dark",
+      label: currentLang === "fr" ? "❖ Vert Sombre" : "❖ Dark Green",
+      sub: currentLang === "fr" ? "Émeraude & Forêts" : "Emerald & Earth Forests"
+    },
+    {
+      id: "green-light",
+      label: currentLang === "fr" ? "✦ Vert Clair" : "✦ Light Green",
+      sub: currentLang === "fr" ? "Jade & Menthe Claire" : "Soft Jade & Mint"
+    },
+    {
       id: "red-dark",
       label: currentLang === "fr" ? "◈ Rouge Sombre" : "◈ Dark Red",
       sub: currentLang === "fr" ? "Kuva & Voile Rouge" : "Kuva & Red Veil"
@@ -910,7 +922,7 @@ function renderSettingsView(container = document.getElementById("center-zoom-con
     <div class="view-header-title">${tr("settings_page_title")}</div>
     <div class="view-header-sub">${tr("settings_page_sub")}</div>
 
-    <!-- BLOC 0 : CHOIX DU THÈME VISUEL (12 THÈMES) -->
+    <!-- BLOC 0 : CHOIX DU THÈME VISUEL (14 THÈMES) -->
     <div class="bounty-card" style="padding:16px; margin-bottom:16px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
         <div style="font-size:15px; font-weight:700; color:var(--accent-blue);">
@@ -923,8 +935,8 @@ function renderSettingsView(container = document.getElementById("center-zoom-con
       <div style="font-size:12.5px; color:var(--text-muted); margin-bottom:10px;">
         ${
           currentLang === "fr"
-            ? "Choisis l'apparence visuelle de WireFrame parmi les 12 thèmes (Sombre, Clair, OLED, Bleu, Rouge, Orange, Violet) :"
-            : "Select the visual theme for WireFrame among the 12 themes (Dark, Light, OLED, Blue, Red, Orange, Purple):"
+            ? "Choisis l'apparence visuelle de WireFrame parmi les 14 thèmes (Sombre, Clair, OLED, Bleu, Vert, Rouge, Orange, Violet) :"
+            : "Select the visual theme for WireFrame among the 14 themes (Dark, Light, OLED, Blue, Green, Red, Orange, Purple):"
         }
       </div>
 
@@ -1773,8 +1785,8 @@ async function refreshAllData(showLoader = false) {
 }
 
 function isNewerVersion(remoteVer, localVer) {
-  const r = String(remoteVer || "1.0.26").replace(/^v/i, "").split(".").map((n) => parseInt(n, 10) || 0);
-  const l = String(localVer || "1.0.26").replace(/^v/i, "").split(".").map((n) => parseInt(n, 10) || 0);
+  const r = String(remoteVer || "1.0.27").replace(/^v/i, "").split(".").map((n) => parseInt(n, 10) || 0);
+  const l = String(localVer || "1.0.27").replace(/^v/i, "").split(".").map((n) => parseInt(n, 10) || 0);
   for (let i = 0; i < Math.max(r.length, l.length); i++) {
     const rv = r[i] || 0;
     const lv = l[i] || 0;
@@ -1785,7 +1797,7 @@ function isNewerVersion(remoteVer, localVer) {
 }
 
 function getEffectiveLocalVersion() {
-  const bundledVer = WF_DATA.version?.version || "1.0.26";
+  const bundledVer = WF_DATA.version?.version || "1.0.27";
   const cachedVer = localStorage.getItem("wf_live_version");
   if (cachedVer && isNewerVersion(cachedVer, bundledVer)) {
     WF_DATA.version = { ...(WF_DATA.version || {}), version: cachedVer };
@@ -1795,7 +1807,7 @@ function getEffectiveLocalVersion() {
 }
 
 function restoreCachedLiveUpdate() {
-  const bundledVer = WF_DATA.version?.version || "1.0.26";
+  const bundledVer = WF_DATA.version?.version || "1.0.27";
   const cachedVer = localStorage.getItem("wf_live_version");
   const effectiveVer = getEffectiveLocalVersion();
   const cachedCss = localStorage.getItem("wf_live_css");
