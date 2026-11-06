@@ -6,7 +6,7 @@ const WF_DATA = window.WIREFRAME_DATA || {
   codex: { warframes: [], resources: [], mods: [], relics: [], bounties: [] },
   duviri: { warframes_weeks: [], incarnon_weeks: [] },
   translations: { fr: {}, en: {} },
-  version: { version: "1.0.6" }
+  version: { version: "1.0.7" }
 };
 
 let currentLang = localStorage.getItem("wf_lang") || "fr";
@@ -611,9 +611,26 @@ function renderWelcomeView(container) {
     { title: tr("card_res_title"), desc: tr("card_res_desc"), tab: "resources" },
     { title: tr("card_mod_title"), desc: tr("card_mod_desc"), tab: "mods" },
     { title: tr("card_wf_title"), desc: tr("card_wf_desc"), tab: "warframes" },
+    { title: tr("card_rel_title"), desc: tr("card_rel_desc"), tab: "relics" },
     { title: tr("card_wld_title"), desc: tr("card_wld_desc"), tab: "worlds" },
     { title: tr("card_bnt_title"), desc: tr("card_bnt_desc"), tab: "bounties" },
-    { title: tr("card_duv_title"), desc: tr("card_duv_desc"), tab: "notifications" }
+    { title: tr("card_cir_title"), desc: tr("card_cir_desc"), tab: "duviri" },
+    { title: tr("card_baro_title"), desc: tr("card_baro_desc"), tab: "baro" },
+    { title: tr("card_duv_title"), desc: tr("card_duv_desc"), tab: "notifications" },
+    {
+      title: tr("card_news_title"),
+      desc: tr("card_news_desc"),
+      extUrl: "https://discord.gg/DhGwHPf82n",
+      extBtn: "💬 Discord ➔"
+    }
+  ];
+
+  const stats = [
+    { icon: "💎", val: "239", lbl: currentLang === "fr" ? "Ressources" : "Resources", tab: "resources" },
+    { icon: "🃏", val: "1 442", lbl: "Mods", tab: "mods" },
+    { icon: "⚡", val: "120", lbl: "Warframes", tab: "warframes" },
+    { icon: "🏺", val: "801", lbl: currentLang === "fr" ? "Reliques" : "Relics", tab: "relics" },
+    { icon: "🌍", val: "24/7", lbl: currentLang === "fr" ? "Cycles & Rotations" : "Live Cycles", tab: "worlds" }
   ];
 
   container.innerHTML = `
@@ -630,6 +647,19 @@ function renderWelcomeView(container) {
       <p>${tr("welcome_banner_desc")}</p>
     </div>
 
+    <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:10px; margin-bottom:14px;">
+      ${stats
+        .map(
+          (s) => `
+        <div onclick="selectTab('${s.tab}')" style="background:#141A29; border:1px solid #232F46; border-radius:10px; padding:10px; text-align:center; cursor:pointer; transition:all 0.18s ease;" onmouseover="this.style.borderColor='#58A6FF'" onmouseout="this.style.borderColor='#232F46'">
+          <div style="font-size:18px; font-weight:800; color:#79C0FF;">${s.icon} ${s.val}</div>
+          <div style="font-size:11.5px; color:#8B949E; font-weight:600; margin-top:2px;">${s.lbl}</div>
+        </div>
+      `
+        )
+        .join("")}
+    </div>
+
     <div class="cards-grid-2">
       ${cards
         .map(
@@ -639,7 +669,11 @@ function renderWelcomeView(container) {
             <h4>${c.title}</h4>
             <p>${c.desc}</p>
           </div>
-          <button class="btn-open" onclick="selectTab('${c.tab}')">${tr("open_btn")}</button>
+          ${
+            c.extUrl
+              ? `<a href="${c.extUrl}" target="_blank" class="btn-open" style="text-decoration:none;">${c.extBtn}</a>`
+              : `<button class="btn-open" onclick="selectTab('${c.tab}')">${tr("open_btn")}</button>`
+          }
         </div>
       `
         )
@@ -1201,7 +1235,7 @@ function setLanguage(lang) {
     "nav-duviri": cleanNavText(tr("nav_duviri")),
     "nav-baro": cleanNavText(tr("nav_baro")),
     "btn-refresh": tr("btn_refresh"),
-    "btn-check-update": `${tr("btn_check_update")} (v${WF_DATA.version?.version || "1.0.6"})`,
+    "btn-check-update": `${tr("btn_check_update")} (v${WF_DATA.version?.version || "1.0.7"})`,
     "live-badge": tr("live_badge"),
     "live-tag": tr("live_tag"),
     "live-worlds-title": tr("live_worlds_title"),
@@ -1246,7 +1280,7 @@ async function refreshAllData(showLoader = false) {
 }
 
 async function checkForUpdatesManual() {
-  const localVer = WF_DATA.version?.version || "1.0.6";
+  const localVer = WF_DATA.version?.version || "1.0.7";
   try {
     const res = await fetch("https://raw.githubusercontent.com/Nyxo-17/WireFrame/main/version.json?t=" + Date.now());
     if (!res.ok) throw new Error("HTTP " + res.status);
