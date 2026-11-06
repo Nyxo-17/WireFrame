@@ -2829,6 +2829,211 @@ html {
   color: #FFFFFF;
 }
 
+/* --- THÈME 15 : JAUNE SOMBRE (OR OROKIN & PRIME) --- */
+[data-theme="yellow-dark"] {
+  --bg-root: #120E04;
+  --bg-sidebar: #1A1406;
+  --bg-center: #1E1808;
+  --bg-live: #1C1607;
+  --bg-card: #29200B;
+  --bg-card-hover: #382C0F;
+  --border-subtle: #453512;
+  --border-card: #634C19;
+  --accent-blue: #EAB308;
+  --accent-cyan: #FACC15;
+  --accent-gold: #FDE047;
+  --accent-green: #4ADE80;
+  --text-main: #FEFCE8;
+  --text-muted: #FDE047;
+  --text-dim: #EAB308;
+}
+
+[data-theme="yellow-dark"] .welcome-banner,
+[data-theme="yellow-dark"] .planet-card.hero-planet-card,
+[data-theme="yellow-dark"] .duviri-showcase-card,
+[data-theme="yellow-dark"] .codex-modal-card {
+  background: linear-gradient(155deg, #33270C 0%, #1A1406 100%);
+  border-color: #854D0E;
+}
+[data-theme="yellow-dark"] .welcome-banner h3,
+[data-theme="yellow-dark"] .feature-card h4,
+[data-theme="yellow-dark"] .nav-section-title.glow {
+  color: #FACC15;
+}
+[data-theme="yellow-dark"] .nav-icon {
+  color: #FACC15;
+}
+[data-theme="yellow-dark"] .nav-item:hover {
+  background: #36290D;
+  border-color: #A16207;
+}
+[data-theme="yellow-dark"] .nav-item.active,
+[data-theme="yellow-dark"] .filter-pill.active,
+[data-theme="yellow-dark"] .fps-pill-btn.active {
+  background: linear-gradient(90deg, #A16207 0%, #422006 100%);
+  border-color: #FACC15;
+  box-shadow: 0 0 16px rgba(234, 179, 8, 0.45);
+}
+[data-theme="yellow-dark"] .nav-item.active::before {
+  background: #FEF08A;
+  box-shadow: 0 0 8px #FACC15;
+}
+[data-theme="yellow-dark"] .search-input,
+[data-theme="yellow-dark"] .filter-pill,
+[data-theme="yellow-dark"] .fps-pill-btn,
+[data-theme="yellow-dark"] .duviri-item-chip,
+[data-theme="yellow-dark"] .modal-sec-box,
+[data-theme="yellow-dark"] .control-pill,
+[data-theme="yellow-dark"] .live-toggle-btn,
+[data-theme="yellow-dark"] .btn-sidebar-action,
+[data-theme="yellow-dark"] .btn-sidebar-secondary {
+  background: #241C09;
+  border-color: #634C19;
+  color: #FEF9C3;
+}
+[data-theme="yellow-dark"] .btn-open {
+  background: #422006;
+  border-color: #A16207;
+  color: #FDE047;
+}
+[data-theme="yellow-dark"] .btn-open:hover,
+[data-theme="yellow-dark"] .live-toggle-btn.active,
+[data-theme="yellow-dark"] .lang-btn.active {
+  background: #CA8A04;
+  border-color: #FACC15;
+  color: #FFFFFF;
+}
+[data-theme="yellow-dark"] .bounty-rot-row.active {
+  background: #422006;
+  border-color: #EAB308;
+}
+[data-theme="yellow-dark"] .bounty-rot-row.active .duviri-item-chip {
+  background: #573008;
+  border-color: #FACC15;
+}
+
+/* --- THÈME 16 : JAUNE CLAIR (SOLAIRE CLAIR & IVOIRE DORÉ) --- */
+[data-theme="yellow-light"] {
+  --bg-root: #FEF9C3;
+  --bg-sidebar: #FEFCE8;
+  --bg-center: #FFFDF2;
+  --bg-live: #FEFCE8;
+  --bg-card: #FFFFFF;
+  --bg-card-hover: #FEF9C3;
+  --border-subtle: #FEF08A;
+  --border-card: #FDE047;
+  --accent-blue: #CA8A04;
+  --accent-cyan: #A16207;
+  --accent-gold: #854D0E;
+  --accent-green: #15803D;
+  --text-main: #422006;
+  --text-muted: #713F12;
+  --text-dim: #854D0E;
+}
+
+[data-theme="yellow-light"] .welcome-banner {
+  background: linear-gradient(135deg, #FEFCE8 0%, #FEF9C3 100%);
+  border-color: #FDE047;
+}
+[data-theme="yellow-light"] .welcome-banner h3,
+[data-theme="yellow-light"] .feature-card h4 {
+  color: #A16207;
+}
+[data-theme="yellow-light"] .welcome-banner p {
+  color: #422006;
+}
+[data-theme="yellow-light"] .nav-item {
+  color: #713F12;
+}
+[data-theme="yellow-light"] .nav-icon {
+  color: #CA8A04;
+}
+[data-theme="yellow-light"] .nav-item:hover {
+  background: #FEF9C3;
+  border-color: #FDE047;
+  color: #422006;
+}
+[data-theme="yellow-light"] .nav-item.active {
+  background: linear-gradient(90deg, #CA8A04 0%, #A16207 100%);
+  border-color: #854D0E;
+  color: #FFFFFF;
+  box-shadow: 0 0 14px rgba(202, 138, 4, 0.35);
+}
+[data-theme="yellow-light"] .nav-item.active .nav-icon {
+  color: #FFFFFF;
+}
+[data-theme="yellow-light"] .control-pill,
+[data-theme="yellow-light"] .live-toggle-btn,
+[data-theme="yellow-light"] .live-close-btn,
+[data-theme="yellow-light"] .btn-sidebar-action,
+[data-theme="yellow-light"] .btn-sidebar-secondary,
+[data-theme="yellow-light"] .search-input,
+[data-theme="yellow-light"] .filter-pill,
+[data-theme="yellow-light"] .fps-pill-btn,
+[data-theme="yellow-light"] .duviri-item-chip,
+[data-theme="yellow-light"] .modal-sec-box {
+  background: #FFFFFF;
+  border-color: #FDE047;
+  color: #422006;
+}
+[data-theme="yellow-light"] #zoom-label,
+[data-theme="yellow-light"] .fps-pill-hz,
+[data-theme="yellow-light"] .hero-planet-card .planet-title,
+[data-theme="yellow-light"] .cycle-timer,
+[data-theme="yellow-light"] .duviri-showcase-name,
+[data-theme="yellow-light"] .modal-sec-text {
+  color: #422006 !important;
+}
+[data-theme="yellow-light"] .hero-planet-card .planet-sub {
+  color: #713F12;
+}
+[data-theme="yellow-light"] .planet-card.hero-planet-card,
+[data-theme="yellow-light"] .duviri-showcase-card,
+[data-theme="yellow-light"] .codex-modal-card {
+  background: linear-gradient(155deg, #FFFFFF 0%, #FEFCE8 100%);
+  border-color: #FDE047;
+  box-shadow: 0 4px 16px rgba(133, 77, 14, 0.08);
+}
+[data-theme="yellow-light"] .hero-planet-card .cycle-state {
+  background: #FEFCE8;
+  border-color: #FDE047;
+}
+[data-theme="yellow-light"] .filter-pill.active,
+[data-theme="yellow-light"] .lang-btn.active,
+[data-theme="yellow-light"] .live-toggle-btn.active {
+  background: #CA8A04;
+  border-color: #A16207;
+  color: #FFFFFF;
+}
+[data-theme="yellow-light"] .fps-pill-btn.active {
+  background: #FEF9C3;
+  border-color: #CA8A04;
+  box-shadow: 0 0 12px rgba(202, 138, 4, 0.25);
+}
+[data-theme="yellow-light"] .fps-pill-btn.active .fps-pill-hz,
+[data-theme="yellow-light"] .fps-pill-btn.active .fps-pill-desc {
+  color: #A16207;
+  text-shadow: none;
+}
+[data-theme="yellow-light"] .bounty-rot-row.active {
+  background: #FEF9C3;
+  border-color: #CA8A04;
+}
+[data-theme="yellow-light"] .bounty-rot-row.active .duviri-item-chip {
+  background: #FEF08A;
+  border-color: #CA8A04;
+  color: #422006;
+}
+[data-theme="yellow-light"] .btn-open {
+  background: #FEFCE8;
+  border-color: #FDE047;
+  color: #A16207;
+}
+[data-theme="yellow-light"] .btn-open:hover {
+  background: #CA8A04;
+  color: #FFFFFF;
+}
+
 /* --- ADAPTATION DES NOTIFICATIONS TOAST & LOADER SELON LE THÈME --- */
 [data-theme="light"] #toast-banner,
 [data-theme="full-white"] #toast-banner {
@@ -2860,6 +3065,16 @@ html {
   background: linear-gradient(145deg, #FFFFFF 0%, #F0FDF4 100%);
   border-color: #059669;
   box-shadow: 0 8px 24px rgba(4, 120, 87, 0.14), 0 0 14px rgba(5, 150, 105, 0.25);
+}
+[data-theme="yellow-dark"] #toast-banner {
+  background: linear-gradient(145deg, #33270C 0%, #1A1406 100%);
+  border-color: #FACC15;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.7), 0 0 18px rgba(234, 179, 8, 0.4);
+}
+[data-theme="yellow-light"] #toast-banner {
+  background: linear-gradient(145deg, #FFFFFF 0%, #FEFCE8 100%);
+  border-color: #CA8A04;
+  box-shadow: 0 8px 24px rgba(133, 77, 14, 0.14), 0 0 14px rgba(202, 138, 4, 0.25);
 }
 [data-theme="red-dark"] #toast-banner {
   background: linear-gradient(145deg, #2D0D16 0%, #19070C 100%);
@@ -2895,6 +3110,7 @@ html {
 [data-theme="full-white"] #in-app-loader,
 [data-theme="blue-light"] #in-app-loader,
 [data-theme="green-light"] #in-app-loader,
+[data-theme="yellow-light"] #in-app-loader,
 [data-theme="red-light"] #in-app-loader,
 [data-theme="orange-light"] #in-app-loader,
 [data-theme="purple-light"] #in-app-loader {
