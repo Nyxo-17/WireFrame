@@ -1,26 +1,159 @@
 {
   "warframes_weeks": [
-    ["Excalibur", "Trinity", "Ember"],
-    ["Loki", "Mag", "Rhino"],
-    ["Ash", "Frost", "Nyx"],
-    ["Saryn", "Vauban", "Nova"],
-    ["Nekros", "Valkyr", "Oberon"],
-    ["Hydroid", "Mirage", "Limbo"],
-    ["Mesa", "Chroma", "Atlas"],
-    ["Ivara", "Inaros", "Titania"],
-    ["Nidus", "Octavia", "Harrow"],
-    ["Gara", "Khora", "Revenant"],
-    ["Garuda", "Baruuk", "Hildryn"]
+    [
+      "Excalibur",
+      "Trinity",
+      "Ember"
+    ],
+    [
+      "Loki",
+      "Mag",
+      "Rhino"
+    ],
+    [
+      "Ash",
+      "Frost",
+      "Nyx"
+    ],
+    [
+      "Saryn",
+      "Vauban",
+      "Nova"
+    ],
+    [
+      "Nekros",
+      "Valkyr",
+      "Oberon"
+    ],
+    [
+      "Hydroid",
+      "Mirage",
+      "Limbo"
+    ],
+    [
+      "Mesa",
+      "Chroma",
+      "Atlas"
+    ],
+    [
+      "Ivara",
+      "Inaros",
+      "Titania"
+    ],
+    [
+      "Nidus",
+      "Octavia",
+      "Harrow"
+    ],
+    [
+      "Gara",
+      "Khora",
+      "Revenant"
+    ],
+    [
+      "Garuda",
+      "Baruuk",
+      "Hildryn"
+    ]
   ],
   "incarnon_weeks": [
-    ["Braton", "Lato", "Skana", "Paris", "Kunai"],
-    ["Bo", "Latron", "Furis", "Furax", "Strun"],
-    ["Lex", "Magistar", "Boltor", "Bronco", "Ceramic Dagger"],
-    ["Torid", "Dual Toxocyst", "Dual Ichor", "Miter", "Atomos"],
-    ["Ack & Brunt", "Soma", "Vasto", "Nami Solo", "Burston"],
-    ["Zylok", "Sibear", "Dread", "Despair", "Hate"],
-    ["Dera", "Sybaris", "Cestra", "Sicarus", "Okina"],
-    ["Gorgon", "Anku", "Angstrum", "Boar", "Gammacor"]
-  ]
+    [
+      "Braton",
+      "Lato",
+      "Skana",
+      "Paris",
+      "Kunai"
+    ],
+    [
+      "Bo",
+      "Latron",
+      "Furis",
+      "Furax",
+      "Strun"
+    ],
+    [
+      "Lex",
+      "Magistar",
+      "Boltor",
+      "Bronco",
+      "Ceramic Dagger"
+    ],
+    [
+      "Torid",
+      "Dual Toxocyst",
+      "Dual Ichor",
+      "Miter",
+      "Atomos"
+    ],
+    [
+      "Ack & Brunt",
+      "Soma",
+      "Vasto",
+      "Nami Solo",
+      "Burston"
+    ],
+    [
+      "Zylok",
+      "Sibear",
+      "Dread",
+      "Despair",
+      "Hate"
+    ],
+    [
+      "Dera",
+      "Sybaris",
+      "Cestra",
+      "Sicarus",
+      "Okina"
+    ],
+    [
+      "Gorgon",
+      "Anku",
+      "Angstrum",
+      "Boar",
+      "Gammacor"
+    ]
+  ],
+  "incarnon_images": {
+    "Boar": "Boar.png",
+    "Boltor": "Boltor.png",
+    "Braton": "Braton.png",
+    "Burston": "Burston.png",
+    "Dera": "Dera.png",
+    "Dread": "Dread.png",
+    "Gorgon": "Gorgon.png",
+    "Latron": "Latron.png",
+    "Miter": "Miter.png",
+    "Paris": "Paris.png",
+    "Soma": "Soma.png",
+    "Strun": "Strun.png",
+    "Sybaris": "Sybaris.png",
+    "Torid": "Torid.png",
+    "Angstrum": "Angstrum.png",
+    "Atomos": "Atomos.png",
+    "Bronco": "Bronco.png",
+    "Cestra": "Cestra.png",
+    "Despair": "Despair.png",
+    "Dual Toxocyst": "DualToxocyst.png",
+    "Furis": "Furis.png",
+    "Gammacor": "Gammacor.png",
+    "Kunai": "Kunai.png",
+    "Lato": "Lato.png",
+    "Lex": "Lex.png",
+    "Sicarus": "Sicarus.png",
+    "Vasto": "Vasto.png",
+    "Zylok": "ConclaveLeverPistol.png",
+    "Ack & Brunt": "AckAndBrunt.png",
+    "Anku": "Anku.png",
+    "Bo": "Bo.png",
+    "Ceramic Dagger": "CeramicDagger.png",
+    "Dual Ichor": "DualIchor.png",
+    "Furax": "Furax.png",
+    "Hate": "Hate.png",
+    "Magistar": "Magistar.png",
+    "Nami Solo": "NamiSolo.png",
+    "Okina": "Okina.png",
+    "Sibear": "Sibear.png",
+    "Skana": "Skana.png"
+  }
 }
-

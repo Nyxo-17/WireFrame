@@ -26,7 +26,7 @@
   <header class="topbar">
     <div class="topbar-left">
       <span class="topbar-title">WireFrame</span>
-      <span class="topbar-tag">HTML5 • 144 FPS</span>
+      <span id="topbar-fps-tag" class="topbar-tag">HTML5 • 144 FPS</span>
     </div>
     <div class="topbar-right">
       <!-- Sélecteur FR | EN -->
@@ -41,6 +41,11 @@
         <span id="zoom-label">100%</span>
         <button class="zoom-btn" onclick="changeZoom(10)">🔍+</button>
       </div>
+      <!-- Bouton Afficher / Masquer la colonne de droite -->
+      <button id="btn-toggle-live" class="live-toggle-btn active" onclick="toggleRightPanel()" title="Afficher / Cacher la colonne de droite">
+        <span>📡</span>
+        <span id="lbl-toggle-live">Panneau Direct</span>
+      </button>
       <!-- Bouton Discord officiel -->
       <a href="https://discord.gg/DhGwHPf82n" target="_blank" class="discord-btn">
         <img src="data/icons/discord_logo.png" alt="Discord" />
@@ -65,9 +70,6 @@
       <div id="sec-home" class="nav-section-title glow">ACCUEIL</div>
       <div class="nav-item active" data-tab="welcome" data-sec="sec-home" onclick="selectTab('welcome')">
         <span class="nav-icon">🏠</span><span id="nav-welcome">Bienvenue</span>
-      </div>
-      <div class="nav-item" data-tab="notifications" data-sec="sec-home" onclick="selectTab('notifications')">
-        <span class="nav-icon">🔔</span><span id="nav-notifications">Notifications</span>
       </div>
 
       <div id="sec-inv" class="nav-section-title">INVENTAIRE & CODEX</div>
@@ -100,10 +102,14 @@
 
       <div class="sidebar-spacer"></div>
 
+      <div class="nav-item" data-tab="settings" data-sec="" onclick="selectTab('settings')">
+        <span class="nav-icon">⚙️</span><span id="nav-settings">Paramètres</span>
+      </div>
+
       <div class="sidebar-footer">
         <div id="lbl-api-status" class="api-status">📡 En direct (API)</div>
         <button id="btn-refresh" class="btn-sidebar-action" onclick="refreshAllData(true)">🔄 Actualiser en direct</button>
-        <button id="btn-check-update" class="btn-sidebar-secondary" onclick="checkForUpdatesManual()">⬇️ Vérifier MAJ (v1.0.8)</button>
+        <button id="btn-check-update" class="btn-sidebar-secondary" onclick="checkForUpdatesManual()">⬇️ Vérifier MAJ (v1.0.10)</button>
       </div>
     </aside>
 
@@ -134,10 +140,13 @@
     </main>
 
     <!-- COLONNE DROITE : PANNEAU EN DIRECT -->
-    <aside class="live-panel">
+    <aside id="right-live-panel" class="live-panel">
       <div class="live-header-pill">
         <span id="live-badge" style="color:#F0F6FC;">● Cycles & Événements</span>
-        <span id="live-tag" style="color:#8A94A6; font-size:11px;">📡 En direct</span>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span id="live-tag" style="color:#8A94A6; font-size:11px;">📡 En direct</span>
+          <button class="live-close-btn" onclick="toggleRightPanel(false)" title="Cacher la colonne de droite">❯</button>
+        </div>
       </div>
 
       <div id="live-worlds-title" class="live-sec-title">Cycles des Mondes</div>

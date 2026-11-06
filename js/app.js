@@ -6,11 +6,13 @@ const WF_DATA = window.WIREFRAME_DATA || {
   codex: { warframes: [], resources: [], mods: [], relics: [], bounties: [] },
   duviri: { warframes_weeks: [], incarnon_weeks: [] },
   translations: { fr: {}, en: {} },
-  version: { version: "1.0.8" }
+  version: { version: "1.0.10" }
 };
 
 let currentLang = localStorage.getItem("wf_lang") || "fr";
 let currentZoom = parseInt(localStorage.getItem("wf_zoom") || "100", 10);
+let currentFps = parseInt(localStorage.getItem("wf_fps") || "144", 10);
+let showRightPanel = localStorage.getItem("wf_right_panel") !== "false";
 let currentTab = "welcome";
 
 // État de la recherche et des filtres Codex
@@ -509,8 +511,8 @@ function triggerAlert(title, message) {
     new Notification(title, { body: message, icon: "data/app_logo.png" });
   }
 
-  if (currentTab === "notifications") {
-    renderNotificationsView();
+  if (currentTab === "settings" || currentTab === "notifications") {
+    renderSettingsView();
   }
 }
 
@@ -575,8 +577,9 @@ function renderCurrentTab() {
     case "welcome":
       renderWelcomeView(container);
       break;
+    case "settings":
     case "notifications":
-      renderNotificationsView(container);
+      renderSettingsView(container);
       break;
     case "resources":
       renderCodexView(container, "resources", tr("res_page_title"));
@@ -616,7 +619,7 @@ function renderWelcomeView(container) {
     { title: tr("card_bnt_title"), desc: tr("card_bnt_desc"), tab: "bounties" },
     { title: tr("card_cir_title"), desc: tr("card_cir_desc"), tab: "duviri" },
     { title: tr("card_baro_title"), desc: tr("card_baro_desc"), tab: "baro" },
-    { title: tr("card_duv_title"), desc: tr("card_duv_desc"), tab: "notifications" },
+    { title: tr("card_duv_title"), desc: tr("card_duv_desc"), tab: "settings" },
     {
       title: tr("card_news_title"),
       desc: tr("card_news_desc"),
@@ -682,8 +685,58 @@ function renderWelcomeView(container) {
   `;
 }
 
-/* --- VUE 2 : CENTRE DE NOTIFICATIONS --- */
-function renderNotificationsView(container = document.getElementById("center-zoom-content")) {
+/* --- VUE 2 : PARAMÈTRES (FPS & CENTRE DE NOTIFICATIONS) --- */
+function setFps(fpsVal) {
+  const valid = [30, 60, 120, 144];
+  currentFps = valid.includes(Number(fpsVal)) ? Number(fpsVal) : 144;
+  localStorage.setItem("wf_fps", String(currentFps));
+
+  const tagEl = document.getElementById("topbar-fps-tag");
+  if (tagEl) {
+    tagEl.textContent = `HTML5 • ${currentFps} FPS`;
+  }
+
+  // Adapte la réactivité des transitions CSS selon le mode FPS choisi
+  const durMap = { 30: "0.36s", 60: "0.24s", 120: "0.16s", 144: "0.12s" };
+  document.documentElement.style.setProperty("--fps-transition", durMap[currentFps] || "0.16s");
+
+  if (currentTab === "settings" || currentTab === "notifications") {
+    renderSettingsView();
+  }
+}
+
+function toggleRightPanel(forceState) {
+  if (typeof forceState === "boolean") {
+    showRightPanel = forceState;
+  } else {
+    showRightPanel = !showRightPanel;
+  }
+  localStorage.setItem("wf_right_panel", String(showRightPanel));
+
+  const panel = document.getElementById("right-live-panel");
+  if (panel) {
+    panel.classList.toggle("collapsed", !showRightPanel);
+  }
+
+  const btn = document.getElementById("btn-toggle-live");
+  if (btn) {
+    btn.classList.toggle("active", showRightPanel);
+  }
+  const lbl = document.getElementById("lbl-toggle-live");
+  if (lbl) {
+    if (currentLang === "fr") {
+      lbl.textContent = showRightPanel ? "Cacher Direct" : "Afficher Direct";
+    } else {
+      lbl.textContent = showRightPanel ? "Hide Live" : "Show Live";
+    }
+  }
+
+  if (currentTab === "settings" || currentTab === "notifications") {
+    renderSettingsView();
+  }
+}
+
+function renderSettingsView(container = document.getElementById("center-zoom-content")) {
   if (!container) return;
   const switches = [
     { key: "planets", label: tr("notif_sw_planets") },
@@ -694,9 +747,73 @@ function renderNotificationsView(container = document.getElementById("center-zoo
     { key: "sound", label: tr("notif_sw_sound") }
   ];
 
+  const fpsOptions = [
+    {
+      fps: 30,
+      label: "30 FPS",
+      sub: currentLang === "fr" ? "🔋 Économie d'énergie" : "🔋 Power Saving"
+    },
+    {
+      fps: 60,
+      label: "60 FPS",
+      sub: currentLang === "fr" ? "⚖️ Standard équilibré" : "⚖️ Balanced Standard"
+    },
+    {
+      fps: 120,
+      label: "120 FPS",
+      sub: currentLang === "fr" ? "🚀 Haute fluidité" : "🚀 High Smoothness"
+    },
+    {
+      fps: 144,
+      label: "144 FPS",
+      sub: currentLang === "fr" ? "⚡ Ultra Réactif (Max)" : "⚡ Ultra Responsive (Max)"
+    }
+  ];
+
   container.innerHTML = `
-    <div class="view-header-title">${tr("notif_page_title")}</div>
-    <div class="view-header-sub">${tr("notif_page_sub")}</div>
+    <div class="view-header-title">${tr("settings_page_title")}</div>
+    <div class="view-header-sub">${tr("settings_page_sub")}</div>
+
+    <!-- BLOC 1 : CHOIX DES FPS (30 / 60 / 120 / 144) -->
+    <div class="bounty-card" style="padding:16px; margin-bottom:16px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+        <div style="font-size:15px; font-weight:700; color:#58A6FF;">${tr("fps_sec_title")}</div>
+        <span style="font-size:12px; font-weight:700; color:#4ADE80; background:rgba(74,222,128,0.12); border:1px solid rgba(74,222,128,0.35); padding:2px 10px; border-radius:12px;">
+          ● ${currentFps} FPS ${currentLang === "fr" ? "Actif" : "Active"}
+        </span>
+      </div>
+      <div style="font-size:12.5px; color:#8B949E; margin-bottom:10px;">${tr("fps_sec_desc")}</div>
+
+      <div class="fps-selector-grid">
+        ${fpsOptions
+          .map(
+            (opt) => `
+          <button class="fps-pill-btn ${currentFps === opt.fps ? "active" : ""}" onclick="setFps(${opt.fps})">
+            <span class="fps-pill-hz">${opt.label}</span>
+            <span class="fps-pill-desc">${opt.sub}</span>
+          </button>
+        `
+          )
+          .join("")}
+      </div>
+
+      <div style="margin-top:14px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.06);">
+        <label style="display:flex; align-items:center; gap:12px; cursor:pointer; font-size:13px; color:#E6EDF3;">
+          <input type="checkbox" ${showRightPanel ? "checked" : ""} onchange="toggleRightPanel(this.checked)" style="width:17px; height:17px; accent-color:#3B82F6; cursor:pointer;" />
+          <span>${
+            currentLang === "fr"
+              ? "📡  Afficher la colonne de droite (Cycles en direct, Duviri, Baro Ki'Teer & Actualités Warframe)"
+              : "📡  Show right-hand Live Panel (World Cycles, Duviri, Baro Ki'Teer & Official News)"
+          }</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- BLOC 2 : CENTRE DE NOTIFICATIONS & ALERTES EN DIRECT -->
+    <div class="view-header-title" style="font-size:16px; margin:8px 0 4px 0; color:#58A6FF;">
+      ${tr("notif_page_title")}
+    </div>
+    <div class="view-header-sub" style="margin-bottom:10px;">${tr("notif_page_sub")}</div>
 
     <div class="bounty-card" style="padding:16px;">
       ${switches
@@ -1111,8 +1228,66 @@ function renderBountiesView(container) {
 }
 
 /* --- VUE 8 : CIRCUIT DE DUVIRI & INCARNON --- */
+const INCARNON_WEAPON_IMAGES = {
+  "Ack & Brunt": "AckAndBrunt.png",
+  "Angstrum": "Angstrum.png",
+  "Anku": "Anku.png",
+  "Atomos": "Atomos.png",
+  "Bo": "Bo.png",
+  "Boar": "Boar.png",
+  "Boltor": "Boltor.png",
+  "Braton": "Braton.png",
+  "Bronco": "Bronco.png",
+  "Burston": "Burston.png",
+  "Ceramic Dagger": "CeramicDagger.png",
+  "Cestra": "Cestra.png",
+  "Dera": "Dera.png",
+  "Despair": "Despair.png",
+  "Dread": "Dread.png",
+  "Dual Ichor": "DualIchor.png",
+  "Dual Toxocyst": "DualToxocyst.png",
+  "Furax": "Furax.png",
+  "Furis": "Furis.png",
+  "Gammacor": "Gammacor.png",
+  "Gorgon": "Gorgon.png",
+  "Hate": "Hate.png",
+  "Kunai": "Kunai.png",
+  "Lato": "Lato.png",
+  "Latron": "Latron.png",
+  "Lex": "Lex.png",
+  "Magistar": "Magistar.png",
+  "Miter": "Miter.png",
+  "Nami Solo": "NamiSolo.png",
+  "Okina": "Okina.png",
+  "Paris": "Paris.png",
+  "Sibear": "Sibear.png",
+  "Sicarus": "Sicarus.png",
+  "Skana": "Skana.png",
+  "Soma": "Soma.png",
+  "Strun": "Strun.png",
+  "Sybaris": "Sybaris.png",
+  "Torid": "Torid.png",
+  "Vasto": "Vasto.png",
+  "Zylok": "ConclaveLeverPistol.png"
+};
+
+function getIncarnonWeaponImg(wName) {
+  const map = (WF_DATA.duviri && WF_DATA.duviri.incarnon_images) || INCARNON_WEAPON_IMAGES;
+  const file = map[wName] || INCARNON_WEAPON_IMAGES[wName] || `${wName.replace(/[^a-zA-Z0-9]/g, "")}.png`;
+  return `https://cdn.warframestat.us/img/${file}`;
+}
+
+function getCircuitWarframeImg(wfName) {
+  const found = (WF_DATA.codex?.warframes || []).find((w) => w.name.toLowerCase() === wfName.toLowerCase());
+  const file = (found && found.image) || `${wfName.replace(/\s+/g, "")}.png`;
+  return `https://cdn.warframestat.us/img/${file}`;
+}
+
 function renderDuviriView(container) {
   if (!duviriState) duviriState = computeDuviriState();
+
+  const curIncWeek = duviriState.incarnon_index + 1;
+  const curWfWeek = duviriState.warframe_index + 1;
 
   container.innerHTML = `
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -1122,6 +1297,52 @@ function renderDuviriView(container) {
       </div>
     </div>
 
+    <!-- VITRINE EN DIRECT DE LA SEMAINE ACTIVE (AVEC GRANDES IMAGES OFFICIELLES) -->
+    <div class="cards-grid-2" style="margin-bottom:14px;">
+      <div class="bounty-card" style="margin-bottom:0; border-color:#3B82F6; box-shadow:0 0 18px rgba(59,130,246,0.18);">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:13.5px; font-weight:800; color:#79C0FF;">
+            🔥 ${currentLang === "fr" ? "Armes Incarnon Actives" : "Active Incarnon Weapons"} (${tr("week_label")} ${curIncWeek})
+          </span>
+          <span style="font-size:11px; font-weight:700; color:#4ADE80;">● ${currentLang === "fr" ? "EN COURS" : "ACTIVE"}</span>
+        </div>
+        <div class="duviri-showcase-grid">
+          ${duviriState.incarnon_current
+            .map(
+              (w) => `
+            <div class="duviri-showcase-card">
+              <img src="${getIncarnonWeaponImg(w)}" alt="${w}" class="duviri-showcase-img" loading="lazy" onerror="this.onerror=null;this.src='data/app_logo.png';" />
+              <div class="duviri-showcase-name">${w}</div>
+            </div>
+          `
+            )
+            .join("")}
+        </div>
+      </div>
+
+      <div class="bounty-card" style="margin-bottom:0; border-color:#3B82F6; box-shadow:0 0 18px rgba(59,130,246,0.18);">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:13.5px; font-weight:800; color:#79C0FF;">
+            🛡️ ${currentLang === "fr" ? "Warframes du Circuit Actives" : "Active Circuit Warframes"} (${tr("week_label")} ${curWfWeek})
+          </span>
+          <span style="font-size:11px; font-weight:700; color:#4ADE80;">● ${currentLang === "fr" ? "EN COURS" : "ACTIVE"}</span>
+        </div>
+        <div class="duviri-showcase-grid wf-grid">
+          ${duviriState.warframes_current
+            .map(
+              (wf) => `
+            <div class="duviri-showcase-card">
+              <img src="${getCircuitWarframeImg(wf)}" alt="${wf}" class="duviri-showcase-img" loading="lazy" onerror="this.onerror=null;this.src='data/app_logo.png';" />
+              <div class="duviri-showcase-name">${wf}</div>
+            </div>
+          `
+            )
+            .join("")}
+        </div>
+      </div>
+    </div>
+
+    <!-- CALENDRIER COMPLET DES ROTATIONS AVEC IMAGES OFFICIELLES -->
     <div class="cards-grid-2">
       <div class="bounty-card">
         <div style="font-size:14px; font-weight:700; color:#58A6FF; margin-bottom:10px;">${tr("duviri_inc_col")}</div>
@@ -1129,11 +1350,22 @@ function renderDuviriView(container) {
           .map((weapons, idx) => {
             const isAct = idx === duviriState.incarnon_index;
             return `
-              <div class="bounty-rot-row ${isAct ? "active" : ""}" style="grid-template-columns:135px 1fr;">
-                <span style="color:${isAct ? "#4ADE80" : "#8B949E"};">
+              <div class="bounty-rot-row ${isAct ? "active" : ""}" style="grid-template-columns:130px 1fr; align-items:center; padding:8px 10px; margin:4px 0;">
+                <span style="color:${isAct ? "#4ADE80" : "#8B949E"}; font-weight:${isAct ? "800" : "600"};">
                   ${tr("week_label")} ${idx + 1}${isAct ? tr("active_tag") : ""}
                 </span>
-                <span style="color:${isAct ? "#FFFFFF" : "#C9D1D9"};">${weapons.join(" • ")}</span>
+                <div class="duviri-chips-wrap">
+                  ${weapons
+                    .map(
+                      (w) => `
+                    <span class="duviri-item-chip">
+                      <img src="${getIncarnonWeaponImg(w)}" alt="${w}" class="duviri-chip-img" loading="lazy" onerror="this.onerror=null;this.src='data/app_logo.png';" />
+                      <span>${w}</span>
+                    </span>
+                  `
+                    )
+                    .join("")}
+                </div>
               </div>
             `;
           })
@@ -1146,11 +1378,22 @@ function renderDuviriView(container) {
           .map((wfs, idx) => {
             const isAct = idx === duviriState.warframe_index;
             return `
-              <div class="bounty-rot-row ${isAct ? "active" : ""}" style="grid-template-columns:135px 1fr;">
-                <span style="color:${isAct ? "#4ADE80" : "#8B949E"};">
+              <div class="bounty-rot-row ${isAct ? "active" : ""}" style="grid-template-columns:130px 1fr; align-items:center; padding:8px 10px; margin:4px 0;">
+                <span style="color:${isAct ? "#4ADE80" : "#8B949E"}; font-weight:${isAct ? "800" : "600"};">
                   ${tr("week_label")} ${idx + 1}${isAct ? tr("active_tag") : ""}
                 </span>
-                <span style="color:${isAct ? "#FFFFFF" : "#C9D1D9"};">${wfs.join(" • ")}</span>
+                <div class="duviri-chips-wrap">
+                  ${wfs
+                    .map(
+                      (wf) => `
+                    <span class="duviri-item-chip">
+                      <img src="${getCircuitWarframeImg(wf)}" alt="${wf}" class="duviri-chip-img" loading="lazy" onerror="this.onerror=null;this.src='data/app_logo.png';" />
+                      <span>${wf}</span>
+                    </span>
+                  `
+                    )
+                    .join("")}
+                </div>
               </div>
             `;
           })
@@ -1223,7 +1466,7 @@ function setLanguage(lang) {
     "lbl-creator-role": tr("creator_role"),
     "sec-home": tr("sec_home"),
     "nav-welcome": cleanNavText(tr("nav_welcome")),
-    "nav-notifications": cleanNavText(tr("nav_notifications")),
+    "nav-settings": cleanNavText(tr("nav_settings")),
     "sec-inv": tr("sec_inventory"),
     "nav-resources": cleanNavText(tr("nav_resources")),
     "nav-mods": cleanNavText(tr("nav_mods")),
@@ -1235,7 +1478,7 @@ function setLanguage(lang) {
     "nav-duviri": cleanNavText(tr("nav_duviri")),
     "nav-baro": cleanNavText(tr("nav_baro")),
     "btn-refresh": tr("btn_refresh"),
-    "btn-check-update": `${tr("btn_check_update")} (v${WF_DATA.version?.version || "1.0.8"})`,
+    "btn-check-update": `${tr("btn_check_update")} (v${WF_DATA.version?.version || "1.0.10"})`,
     "live-badge": tr("live_badge"),
     "live-tag": tr("live_tag"),
     "live-worlds-title": tr("live_worlds_title"),
@@ -1250,6 +1493,18 @@ function setLanguage(lang) {
     const el = document.getElementById(id);
     if (el) el.textContent = txt;
   });
+
+  const lblLive = document.getElementById("lbl-toggle-live");
+  if (lblLive) {
+    lblLive.textContent =
+      currentLang === "fr"
+        ? showRightPanel
+          ? "Cacher Direct"
+          : "Afficher Direct"
+        : showRightPanel
+          ? "Hide Live"
+          : "Show Live";
+  }
 
   buildLiveWorldsGrid();
   buildLiveNewsList();
@@ -1280,7 +1535,7 @@ async function refreshAllData(showLoader = false) {
 }
 
 async function checkForUpdatesManual() {
-  const localVer = WF_DATA.version?.version || "1.0.8";
+  const localVer = WF_DATA.version?.version || "1.0.10";
   try {
     const res = await fetch("https://raw.githubusercontent.com/Nyxo-17/WireFrame/main/version.json?t=" + Date.now());
     if (!res.ok) throw new Error("HTTP " + res.status);
@@ -1307,6 +1562,8 @@ window.addEventListener("DOMContentLoaded", async () => {
   const splash = document.getElementById("splash-screen");
 
   changeZoom(0);
+  setFps(currentFps);
+  toggleRightPanel(showRightPanel);
   worldState = computeOfflineWorldState();
   setLanguage(currentLang);
 
