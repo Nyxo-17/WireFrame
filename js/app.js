@@ -6,7 +6,7 @@ const WF_DATA = window.WIREFRAME_DATA || {
   codex: { warframes: [], weapons: [], resources: [], mods: [], relics: [], bounties: [] },
   duviri: { warframes_weeks: [], incarnon_weeks: [] },
   translations: { fr: {}, en: {} },
-  version: { version: "1.0.33" }
+  version: { version: "1.0.34" }
 };
 
 let currentLang = localStorage.getItem("wf_lang") || "fr";
@@ -663,13 +663,42 @@ function renderWelcomeView(container) {
     { title: tr("card_wf_title"), desc: tr("card_wf_desc"), tab: "warframes" },
     { title: tr("card_wpn_title"), desc: tr("card_wpn_desc"), tab: "weapons" },
     { title: tr("card_rel_title"), desc: tr("card_rel_desc"), tab: "relics" },
-    { title: tr("card_wld_title"), desc: tr("card_wld_desc"), tab: "worlds" },
-    { title: tr("card_bnt_title"), desc: tr("card_bnt_desc"), tab: "bounties" },
-    { title: tr("card_cir_title"), desc: tr("card_cir_desc"), tab: "duviri" },
-    { title: tr("card_baro_title"), desc: tr("card_baro_desc"), tab: "baro" },
-    { title: tr("card_duv_title"), desc: tr("card_duv_desc"), tab: "settings" },
     {
-      title: tr("card_news_title"),
+      title: currentLang === "fr" ? "◎  6. Temps des Planètes" : "◎  6. Planet Timers",
+      desc: tr("card_wld_desc"),
+      tab: "worlds"
+    },
+    {
+      title: currentLang === "fr" ? "⌖  7. Mises à Prix (Rotations A/B/C)" : "⌖  7. Bounties (Rotations A/B/C)",
+      desc: tr("card_bnt_desc"),
+      tab: "bounties"
+    },
+    {
+      title: currentLang === "fr" ? "⟡  8. Le Circuit de Duviri & Incarnon" : "⟡  8. The Duviri Circuit & Incarnon",
+      desc: tr("card_cir_desc"),
+      tab: "duviri"
+    },
+    {
+      title: currentLang === "fr" ? "❖  9. Marchand du Néant — Baro Ki'Teer" : "❖  9. Void Trader — Baro Ki'Teer",
+      desc: tr("card_baro_desc"),
+      tab: "baro"
+    },
+    {
+      title:
+        currentLang === "fr"
+          ? "❖  10. Paramètres, 20 Thèmes, FPS & Notifications"
+          : "❖  10. Settings, 20 Themes, FPS & Notifications",
+      desc:
+        currentLang === "fr"
+          ? "Personnalisation complète avec 20 thèmes visuels (Sombre, Clair, OLED, Bleu, Cyan, Vert, Jaune, Rouge, Orange, Violet, Rose), fluidité 30 à 144 FPS et alertes sonores en direct."
+          : "Full customization with 20 visual themes (Dark, Light, OLED, Blue, Cyan, Green, Yellow, Red, Orange, Purple, Pink), 30 to 144 FPS smoothness and live sound alerts.",
+      tab: "settings"
+    },
+    {
+      title:
+        currentLang === "fr"
+          ? "❖  11. Actualités Warframe & Discord Officiel"
+          : "❖  11. Official Warframe News & Discord",
       desc: tr("card_news_desc"),
       extUrl: "https://discord.gg/DhGwHPf82n",
       extBtn: "❖ Discord ➔"
@@ -682,15 +711,21 @@ function renderWelcomeView(container) {
     { icon: "✦", val: "120", lbl: "Warframes", tab: "warframes" },
     { icon: "⚔", val: "635", lbl: currentLang === "fr" ? "Armes" : "Weapons", tab: "weapons" },
     { icon: "⬡", val: "801", lbl: currentLang === "fr" ? "Reliques" : "Relics", tab: "relics" },
-    { icon: "◎", val: "24/7", lbl: currentLang === "fr" ? "Cycles Direct" : "Live Cycles", tab: "worlds" }
+    { icon: "◎", val: "24/7", lbl: currentLang === "fr" ? "Cycles Direct" : "Live Cycles", tab: "worlds" },
+    { icon: "❖", val: "20 Thèmes", lbl: currentLang === "fr" ? "Paramètres" : "Settings", tab: "settings" }
   ];
 
   container.innerHTML = `
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-      <div class="view-header-title" style="margin-bottom:0;">${tr("welcome_page_title")}</div>
-      <div style="display:flex; align-items:center; gap:8px; background:#141A29; border:1px solid #263554; padding:5px 12px; border-radius:8px;">
-        <img src="data/app_logo.png" alt="Nyxo_17" style="width:24px; height:24px; object-fit:contain;" />
-        <span style="font-size:12px; color:#8B949E;">${tr("created_by")} <strong style="color:#58A6FF;">Nyxo_17</strong></span>
+      <div class="view-header-title" style="margin-bottom:0;">${currentLang === "fr" ? "Accueil — WireFrame" : "Home — WireFrame"}</div>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <button class="btn-open" onclick="selectTab('settings')" style="padding:6px 14px; font-size:12.5px; display:inline-flex; align-items:center; gap:6px;">
+          ❖ ${currentLang === "fr" ? "Paramètres & Thèmes" : "Settings & Themes"}
+        </button>
+        <div style="display:flex; align-items:center; gap:8px; background:#141A29; border:1px solid #263554; padding:5px 12px; border-radius:8px;">
+          <img src="data/app_logo.png" alt="Nyxo_17" style="width:24px; height:24px; object-fit:contain;" />
+          <span style="font-size:12px; color:#8B949E;">${tr("created_by")} <strong style="color:#58A6FF;">Nyxo_17</strong></span>
+        </div>
       </div>
     </div>
 
@@ -699,7 +734,7 @@ function renderWelcomeView(container) {
       <p>${tr("welcome_banner_desc")}</p>
     </div>
 
-    <div style="display:grid; grid-template-columns:repeat(6, 1fr); gap:10px; margin-bottom:14px;">
+    <div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:10px; margin-bottom:14px;">
       ${stats
         .map(
           (s) => `
@@ -1748,7 +1783,7 @@ function setLanguage(lang) {
   const mapText = {
     "lbl-creator-role": tr("creator_role"),
     "sec-home": tr("sec_home"),
-    "nav-welcome": cleanNavText(tr("nav_welcome")),
+    "nav-welcome": currentLang === "fr" ? "Accueil" : "Home",
     "nav-settings": cleanNavText(tr("nav_settings")),
     "sec-inv": tr("sec_inventory"),
     "nav-resources": cleanNavText(tr("nav_resources")),
@@ -1821,8 +1856,8 @@ async function refreshAllData(showLoader = false) {
 }
 
 function isNewerVersion(remoteVer, localVer) {
-  const r = String(remoteVer || "1.0.33").replace(/^v/i, "").split(".").map((n) => parseInt(n, 10) || 0);
-  const l = String(localVer || "1.0.33").replace(/^v/i, "").split(".").map((n) => parseInt(n, 10) || 0);
+  const r = String(remoteVer || "1.0.34").replace(/^v/i, "").split(".").map((n) => parseInt(n, 10) || 0);
+  const l = String(localVer || "1.0.34").replace(/^v/i, "").split(".").map((n) => parseInt(n, 10) || 0);
   for (let i = 0; i < Math.max(r.length, l.length); i++) {
     const rv = r[i] || 0;
     const lv = l[i] || 0;
@@ -1833,7 +1868,7 @@ function isNewerVersion(remoteVer, localVer) {
 }
 
 function getEffectiveLocalVersion() {
-  const bundledVer = WF_DATA.version?.version || "1.0.33";
+  const bundledVer = WF_DATA.version?.version || "1.0.34";
   const cachedVer = localStorage.getItem("wf_live_version");
   if (cachedVer && isNewerVersion(cachedVer, bundledVer)) {
     WF_DATA.version = { ...(WF_DATA.version || {}), version: cachedVer };
@@ -1864,7 +1899,7 @@ function applyLiveJsCode(jsText) {
 }
 
 function restoreCachedLiveUpdate() {
-  const bundledVer = WF_DATA.version?.version || "1.0.33";
+  const bundledVer = WF_DATA.version?.version || "1.0.34";
   const cachedVer = localStorage.getItem("wf_live_version");
   const effectiveVer = getEffectiveLocalVersion();
   const cachedCss = localStorage.getItem("wf_live_css");
