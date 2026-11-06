@@ -6,7 +6,7 @@ const WF_DATA = window.WIREFRAME_DATA || {
   codex: { warframes: [], weapons: [], resources: [], mods: [], relics: [], bounties: [] },
   duviri: { warframes_weeks: [], incarnon_weeks: [] },
   translations: { fr: {}, en: {} },
-  version: { version: "1.0.32" }
+  version: { version: "1.0.33" }
 };
 
 let currentLang = localStorage.getItem("wf_lang") || "fr";
@@ -743,6 +743,8 @@ function setTheme(themeKey) {
     "full-white",
     "blue-dark",
     "blue-light",
+    "cyan-dark",
+    "cyan-light",
     "green-dark",
     "green-light",
     "yellow-dark",
@@ -752,7 +754,9 @@ function setTheme(themeKey) {
     "orange-dark",
     "orange-light",
     "purple-dark",
-    "purple-light"
+    "purple-light",
+    "pink-dark",
+    "pink-light"
   ];
   currentTheme = valid.includes(themeKey) ? themeKey : "dark";
   localStorage.setItem("wf_theme", currentTheme);
@@ -879,6 +883,16 @@ function renderSettingsView(container = document.getElementById("center-zoom-con
       sub: currentLang === "fr" ? "Glace de Fortuna & Azur" : "Fortuna Ice & Azure"
     },
     {
+      id: "cyan-dark",
+      label: currentLang === "fr" ? "⬡ Cyan Sombre" : "⬡ Dark Cyan",
+      sub: currentLang === "fr" ? "Céphalon & Cryotique" : "Cephalon & Cryotic"
+    },
+    {
+      id: "cyan-light",
+      label: currentLang === "fr" ? "✧ Cyan Clair" : "✧ Light Cyan",
+      sub: currentLang === "fr" ? "Lagon & Cristal Clair" : "Lagoon & Clear Crystal"
+    },
+    {
       id: "green-dark",
       label: currentLang === "fr" ? "❖ Vert Sombre" : "❖ Dark Green",
       sub: currentLang === "fr" ? "Émeraude & Forêts" : "Emerald & Earth Forests"
@@ -927,6 +941,16 @@ function renderSettingsView(container = document.getElementById("center-zoom-con
       id: "purple-light",
       label: currentLang === "fr" ? "❖ Violet Clair" : "❖ Light Purple",
       sub: currentLang === "fr" ? "Améthyste & Lavande" : "Amethyst & Lavender"
+    },
+    {
+      id: "pink-dark",
+      label: currentLang === "fr" ? "❖ Rose Sombre" : "❖ Dark Pink",
+      sub: currentLang === "fr" ? "Octavia & Néon Magenta" : "Octavia & Neon Magenta"
+    },
+    {
+      id: "pink-light",
+      label: currentLang === "fr" ? "✦ Rose Clair" : "✦ Light Pink",
+      sub: currentLang === "fr" ? "Cerisier & Quartz Rose" : "Cherry Blossom & Rose Quartz"
     }
   ];
 
@@ -934,7 +958,7 @@ function renderSettingsView(container = document.getElementById("center-zoom-con
     <div class="view-header-title">${tr("settings_page_title")}</div>
     <div class="view-header-sub">${tr("settings_page_sub")}</div>
 
-    <!-- BLOC 0 : CHOIX DU THÈME VISUEL (16 THÈMES) -->
+    <!-- BLOC 0 : CHOIX DU THÈME VISUEL (20 THÈMES) -->
     <div class="bounty-card" style="padding:16px; margin-bottom:16px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
         <div style="font-size:15px; font-weight:700; color:var(--accent-blue);">
@@ -947,8 +971,8 @@ function renderSettingsView(container = document.getElementById("center-zoom-con
       <div style="font-size:12.5px; color:var(--text-muted); margin-bottom:10px;">
         ${
           currentLang === "fr"
-            ? "Choisis l'apparence visuelle de WireFrame parmi les 16 thèmes (Sombre, Clair, OLED, Bleu, Vert, Jaune, Rouge, Orange, Violet) :"
-            : "Select the visual theme for WireFrame among the 16 themes (Dark, Light, OLED, Blue, Green, Yellow, Red, Orange, Purple):"
+            ? "Choisis l'apparence visuelle de WireFrame parmi les 20 thèmes (Sombre, Clair, OLED, Bleu, Cyan, Vert, Jaune, Rouge, Orange, Violet, Rose) :"
+            : "Select the visual theme for WireFrame among the 20 themes (Dark, Light, OLED, Blue, Cyan, Green, Yellow, Red, Orange, Purple, Pink):"
         }
       </div>
 
@@ -1797,8 +1821,8 @@ async function refreshAllData(showLoader = false) {
 }
 
 function isNewerVersion(remoteVer, localVer) {
-  const r = String(remoteVer || "1.0.32").replace(/^v/i, "").split(".").map((n) => parseInt(n, 10) || 0);
-  const l = String(localVer || "1.0.32").replace(/^v/i, "").split(".").map((n) => parseInt(n, 10) || 0);
+  const r = String(remoteVer || "1.0.33").replace(/^v/i, "").split(".").map((n) => parseInt(n, 10) || 0);
+  const l = String(localVer || "1.0.33").replace(/^v/i, "").split(".").map((n) => parseInt(n, 10) || 0);
   for (let i = 0; i < Math.max(r.length, l.length); i++) {
     const rv = r[i] || 0;
     const lv = l[i] || 0;
@@ -1809,7 +1833,7 @@ function isNewerVersion(remoteVer, localVer) {
 }
 
 function getEffectiveLocalVersion() {
-  const bundledVer = WF_DATA.version?.version || "1.0.32";
+  const bundledVer = WF_DATA.version?.version || "1.0.33";
   const cachedVer = localStorage.getItem("wf_live_version");
   if (cachedVer && isNewerVersion(cachedVer, bundledVer)) {
     WF_DATA.version = { ...(WF_DATA.version || {}), version: cachedVer };
@@ -1840,7 +1864,7 @@ function applyLiveJsCode(jsText) {
 }
 
 function restoreCachedLiveUpdate() {
-  const bundledVer = WF_DATA.version?.version || "1.0.32";
+  const bundledVer = WF_DATA.version?.version || "1.0.33";
   const cachedVer = localStorage.getItem("wf_live_version");
   const effectiveVer = getEffectiveLocalVersion();
   const cachedCss = localStorage.getItem("wf_live_css");
