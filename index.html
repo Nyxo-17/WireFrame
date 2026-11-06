@@ -112,7 +112,7 @@
       <div class="sidebar-footer">
         <div id="lbl-api-status" class="api-status">📡 En direct (API)</div>
         <button id="btn-refresh" class="btn-sidebar-action" onclick="refreshAllData(true)">🔄 Actualiser en direct</button>
-        <button id="btn-check-update" class="btn-sidebar-secondary" onclick="checkForUpdatesManual()">⬇️ Vérifier MAJ (v1.0.13)</button>
+        <button id="btn-check-update" class="btn-sidebar-secondary" onclick="checkForUpdatesManual()">⬇️ Vérifier MAJ (v1.0.14)</button>
       </div>
     </aside>
 
@@ -142,58 +142,16 @@
       </div>
     </main>
 
-    <!-- COLONNE DROITE : PANNEAU EN DIRECT -->
+    <!-- COLONNE DROITE : ACTUALITÉS OFFICIELLES WARFRAME UNIQUEMENT -->
     <aside id="right-live-panel" class="live-panel">
       <div class="live-header-pill">
-        <span id="live-badge" style="color:#F0F6FC;">● Cycles & Événements</span>
+        <span id="live-news-title" style="color:#F0F6FC; font-size:13px; font-weight:800;">📰 Actualités Warframe</span>
         <div style="display:flex; align-items:center; gap:8px;">
-          <span id="live-tag" style="color:#8A94A6; font-size:11px;">📡 En direct</span>
+          <a href="https://www.warframe.com/fr/news" target="_blank" id="live-news-all" class="live-news-link">warframe.com ↗</a>
           <button class="live-close-btn" onclick="toggleRightPanel(false)" title="Cacher la colonne de droite">❯</button>
         </div>
       </div>
 
-      <div id="live-worlds-title" class="live-sec-title">Cycles des Mondes</div>
-      <div id="live-worlds-grid" class="live-worlds-grid"></div>
-
-      <div id="live-duviri-title" class="live-sec-title">Le Circuit // Duviri</div>
-      <div class="live-box">
-        <div class="live-box-top">
-          <span id="live-inc-title" class="live-box-title">⚔️ Incarnon (Acier)</span>
-          <span id="live-inc-timer" class="live-box-timer">--j --h</span>
-        </div>
-        <div id="live-inc-cur" class="live-box-cur">...</div>
-        <div id="live-inc-nxt" class="live-box-nxt">...</div>
-      </div>
-
-      <div class="live-box">
-        <div class="live-box-top">
-          <span id="live-wf-title" class="live-box-title">🛡️ Warframes (Circuit)</span>
-          <span id="live-wf-timer" class="live-box-timer">--j --h</span>
-        </div>
-        <div id="live-wf-cur" class="live-box-cur">...</div>
-        <div id="live-wf-nxt" class="live-box-nxt">...</div>
-      </div>
-
-      <div class="live-box">
-        <div class="live-box-top">
-          <span id="live-bounty-title" class="live-box-title">🎯 Mises à Prix (Planètes)</span>
-          <span id="live-bounty-timer" class="live-box-timer">--h --m</span>
-        </div>
-        <div id="live-bounty-info" class="live-box-cur">...</div>
-      </div>
-
-      <div class="live-box">
-        <div class="live-box-top">
-          <span id="live-baro-title" class="live-box-title">💎 Baro Ki'Teer (Néant)</span>
-          <span id="live-baro-timer" class="live-box-timer">--j --h</span>
-        </div>
-        <div id="live-baro-info" class="live-box-cur">...</div>
-      </div>
-
-      <div class="live-news-header">
-        <span id="live-news-title" class="live-sec-title">📰 Actualités Officielles Warframe</span>
-        <a href="https://www.warframe.com/fr/news" target="_blank" id="live-news-all" class="live-news-link">warframe.com ↗</a>
-      </div>
       <div id="live-news-list" class="live-news-list"></div>
     </aside>
 

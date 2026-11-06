@@ -6,12 +6,13 @@ const WF_DATA = window.WIREFRAME_DATA || {
   codex: { warframes: [], weapons: [], resources: [], mods: [], relics: [], bounties: [] },
   duviri: { warframes_weeks: [], incarnon_weeks: [] },
   translations: { fr: {}, en: {} },
-  version: { version: "1.0.13" }
+  version: { version: "1.0.14" }
 };
 
 let currentLang = localStorage.getItem("wf_lang") || "fr";
 let currentZoom = parseInt(localStorage.getItem("wf_zoom") || "100", 10);
 let currentFps = parseInt(localStorage.getItem("wf_fps") || "144", 10);
+let currentTheme = localStorage.getItem("wf_theme") || "dark";
 let showRightPanel = localStorage.getItem("wf_right_panel") !== "false";
 let currentTab = "welcome";
 
@@ -163,25 +164,67 @@ function computeOfflineWorldState() {
     },
     news: [
       {
-        title_fr: "Actualités & Mises à jour officielles Warframe",
-        title_en: "Official Warframe News & Patch Notes",
-        link: "https://www.warframe.com/fr/news",
-        image: "data/planets/earth.png",
-        date: new Date(nowMs).toISOString()
+        title_fr: "Le t-shirt \"Definitely the Lotus\" est maintenant disponible",
+        title_en: "\"Definitely The Lotus\" T-Shirt Available Now",
+        link: "https://store.warframe.com/collections/featured/products/definitely-the-lotus-t-shirt",
+        image: "https://www-static.warframe.com/uploads/thumbnails/bda201fce9f7dbf314713007e046c889_1600x900.jpg",
+        date: "2026-11-02T21:35:00.000Z"
       },
       {
-        title_fr: "Forums Officiels Warframe — Notes de version",
-        title_en: "Official Warframe Forums — Update Notes",
-        link: "https://forums.warframe.com/",
-        image: "data/planets/zariman.png",
-        date: new Date(nowMs - 86400000).toISOString()
+        title_fr: "Community Stream & Twitch Drop Schedule",
+        title_en: "Community Stream & Twitch Drop Schedule",
+        link: "https://forums.warframe.com/topic/1531432-community-stream-schedule-november-2-8-2026/",
+        image: "https://media.invisioncic.com/Mwarframe/monthly_2026_05/EM335_Drops.jpg.f9b99bce3373a1b10af4d2deafeb2daa.jpg",
+        date: "2026-11-02T20:51:00.000Z"
       },
       {
-        title_fr: "Prime Resurgence & Rotations Varzia en cours",
-        title_en: "Prime Resurgence & Current Varzia Rotations",
-        link: "https://www.warframe.com/fr/prime-resurgence",
-        image: "data/planets/venus.png",
-        date: new Date(nowMs - 172800000).toISOString()
+        title_fr: "Lisez le Résumé du Devstream 198",
+        title_en: "Read Now: Devstream 198 Overview",
+        link: "https://www.warframe.com/news/devstream-198-overview",
+        image: "https://www-static.warframe.com/uploads/8175be244877c6b48e13a1a49e3bbcf1.png",
+        date: "2026-11-02T20:25:00.000Z"
+      },
+      {
+        title_fr: "Movember 2026",
+        title_en: "Movember 2026",
+        link: "https://www.warframe.com/en/news/movember-2026",
+        image: "https://www-static.warframe.com/uploads/14ec028261a5f8c6bb627876a890482f.png",
+        date: "2026-11-02T08:56:00.000Z"
+      },
+      {
+        title_fr: "Warframe : Tau arrive en décembre",
+        title_en: "Warframe: Tau Coming in December",
+        link: "https://www.warframe.com/tau",
+        image: "https://www-static.warframe.com/uploads/2e36b9c6bfb025a324113c5840245ace.png",
+        date: "2026-10-30T18:30:00.000Z"
+      },
+      {
+        title_fr: "Précommandez dès maintenant : Collection de Produits Dérivés Portau",
+        title_en: "Preorder Now: Portau Merch Collection",
+        link: "https://www.warframe.com/en/news/portau-collection-coming-soon",
+        image: "https://www-static.warframe.com/uploads/a18b62951254df7dd0563b899d380d29.jpg",
+        date: "2026-10-30T11:07:00.000Z"
+      },
+      {
+        title_fr: "Résurgence Prime : Nidus Prime et Saryn Prime !",
+        title_en: "Prime Resurgence: Nidus Prime and Saryn Prime!",
+        link: "https://www.warframe.com/prime-resurgence",
+        image: "https://www-static.warframe.com/uploads/8f5e71995c1f45edf570da1f53d73711.png",
+        date: "2026-10-29T14:13:00.000Z"
+      },
+      {
+        title_fr: "Iceblade of Narin: The Icebind: Hotfix 44.1.4",
+        title_en: "Iceblade of Narin: The Icebind: Hotfix 44.1.4",
+        link: "https://www.warframe.com/en/patch-notes/pc/44-1-4",
+        image: "https://cdn.warframestat.us/genesis/img/news-placeholder.png",
+        date: "2026-10-27T15:06:00.000Z"
+      },
+      {
+        title_fr: "Known Issues List — Warframe Forums",
+        title_en: "Known Issues List — Warframe Forums",
+        link: "https://forums.warframe.com/topic/1523875-known-issues-iceblade-of-narin/",
+        image: "https://cdn.warframestat.us/genesis/img/news-placeholder.png",
+        date: "2026-09-23T15:15:00.000Z"
       }
     ]
   };
@@ -284,7 +327,7 @@ async function fetchLiveWarframeAPI() {
         ? raw.news
             .slice()
             .sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0))
-            .slice(0, 10)
+            .slice(0, 15)
             .map((n) => ({
               title_fr: (n.translations && n.translations.fr) || n.message || "Actualité Warframe",
               title_en: (n.translations && n.translations.en) || n.message || "Warframe News",
@@ -691,7 +734,18 @@ function renderWelcomeView(container) {
   `;
 }
 
-/* --- VUE 2 : PARAMÈTRES (FPS & CENTRE DE NOTIFICATIONS) --- */
+/* --- VUE 2 : PARAMÈTRES (THÈME, FPS & CENTRE DE NOTIFICATIONS) --- */
+function setTheme(themeKey) {
+  const valid = ["dark", "light", "full-black", "full-white"];
+  currentTheme = valid.includes(themeKey) ? themeKey : "dark";
+  localStorage.setItem("wf_theme", currentTheme);
+  document.documentElement.setAttribute("data-theme", currentTheme);
+
+  if (currentTab === "settings" || currentTab === "notifications") {
+    renderSettingsView();
+  }
+}
+
 function setFps(fpsVal) {
   const valid = [30, 60, 120, 144];
   currentFps = valid.includes(Number(fpsVal)) ? Number(fpsVal) : 144;
@@ -776,19 +830,74 @@ function renderSettingsView(container = document.getElementById("center-zoom-con
     }
   ];
 
+  const themeOptions = [
+    {
+      id: "dark",
+      label: currentLang === "fr" ? "🌙 Sombre" : "🌙 Dark",
+      sub: currentLang === "fr" ? "Sci-Fi Bleu Nuit (Défaut)" : "Sci-Fi Midnight (Default)"
+    },
+    {
+      id: "light",
+      label: currentLang === "fr" ? "☀️ Clair" : "☀️ Light",
+      sub: currentLang === "fr" ? "Clair & Doux" : "Soft Light"
+    },
+    {
+      id: "full-black",
+      label: "🖤 Full Black",
+      sub: currentLang === "fr" ? "Noir Pur OLED (#000)" : "Pure Black OLED (#000)"
+    },
+    {
+      id: "full-white",
+      label: "🤍 Full White",
+      sub: currentLang === "fr" ? "Blanc Pur (#FFF)" : "Pure White (#FFF)"
+    }
+  ];
+
   container.innerHTML = `
     <div class="view-header-title">${tr("settings_page_title")}</div>
     <div class="view-header-sub">${tr("settings_page_sub")}</div>
 
+    <!-- BLOC 0 : CHOIX DU THÈME VISUEL (SOMBRE / CLAIR / FULL BLACK / FULL WHITE) -->
+    <div class="bounty-card" style="padding:16px; margin-bottom:16px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+        <div style="font-size:15px; font-weight:700; color:var(--accent-blue);">
+          🎨 ${currentLang === "fr" ? "Thème de l'Interface" : "Interface Theme"}
+        </div>
+        <span style="font-size:12px; font-weight:700; color:var(--accent-green); background:rgba(74,222,128,0.12); border:1px solid rgba(74,222,128,0.35); padding:2px 10px; border-radius:12px;">
+          ● ${(themeOptions.find((t) => t.id === currentTheme) || themeOptions[0]).label}
+        </span>
+      </div>
+      <div style="font-size:12.5px; color:var(--text-muted); margin-bottom:10px;">
+        ${
+          currentLang === "fr"
+            ? "Choisis l'apparence visuelle de WireFrame (Sombre, Clair, Full Black OLED ou Full White) :"
+            : "Select the visual theme for WireFrame (Dark, Light, Full Black OLED or Full White):"
+        }
+      </div>
+
+      <div class="fps-selector-grid">
+        ${themeOptions
+          .map(
+            (th) => `
+          <button class="fps-pill-btn ${currentTheme === th.id ? "active" : ""}" onclick="setTheme('${th.id}')">
+            <span class="fps-pill-hz">${th.label}</span>
+            <span class="fps-pill-desc">${th.sub}</span>
+          </button>
+        `
+          )
+          .join("")}
+      </div>
+    </div>
+
     <!-- BLOC 1 : CHOIX DES FPS (30 / 60 / 120 / 144) -->
     <div class="bounty-card" style="padding:16px; margin-bottom:16px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-        <div style="font-size:15px; font-weight:700; color:#58A6FF;">${tr("fps_sec_title")}</div>
-        <span style="font-size:12px; font-weight:700; color:#4ADE80; background:rgba(74,222,128,0.12); border:1px solid rgba(74,222,128,0.35); padding:2px 10px; border-radius:12px;">
+        <div style="font-size:15px; font-weight:700; color:var(--accent-blue);">${tr("fps_sec_title")}</div>
+        <span style="font-size:12px; font-weight:700; color:var(--accent-green); background:rgba(74,222,128,0.12); border:1px solid rgba(74,222,128,0.35); padding:2px 10px; border-radius:12px;">
           ● ${currentFps} FPS ${currentLang === "fr" ? "Actif" : "Active"}
         </span>
       </div>
-      <div style="font-size:12.5px; color:#8B949E; margin-bottom:10px;">${tr("fps_sec_desc")}</div>
+      <div style="font-size:12.5px; color:var(--text-muted); margin-bottom:10px;">${tr("fps_sec_desc")}</div>
 
       <div class="fps-selector-grid">
         ${fpsOptions
@@ -803,20 +912,20 @@ function renderSettingsView(container = document.getElementById("center-zoom-con
           .join("")}
       </div>
 
-      <div style="margin-top:14px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.06);">
-        <label style="display:flex; align-items:center; gap:12px; cursor:pointer; font-size:13px; color:#E6EDF3;">
+      <div style="margin-top:14px; padding-top:12px; border-top:1px solid var(--border-subtle);">
+        <label style="display:flex; align-items:center; gap:12px; cursor:pointer; font-size:13px; color:var(--text-main);">
           <input type="checkbox" ${showRightPanel ? "checked" : ""} onchange="toggleRightPanel(this.checked)" style="width:17px; height:17px; accent-color:#3B82F6; cursor:pointer;" />
           <span>${
             currentLang === "fr"
-              ? "📡  Afficher la colonne de droite (Cycles en direct, Duviri, Baro Ki'Teer & Actualités Warframe)"
-              : "📡  Show right-hand Live Panel (World Cycles, Duviri, Baro Ki'Teer & Official News)"
+              ? "📰  Afficher la colonne de droite (Actualités Officielles Warframe)"
+              : "📰  Show right-hand column (Official Warframe News)"
           }</span>
         </label>
       </div>
     </div>
 
     <!-- BLOC 2 : CENTRE DE NOTIFICATIONS & ALERTES EN DIRECT -->
-    <div class="view-header-title" style="font-size:16px; margin:8px 0 4px 0; color:#58A6FF;">
+    <div class="view-header-title" style="font-size:16px; margin:8px 0 4px 0; color:var(--accent-blue);">
       ${tr("notif_page_title")}
     </div>
     <div class="view-header-sub" style="margin-bottom:10px;">${tr("notif_page_sub")}</div>
@@ -825,7 +934,7 @@ function renderSettingsView(container = document.getElementById("center-zoom-con
       ${switches
         .map(
           (sw) => `
-        <label style="display:flex; align-items:center; gap:12px; padding:8px 4px; cursor:pointer; font-size:13px; color:#E6EDF3;">
+        <label style="display:flex; align-items:center; gap:12px; padding:8px 4px; cursor:pointer; font-size:13px; color:var(--text-main);">
           <input type="checkbox" ${notifPrefs[sw.key] ? "checked" : ""} onchange="toggleNotifPref('${sw.key}', this.checked)" style="width:17px; height:17px; accent-color:#3B82F6; cursor:pointer;" />
           <span>${sw.label}</span>
         </label>
@@ -1552,7 +1661,7 @@ function setLanguage(lang) {
     "nav-duviri": cleanNavText(tr("nav_duviri")),
     "nav-baro": cleanNavText(tr("nav_baro")),
     "btn-refresh": tr("btn_refresh"),
-    "btn-check-update": `${tr("btn_check_update")} (v${WF_DATA.version?.version || "1.0.13"})`,
+    "btn-check-update": `${tr("btn_check_update")} (v${WF_DATA.version?.version || "1.0.14"})`,
     "live-badge": tr("live_badge"),
     "live-tag": tr("live_tag"),
     "live-worlds-title": tr("live_worlds_title"),
@@ -1609,7 +1718,7 @@ async function refreshAllData(showLoader = false) {
 }
 
 async function checkForUpdatesManual() {
-  const localVer = WF_DATA.version?.version || "1.0.13";
+  const localVer = WF_DATA.version?.version || "1.0.14";
   try {
     const res = await fetch("https://raw.githubusercontent.com/Nyxo-17/WireFrame/main/version.json?t=" + Date.now());
     if (!res.ok) throw new Error("HTTP " + res.status);
@@ -1636,6 +1745,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   const splash = document.getElementById("splash-screen");
 
   changeZoom(0);
+  setTheme(currentTheme);
   setFps(currentFps);
   toggleRightPanel(showRightPanel);
   worldState = computeOfflineWorldState();
@@ -1649,6 +1759,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     if (status) status.textContent = "Synchronisation avec les serveurs Warframe...";
     worldState = await fetchLiveWarframeAPI();
     buildLiveWorldsGrid();
+    buildLiveNewsList();
     updateLivePanel();
     renderCurrentTab();
 

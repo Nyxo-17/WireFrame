@@ -960,6 +960,7 @@ html {
   line-height: 1.25;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -1296,18 +1297,18 @@ html {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   padding-right: 3px;
 }
 .news-card {
   display: grid;
-  grid-template-columns: 64px 1fr;
-  gap: 9px;
+  grid-template-columns: 82px 1fr;
+  gap: 10px;
   align-items: center;
   background: var(--bg-card);
   border: 1px solid var(--border-card);
-  border-radius: 8px;
-  padding: 7px 9px;
+  border-radius: 9px;
+  padding: 9px 10px;
   text-decoration: none;
   transition: all 0.18s ease;
 }
@@ -1318,9 +1319,9 @@ html {
   transform: translateX(2px);
 }
 .news-thumb {
-  width: 64px;
-  height: 40px;
-  border-radius: 5px;
+  width: 82px;
+  height: 50px;
+  border-radius: 6px;
   object-fit: cover;
   background: #0B0F19;
   border: 1px solid #24324C;
@@ -1338,6 +1339,7 @@ html {
   line-height: 1.28;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -1494,4 +1496,270 @@ html {
   object-fit: contain;
   filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.6));
 }
+
+/* ==========================================================================
+   8. SYSTÈME DE THÈMES (SOMBRE, CLAIR, FULL BLACK OLED, FULL WHITE)
+   ========================================================================== */
+
+/* --- THÈME 3 : FULL BLACK (OLED #000000) --- */
+[data-theme="full-black"] {
+  --bg-root: #000000;
+  --bg-sidebar: #000000;
+  --bg-center: #000000;
+  --bg-live: #000000;
+  --bg-card: #070709;
+  --bg-card-hover: #0E1015;
+  --border-subtle: #161922;
+  --border-card: #1C202B;
+  --text-main: #FFFFFF;
+  --text-muted: #9CA3AF;
+  --text-dim: #6B7280;
+}
+
+[data-theme="full-black"] .welcome-banner,
+[data-theme="full-black"] .planet-card.hero-planet-card,
+[data-theme="full-black"] .duviri-showcase-card,
+[data-theme="full-black"] .codex-modal-card {
+  background: #050507 !important;
+  border-color: #1F2430 !important;
+}
+
+[data-theme="full-black"] .search-input,
+[data-theme="full-black"] .filter-pill,
+[data-theme="full-black"] .fps-pill-btn,
+[data-theme="full-black"] .duviri-item-chip,
+[data-theme="full-black"] .modal-sec-box,
+[data-theme="full-black"] .control-pill,
+[data-theme="full-black"] .live-toggle-btn {
+  background: #08090C;
+  border-color: #222734;
+}
+
+/* --- THÈME 2 : CLAIR (DOUX) --- */
+[data-theme="light"] {
+  --bg-root: #E2E8F0;
+  --bg-sidebar: #F1F5F9;
+  --bg-center: #F8FAFC;
+  --bg-live: #F1F5F9;
+  --bg-card: #FFFFFF;
+  --bg-card-hover: #F1F5F9;
+  --border-subtle: #CBD5E1;
+  --border-card: #CBD5E1;
+  --accent-blue: #2563EB;
+  --accent-cyan: #1D4ED8;
+  --accent-gold: #B45309;
+  --accent-green: #15803D;
+  --text-main: #0F172A;
+  --text-muted: #475569;
+  --text-dim: #64748B;
+}
+
+/* --- THÈME 4 : FULL WHITE (#FFFFFF PUR) --- */
+[data-theme="full-white"] {
+  --bg-root: #FFFFFF;
+  --bg-sidebar: #FFFFFF;
+  --bg-center: #FFFFFF;
+  --bg-live: #FFFFFF;
+  --bg-card: #FFFFFF;
+  --bg-card-hover: #F8FAFC;
+  --border-subtle: #E2E8F0;
+  --border-card: #CBD5E1;
+  --accent-blue: #1D4ED8;
+  --accent-cyan: #1E40AF;
+  --accent-gold: #B45309;
+  --accent-green: #15803D;
+  --text-main: #000000;
+  --text-muted: #334155;
+  --text-dim: #475569;
+}
+
+/* Adaptations communes pour les thèmes clairs (Clair & Full White) */
+[data-theme="light"] .welcome-banner,
+[data-theme="full-white"] .welcome-banner {
+  background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+  border-color: #93C5FD;
+}
+[data-theme="light"] .welcome-banner h3,
+[data-theme="full-white"] .welcome-banner h3 {
+  color: #1D4ED8;
+}
+[data-theme="light"] .welcome-banner p,
+[data-theme="full-white"] .welcome-banner p {
+  color: #1E293B;
+}
+
+[data-theme="light"] .nav-item,
+[data-theme="full-white"] .nav-item {
+  color: #334155;
+}
+[data-theme="light"] .nav-item:hover,
+[data-theme="full-white"] .nav-item:hover {
+  background: #E2E8F0;
+  border-color: #94A3B8;
+  color: #0F172A;
+}
+[data-theme="light"] .nav-item.active,
+[data-theme="full-white"] .nav-item.active {
+  background: linear-gradient(90deg, #2563EB 0%, #1D4ED8 100%);
+  border-color: #1E40AF;
+  color: #FFFFFF;
+}
+[data-theme="light"] .nav-item.active .nav-icon,
+[data-theme="full-white"] .nav-item.active .nav-icon {
+  color: #FFFFFF;
+}
+
+[data-theme="light"] .control-pill,
+[data-theme="full-white"] .control-pill,
+[data-theme="light"] .live-toggle-btn,
+[data-theme="full-white"] .live-toggle-btn,
+[data-theme="light"] .live-close-btn,
+[data-theme="full-white"] .live-close-btn,
+[data-theme="light"] .btn-sidebar-action,
+[data-theme="full-white"] .btn-sidebar-action,
+[data-theme="light"] .btn-sidebar-secondary,
+[data-theme="full-white"] .btn-sidebar-secondary {
+  background: #FFFFFF;
+  border-color: #CBD5E1;
+  color: #1E293B;
+}
+[data-theme="light"] #zoom-label,
+[data-theme="full-white"] #zoom-label {
+  color: #0F172A;
+}
+[data-theme="light"] .lang-btn.active,
+[data-theme="full-white"] .lang-btn.active,
+[data-theme="light"] .live-toggle-btn.active,
+[data-theme="full-white"] .live-toggle-btn.active {
+  background: #2563EB;
+  border-color: #1D4ED8;
+  color: #FFFFFF;
+}
+
+[data-theme="light"] .search-input,
+[data-theme="full-white"] .search-input {
+  background: #FFFFFF;
+  border-color: #94A3B8;
+  color: #0F172A;
+}
+[data-theme="light"] .filter-pill,
+[data-theme="full-white"] .filter-pill {
+  background: #FFFFFF;
+  border-color: #CBD5E1;
+  color: #334155;
+}
+[data-theme="light"] .filter-pill:hover,
+[data-theme="full-white"] .filter-pill:hover {
+  background: #EFF6FF;
+  color: #1D4ED8;
+}
+[data-theme="light"] .filter-pill.active,
+[data-theme="full-white"] .filter-pill.active {
+  background: #2563EB;
+  border-color: #1D4ED8;
+  color: #FFFFFF;
+}
+
+[data-theme="light"] .planet-card.hero-planet-card,
+[data-theme="full-white"] .planet-card.hero-planet-card {
+  background: linear-gradient(155deg, #FFFFFF 0%, #F1F5F9 100%);
+  border-color: #CBD5E1;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08);
+}
+[data-theme="light"] .hero-planet-card .planet-title,
+[data-theme="full-white"] .hero-planet-card .planet-title,
+[data-theme="light"] .cycle-timer,
+[data-theme="full-white"] .cycle-timer {
+  color: #0F172A;
+}
+[data-theme="light"] .hero-planet-card .planet-sub,
+[data-theme="full-white"] .hero-planet-card .planet-sub {
+  color: #475569;
+}
+[data-theme="light"] .hero-planet-card .cycle-state,
+[data-theme="full-white"] .hero-planet-card .cycle-state {
+  background: #F1F5F9;
+  border-color: #CBD5E1;
+}
+
+[data-theme="light"] .duviri-showcase-card,
+[data-theme="full-white"] .duviri-showcase-card {
+  background: #FFFFFF;
+  border-color: #CBD5E1;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+[data-theme="light"] .duviri-showcase-name,
+[data-theme="full-white"] .duviri-showcase-name {
+  color: #0F172A;
+}
+[data-theme="light"] .duviri-item-chip,
+[data-theme="full-white"] .duviri-item-chip {
+  background: #F8FAFC;
+  border-color: #CBD5E1;
+  color: #1E293B;
+}
+[data-theme="light"] .bounty-rot-row.active,
+[data-theme="full-white"] .bounty-rot-row.active {
+  background: #EFF6FF;
+  border-color: #3B82F6;
+}
+[data-theme="light"] .bounty-rot-row.active .duviri-item-chip,
+[data-theme="full-white"] .bounty-rot-row.active .duviri-item-chip {
+  background: #DBEAFE;
+  border-color: #2563EB;
+  color: #0F172A;
+}
+
+[data-theme="light"] .fps-pill-btn,
+[data-theme="full-white"] .fps-pill-btn {
+  background: #F8FAFC;
+  border-color: #CBD5E1;
+  color: #0F172A;
+}
+[data-theme="light"] .fps-pill-hz,
+[data-theme="full-white"] .fps-pill-hz {
+  color: #0F172A;
+}
+[data-theme="light"] .fps-pill-btn.active,
+[data-theme="full-white"] .fps-pill-btn.active {
+  background: #EFF6FF;
+  border-color: #2563EB;
+}
+[data-theme="light"] .fps-pill-btn.active .fps-pill-hz,
+[data-theme="full-white"] .fps-pill-btn.active .fps-pill-hz {
+  color: #1D4ED8;
+  text-shadow: none;
+}
+[data-theme="light"] .fps-pill-btn.active .fps-pill-desc,
+[data-theme="full-white"] .fps-pill-btn.active .fps-pill-desc {
+  color: #1E40AF;
+}
+
+[data-theme="light"] .codex-modal-card,
+[data-theme="full-white"] .codex-modal-card {
+  background: #FFFFFF;
+  border-color: #2563EB;
+  box-shadow: 0 16px 48px rgba(15, 23, 42, 0.25);
+}
+[data-theme="light"] .modal-sec-box,
+[data-theme="full-white"] .modal-sec-box {
+  background: #F8FAFC;
+  border-color: #CBD5E1;
+}
+[data-theme="light"] .modal-sec-text,
+[data-theme="full-white"] .modal-sec-text {
+  color: #0F172A !important;
+}
+[data-theme="light"] .btn-open,
+[data-theme="full-white"] .btn-open {
+  background: #EFF6FF;
+  border-color: #93C5FD;
+  color: #1D4ED8;
+}
+[data-theme="light"] .btn-open:hover,
+[data-theme="full-white"] .btn-open:hover {
+  background: #2563EB;
+  color: #FFFFFF;
+}
+
 
