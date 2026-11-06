@@ -1,9 +1,9 @@
 @echo off
-title Publication Automatique WireFrame (GitHub + Discord)
+title Publication Automatique WireFrame (GitHub)
 cd /d "%~dp0"
 
 echo ==============================================================
-echo   ❖ PUBLICATION AUTOMATIQUE WIREFRAME (GitHub + Discord) ❖
+echo   ❖ PUBLICATION AUTOMATIQUE WIREFRAME (GitHub) ❖
 echo ==============================================================
 echo.
 
@@ -14,7 +14,7 @@ git push origin main
 
 echo.
 echo ==============================================================
-echo   ✅ Mise a jour publiee sur GitHub ET envoyee sur Discord !
+echo   ✅ Mise a jour publiee sur GitHub (Version auto-incrementee) !
 echo ==============================================================
 timeout /t 4
 exit

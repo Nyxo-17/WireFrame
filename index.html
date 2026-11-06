@@ -31,20 +31,29 @@
     <div class="topbar-right">
       <!-- Sélecteur FR | EN -->
       <div class="control-pill">
-        <span class="pill-icon">🌐</span>
+        <span class="pill-icon" style="display:inline-flex; align-items:center; color:#79C0FF;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/>
+            <ellipse cx="12" cy="12" rx="4.2" ry="9" stroke="#E5C158" stroke-width="1.5"/>
+            <line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="1.5"/>
+          </svg>
+        </span>
         <button id="btn-lang-fr" class="lang-btn active" onclick="setLanguage('fr')">FR</button>
         <button id="btn-lang-en" class="lang-btn" onclick="setLanguage('en')">EN</button>
       </div>
       <!-- Zoom du cadre central uniquement -->
       <div class="control-pill">
-        <button class="zoom-btn" onclick="changeZoom(-10)">🔍-</button>
+        <button class="zoom-btn" onclick="changeZoom(-10)" title="Réduire le zoom">−</button>
         <span id="zoom-label">100%</span>
-        <button class="zoom-btn" onclick="changeZoom(10)">🔍+</button>
+        <button class="zoom-btn" onclick="changeZoom(10)" title="Augmenter le zoom">+</button>
       </div>
       <!-- Bouton Afficher / Masquer la colonne de droite -->
       <button id="btn-toggle-live" class="live-toggle-btn active" onclick="toggleRightPanel()" title="Afficher / Cacher la colonne de droite">
-        <span>📡</span>
-        <span id="lbl-toggle-live">Panneau Direct</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+          <polygon points="12,2 21,12 12,22 3,12" stroke="#E5C158" stroke-width="1.8"/>
+          <circle cx="12" cy="12" r="3" fill="#79C0FF"/>
+        </svg>
+        <span id="lbl-toggle-live">Cacher Direct</span>
       </button>
       <!-- Bouton Discord officiel -->
       <a href="https://discord.gg/DhGwHPf82n" target="_blank" class="discord-btn">
@@ -69,50 +78,138 @@
 
       <div id="sec-home" class="nav-section-title glow">ACCUEIL</div>
       <div class="nav-item active" data-tab="welcome" data-sec="sec-home" onclick="selectTab('welcome')">
-        <span class="nav-icon">🏠</span><span id="nav-welcome">Bienvenue</span>
+        <span class="nav-icon">
+          <!-- Emblème Lotus / Tenno -->
+          <svg class="wf-svg-icon" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2L14.8 8.2L21 6.5L17.2 13.5C15.8 15.8 14 17.2 12 17.8C10 17.2 8.2 15.8 6.8 13.5L3 6.5L9.2 8.2L12 2Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+            <path d="M12 6.5L14 11.5L12 15L10 11.5L12 6.5Z" fill="#E5C158"/>
+            <path d="M7 19.5L12 22L17 19.5" stroke="#E5C158" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <span id="nav-welcome">Bienvenue</span>
       </div>
 
       <div id="sec-inv" class="nav-section-title">INVENTAIRE & CODEX</div>
       <div class="nav-item" data-tab="resources" data-sec="sec-inv" onclick="selectTab('resources')">
-        <span class="nav-icon">💎</span><span id="nav-resources">Ressources</span>
+        <span class="nav-icon">
+          <!-- Cristal d'Argon / Ressource Orokin -->
+          <svg class="wf-svg-icon" viewBox="0 0 24 24" fill="none">
+            <polygon points="12,2 19,7.5 16.5,21 7.5,21 5,7.5" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+            <polyline points="5,7.5 12,11 19,7.5" stroke="currentColor" stroke-width="1.4"/>
+            <line x1="12" y1="2" x2="12" y2="21" stroke="#E5C158" stroke-width="1.4"/>
+          </svg>
+        </span>
+        <span id="nav-resources">Ressources</span>
       </div>
       <div class="nav-item" data-tab="mods" data-sec="sec-inv" onclick="selectTab('mods')">
-        <span class="nav-icon">🃏</span><span id="nav-mods">Mods</span>
+        <span class="nav-icon">
+          <!-- Carte de Mod Warframe avec Polarité Madurai -->
+          <svg class="wf-svg-icon" viewBox="0 0 24 24" fill="none">
+            <polygon points="7,2 17,2 20,5 20,19 17,22 7,22 4,19 4,5" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+            <path d="M9 7.5L12 13L15 7.5" stroke="#E5C158" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="9" cy="18" r="1.1" fill="#79C0FF"/>
+            <circle cx="12" cy="18" r="1.1" fill="#79C0FF"/>
+            <circle cx="15" cy="18" r="1.1" fill="#79C0FF"/>
+          </svg>
+        </span>
+        <span id="nav-mods">Mods</span>
       </div>
       <div class="nav-item" data-tab="warframes" data-sec="sec-inv" onclick="selectTab('warframes')">
-        <span class="nav-icon">⚡</span><span id="nav-warframes">Warframes</span>
+        <span class="nav-icon">
+          <!-- Casque & Armure Warframe -->
+          <svg class="wf-svg-icon" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2L18.5 6.5L17 15.5L12 22L7 15.5L5.5 6.5L12 2Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+            <path d="M8 10L12 13L16 10" stroke="#E5C158" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="12" y1="2" x2="12" y2="8.5" stroke="#E5C158" stroke-width="1.5"/>
+          </svg>
+        </span>
+        <span id="nav-warframes">Warframes</span>
       </div>
       <div class="nav-item" data-tab="weapons" data-sec="sec-inv" onclick="selectTab('weapons')">
-        <span class="nav-icon">🗡️</span><span id="nav-weapons">Armes</span>
+        <span class="nav-icon">
+          <!-- Doubles Nikanas / Lames Tenno Croisées -->
+          <svg class="wf-svg-icon" viewBox="0 0 24 24" fill="none">
+            <path d="M4 20L19 5M15.5 4.5L19.5 4.5L19.5 8.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M20 20L5 5M8.5 4.5L4.5 4.5L4.5 8.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <polygon points="12,9.5 14.5,12 12,14.5 9.5,12" fill="#E5C158"/>
+          </svg>
+        </span>
+        <span id="nav-weapons">Armes</span>
       </div>
       <div class="nav-item" data-tab="relics" data-sec="sec-inv" onclick="selectTab('relics')">
-        <span class="nav-icon">🏺</span><span id="nav-relics">Reliques</span>
+        <span class="nav-icon">
+          <!-- Relique du Néant Orokin -->
+          <svg class="wf-svg-icon" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2L17.5 6.5V15.5L12 22L6.5 15.5V6.5L12 2Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+            <circle cx="12" cy="11.5" r="3" stroke="#E5C158" stroke-width="1.7"/>
+            <path d="M6.5 11.5H9M15 11.5H17.5" stroke="#E5C158" stroke-width="1.5"/>
+          </svg>
+        </span>
+        <span id="nav-relics">Reliques</span>
       </div>
 
       <div id="sec-cycles" class="nav-section-title">CYCLES & ROTATIONS</div>
       <div class="nav-item" data-tab="worlds" data-sec="sec-cycles" onclick="selectTab('worlds')">
-        <span class="nav-icon">🌍</span><span id="nav-worlds">Temps des Planètes</span>
+        <span class="nav-icon">
+          <!-- Système Origine / Planète & Anneau Orbital -->
+          <svg class="wf-svg-icon" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="6" stroke="currentColor" stroke-width="1.7"/>
+            <ellipse cx="12" cy="12" rx="10.5" ry="4" transform="rotate(-24 12 12)" stroke="#E5C158" stroke-width="1.5"/>
+            <circle cx="18.5" cy="6.5" r="1.5" fill="#79C0FF"/>
+          </svg>
+        </span>
+        <span id="nav-worlds">Temps des Planètes</span>
       </div>
       <div class="nav-item" data-tab="bounties" data-sec="sec-cycles" onclick="selectTab('bounties')">
-        <span class="nav-icon">🎯</span><span id="nav-bounties">Mises à Prix</span>
+        <span class="nav-icon">
+          <!-- Réticule Tactique Mises à Prix -->
+          <svg class="wf-svg-icon" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="7.5" stroke="currentColor" stroke-width="1.7"/>
+            <polygon points="12,8.5 15.5,12 12,15.5 8.5,12" stroke="#E5C158" stroke-width="1.6"/>
+            <path d="M12 2V5M12 19V22M2 12H5M19 12H22" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span id="nav-bounties">Mises à Prix</span>
       </div>
       <div class="nav-item" data-tab="duviri" data-sec="sec-cycles" onclick="selectTab('duviri')">
-        <span class="nav-icon">🌀</span><span id="nav-duviri">Circuit & Incarnon</span>
+        <span class="nav-icon">
+          <!-- Spirale de Duviri / Incarnon -->
+          <svg class="wf-svg-icon" viewBox="0 0 24 24" fill="none">
+            <path d="M12 3C16.97 3 21 7.03 21 12C21 16.1 17.6 19.5 13.5 19.5C9.9 19.5 7 16.6 7 13C7 10.2 9.2 8 12 8C14.2 8 16 9.8 16 12C16 13.7 14.7 15 13 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            <circle cx="12.5" cy="12.5" r="1.8" fill="#E5C158"/>
+          </svg>
+        </span>
+        <span id="nav-duviri">Circuit & Incarnon</span>
       </div>
       <div class="nav-item" data-tab="baro" data-sec="sec-cycles" onclick="selectTab('baro')">
-        <span class="nav-icon">💠</span><span id="nav-baro">Baro Ki'Teer</span>
+        <span class="nav-icon">
+          <!-- Emblème Prisma / Ducat de Baro Ki'Teer -->
+          <svg class="wf-svg-icon" viewBox="0 0 24 24" fill="none">
+            <polygon points="12,2 21,12 12,22 3,12" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+            <polygon points="12,6.5 16.5,12 12,17.5 7.5,12" stroke="#E5C158" stroke-width="1.6" stroke-linejoin="round"/>
+            <circle cx="12" cy="12" r="1.5" fill="#79C0FF"/>
+          </svg>
+        </span>
+        <span id="nav-baro">Baro Ki'Teer</span>
       </div>
 
       <div class="sidebar-spacer"></div>
 
       <div class="nav-item" data-tab="settings" data-sec="" onclick="selectTab('settings')">
-        <span class="nav-icon">⚙️</span><span id="nav-settings">Paramètres</span>
+        <span class="nav-icon">
+          <!-- Rouage Céphalon / Fonderie Orokin -->
+          <svg class="wf-svg-icon" viewBox="0 0 24 24" fill="none">
+            <polygon points="12,2.5 15,5 19,5 19,9 21.5,12 19,15 19,19 15,19 12,21.5 9,19 5,19 5,15 2.5,12 5,9 5,5 9,5" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+            <circle cx="12" cy="12" r="3.5" stroke="#E5C158" stroke-width="1.7"/>
+          </svg>
+        </span>
+        <span id="nav-settings">Paramètres</span>
       </div>
 
       <div class="sidebar-footer">
-        <div id="lbl-api-status" class="api-status">📡 En direct (API)</div>
-        <button id="btn-refresh" class="btn-sidebar-action" onclick="refreshAllData(true)">🔄 Actualiser en direct</button>
-        <button id="btn-check-update" class="btn-sidebar-secondary" onclick="checkForUpdatesManual()">⬇️ Vérifier MAJ (v1.0.14)</button>
+        <div id="lbl-api-status" class="api-status">❖ En direct (API)</div>
+        <button id="btn-refresh" class="btn-sidebar-action" onclick="refreshAllData(true)">↻ Actualiser en direct</button>
+        <button id="btn-check-update" class="btn-sidebar-secondary" onclick="checkForUpdatesManual()">⇣ Vérifier MAJ (v1.0.15)</button>
       </div>
     </aside>
 
@@ -145,7 +242,7 @@
     <!-- COLONNE DROITE : ACTUALITÉS OFFICIELLES WARFRAME UNIQUEMENT -->
     <aside id="right-live-panel" class="live-panel">
       <div class="live-header-pill">
-        <span id="live-news-title" style="color:#F0F6FC; font-size:13px; font-weight:800;">📰 Actualités Warframe</span>
+        <span id="live-news-title" style="color:var(--text-main); font-size:13px; font-weight:800;">❖ Actualités Warframe</span>
         <div style="display:flex; align-items:center; gap:8px;">
           <a href="https://www.warframe.com/fr/news" target="_blank" id="live-news-all" class="live-news-link">warframe.com ↗</a>
           <button class="live-close-btn" onclick="toggleRightPanel(false)" title="Cacher la colonne de droite">❯</button>

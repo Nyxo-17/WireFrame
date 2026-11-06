@@ -6,7 +6,7 @@ const WF_DATA = window.WIREFRAME_DATA || {
   codex: { warframes: [], weapons: [], resources: [], mods: [], relics: [], bounties: [] },
   duviri: { warframes_weeks: [], incarnon_weeks: [] },
   translations: { fr: {}, en: {} },
-  version: { version: "1.0.14" }
+  version: { version: "1.0.15" }
 };
 
 let currentLang = localStorage.getItem("wf_lang") || "fr";
@@ -362,7 +362,7 @@ function buildLiveNewsList() {
 
   const titleEl = document.getElementById("live-news-title");
   if (titleEl) {
-    titleEl.textContent = currentLang === "fr" ? "📰 Actualités Officielles" : "📰 Official Warframe News";
+    titleEl.textContent = currentLang === "fr" ? "❖ Actualités Officielles" : "❖ Official Warframe News";
   }
   const allLinkEl = document.getElementById("live-news-all");
   if (allLinkEl) {
@@ -380,7 +380,7 @@ function buildLiveNewsList() {
           <img src="${imgUrl}" alt="News" class="news-thumb" loading="lazy" onerror="this.onerror=null;this.src='data/app_logo.png';" />
           <div class="news-body">
             <div class="news-title">${title}</div>
-            <div class="news-meta">🔗 Warframe.com • ${dateLbl}</div>
+            <div class="news-meta">◈ Warframe.com • ${dateLbl}</div>
           </div>
         </a>
       `;
@@ -430,7 +430,7 @@ function updateLivePanel() {
   bountyState = computeBountyState();
 
   const statusEl = document.getElementById("lbl-api-status");
-  if (statusEl) statusEl.textContent = "📡 " + worldState.source;
+  if (statusEl) statusEl.textContent = "❖ " + worldState.source;
 
   // Vérifie si la grille des planètes du panneau droit est déjà construite
   if (!document.getElementById("live-timer-cetus")) {
@@ -482,8 +482,8 @@ function updateLivePanel() {
   if (baroTimerEl) baroTimerEl.textContent = formatCountdown(getRemainingSeconds(baroTarget), true);
   if (baroInfoEl) {
     baroInfoEl.textContent = baro.active
-      ? `🟢 ${tr("baro_present")} : ${baro.location}`
-      : `⏳ ${tr("baro_arrives")} : ${baro.location}`;
+      ? `● ${tr("baro_present")} : ${baro.location}`
+      : `◷ ${tr("baro_arrives")} : ${baro.location}`;
   }
 
   // Mise à jour dynamique des timers de la vue centrale si ouverte
@@ -543,7 +543,7 @@ function triggerAlert(title, message) {
   const tTitle = document.getElementById("toast-title");
   const tMsg = document.getElementById("toast-msg");
   if (banner && tTitle && tMsg) {
-    tTitle.textContent = "🔔 " + title;
+    tTitle.textContent = "◈ " + title;
     tMsg.textContent = message;
     banner.classList.remove("hidden");
     clearTimeout(window._toastTimeout);
@@ -672,17 +672,17 @@ function renderWelcomeView(container) {
       title: tr("card_news_title"),
       desc: tr("card_news_desc"),
       extUrl: "https://discord.gg/DhGwHPf82n",
-      extBtn: "💬 Discord ➔"
+      extBtn: "❖ Discord ➔"
     }
   ];
 
   const stats = [
-    { icon: "💎", val: "239", lbl: currentLang === "fr" ? "Ressources" : "Resources", tab: "resources" },
-    { icon: "🃏", val: "1 442", lbl: "Mods", tab: "mods" },
-    { icon: "⚡", val: "120", lbl: "Warframes", tab: "warframes" },
-    { icon: "🗡️", val: "635", lbl: currentLang === "fr" ? "Armes" : "Weapons", tab: "weapons" },
-    { icon: "🏺", val: "801", lbl: currentLang === "fr" ? "Reliques" : "Relics", tab: "relics" },
-    { icon: "🌍", val: "24/7", lbl: currentLang === "fr" ? "Cycles Direct" : "Live Cycles", tab: "worlds" }
+    { icon: "◈", val: "239", lbl: currentLang === "fr" ? "Ressources" : "Resources", tab: "resources" },
+    { icon: "⬡", val: "1 442", lbl: "Mods", tab: "mods" },
+    { icon: "✦", val: "120", lbl: "Warframes", tab: "warframes" },
+    { icon: "⚔", val: "635", lbl: currentLang === "fr" ? "Armes" : "Weapons", tab: "weapons" },
+    { icon: "⬡", val: "801", lbl: currentLang === "fr" ? "Reliques" : "Relics", tab: "relics" },
+    { icon: "◎", val: "24/7", lbl: currentLang === "fr" ? "Cycles Direct" : "Live Cycles", tab: "worlds" }
   ];
 
   container.innerHTML = `
@@ -811,44 +811,44 @@ function renderSettingsView(container = document.getElementById("center-zoom-con
     {
       fps: 30,
       label: "30 FPS",
-      sub: currentLang === "fr" ? "🔋 Économie d'énergie" : "🔋 Power Saving"
+      sub: currentLang === "fr" ? "◈ Économie d'énergie" : "◈ Power Saving"
     },
     {
       fps: 60,
       label: "60 FPS",
-      sub: currentLang === "fr" ? "⚖️ Standard équilibré" : "⚖️ Balanced Standard"
+      sub: currentLang === "fr" ? "❖ Standard équilibré" : "❖ Balanced Standard"
     },
     {
       fps: 120,
       label: "120 FPS",
-      sub: currentLang === "fr" ? "🚀 Haute fluidité" : "🚀 High Smoothness"
+      sub: currentLang === "fr" ? "▲ Haute fluidité" : "▲ High Smoothness"
     },
     {
       fps: 144,
       label: "144 FPS",
-      sub: currentLang === "fr" ? "⚡ Ultra Réactif (Max)" : "⚡ Ultra Responsive (Max)"
+      sub: currentLang === "fr" ? "✦ Ultra Réactif (Max)" : "✦ Ultra Responsive (Max)"
     }
   ];
 
   const themeOptions = [
     {
       id: "dark",
-      label: currentLang === "fr" ? "🌙 Sombre" : "🌙 Dark",
+      label: currentLang === "fr" ? "◐ Sombre" : "◐ Dark",
       sub: currentLang === "fr" ? "Sci-Fi Bleu Nuit (Défaut)" : "Sci-Fi Midnight (Default)"
     },
     {
       id: "light",
-      label: currentLang === "fr" ? "☀️ Clair" : "☀️ Light",
+      label: currentLang === "fr" ? "☼ Clair" : "☼ Light",
       sub: currentLang === "fr" ? "Clair & Doux" : "Soft Light"
     },
     {
       id: "full-black",
-      label: "🖤 Full Black",
+      label: "◆ Full Black",
       sub: currentLang === "fr" ? "Noir Pur OLED (#000)" : "Pure Black OLED (#000)"
     },
     {
       id: "full-white",
-      label: "🤍 Full White",
+      label: "◇ Full White",
       sub: currentLang === "fr" ? "Blanc Pur (#FFF)" : "Pure White (#FFF)"
     }
   ];
@@ -861,7 +861,7 @@ function renderSettingsView(container = document.getElementById("center-zoom-con
     <div class="bounty-card" style="padding:16px; margin-bottom:16px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
         <div style="font-size:15px; font-weight:700; color:var(--accent-blue);">
-          🎨 ${currentLang === "fr" ? "Thème de l'Interface" : "Interface Theme"}
+          ❖ ${currentLang === "fr" ? "Thème de l'Interface" : "Interface Theme"}
         </div>
         <span style="font-size:12px; font-weight:700; color:var(--accent-green); background:rgba(74,222,128,0.12); border:1px solid rgba(74,222,128,0.35); padding:2px 10px; border-radius:12px;">
           ● ${(themeOptions.find((t) => t.id === currentTheme) || themeOptions[0]).label}
@@ -917,8 +917,8 @@ function renderSettingsView(container = document.getElementById("center-zoom-con
           <input type="checkbox" ${showRightPanel ? "checked" : ""} onchange="toggleRightPanel(this.checked)" style="width:17px; height:17px; accent-color:#3B82F6; cursor:pointer;" />
           <span>${
             currentLang === "fr"
-              ? "📰  Afficher la colonne de droite (Actualités Officielles Warframe)"
-              : "📰  Show right-hand column (Official Warframe News)"
+              ? "❖  Afficher la colonne de droite (Actualités Officielles Warframe)"
+              : "❖  Show right-hand column (Official Warframe News)"
           }</span>
         </label>
       </div>
@@ -1004,14 +1004,14 @@ function formatGridBadge(rawCat) {
   if (!rawCat) return "Codex";
   return rawCat
     .replace("Warframe Standard • ", "")
-    .replace("Warframe Prime • ", "⭐ Prime • ");
+    .replace("Warframe Prime • ", "✦ Prime • ");
 }
 
 const CODEX_FILTERS = {
   relics: [
     { id: "all", fr: "Tout", en: "All", fn: () => true },
-    { id: "active", fr: "🟢 Actives (En jeu)", en: "🟢 Active (In-game)", fn: (it) => (it.category || "").includes("Active") },
-    { id: "vaulted", fr: "🔒 Vaultées (Soute)", en: "🔒 Vaulted", fn: (it) => (it.category || "").includes("Vaultée") },
+    { id: "active", fr: "● Actives (En jeu)", en: "● Active (In-game)", fn: (it) => (it.category || "").includes("Active") },
+    { id: "vaulted", fr: "⬡ Vaultées (Soute)", en: "⬡ Vaulted", fn: (it) => (it.category || "").includes("Vaultée") },
     { id: "lith", fr: "Lith", en: "Lith", fn: (it) => (it.name || "").startsWith("Lith ") },
     { id: "meso", fr: "Meso", en: "Meso", fn: (it) => (it.name || "").startsWith("Meso ") },
     { id: "neo", fr: "Neo", en: "Neo", fn: (it) => (it.name || "").startsWith("Neo ") },
@@ -1020,51 +1020,51 @@ const CODEX_FILTERS = {
   ],
   warframes: [
     { id: "all", fr: "Tout", en: "All", fn: () => true },
-    { id: "prime", fr: "⭐ Warframes Prime", en: "⭐ Prime Warframes", fn: (it) => (it.category || "").includes("Prime") },
-    { id: "standard", fr: "🛡️ Warframes Standard", en: "🛡️ Standard Warframes", fn: (it) => (it.category || "").includes("Standard") },
+    { id: "prime", fr: "✦ Warframes Prime", en: "✦ Prime Warframes", fn: (it) => (it.category || "").includes("Prime") },
+    { id: "standard", fr: "❖ Warframes Standard", en: "❖ Standard Warframes", fn: (it) => (it.category || "").includes("Standard") },
     {
       id: "tank",
-      fr: "❤️ Tanks (PV > 400)",
-      en: "❤️ Tanks (HP > 400)",
+      fr: "♥ Tanks (PV > 400)",
+      en: "♥ Tanks (HP > 400)",
       fn: (it) => {
-        const m = (it.category || "").match(/❤️\s*(\d+)/);
+        const m = (it.category || "").match(/♥\s*(\d+)/);
         return m ? parseInt(m[1], 10) > 400 : false;
       }
     }
   ],
   weapons: [
     { id: "all", fr: "Tout", en: "All", fn: () => true },
-    { id: "primary", fr: "🔫 Principales", en: "🔫 Primary", fn: (it) => (it.category || "").includes("Principale") },
-    { id: "secondary", fr: "🔫 Secondaires", en: "🔫 Secondary", fn: (it) => (it.category || "").includes("Secondaire") },
-    { id: "melee", fr: "⚔️ Mêlée", en: "⚔️ Melee", fn: (it) => (it.category || "").includes("Mêlée") && !(it.category || "").includes("Arch-Mêlée") },
-    { id: "arch", fr: "🚀 Arch-Armes", en: "🚀 Arch-Weapons", fn: (it) => (it.category || "").includes("Arch-") },
-    { id: "prime", fr: "⭐ Prime", en: "⭐ Prime", fn: (it) => (it.category || "").includes("Prime") },
-    { id: "kuva_tenet", fr: "🩸 Kuva, Principe & Coda", en: "🩸 Kuva, Tenet & Coda", fn: (it) => /Kuva|Principe|Coda/i.test(it.category || "") },
-    { id: "incarnon", fr: "🌀 Incarnon", en: "🌀 Incarnon", fn: (it) => (it.category || "").includes("Incarnon") }
+    { id: "primary", fr: "⌖ Principales", en: "⌖ Primary", fn: (it) => (it.category || "").includes("Principale") },
+    { id: "secondary", fr: "⌖ Secondaires", en: "⌖ Secondary", fn: (it) => (it.category || "").includes("Secondaire") },
+    { id: "melee", fr: "⚔ Mêlée", en: "⚔ Melee", fn: (it) => (it.category || "").includes("Mêlée") && !(it.category || "").includes("Arch-Mêlée") },
+    { id: "arch", fr: "▲ Arch-Armes", en: "▲ Arch-Weapons", fn: (it) => (it.category || "").includes("Arch-") },
+    { id: "prime", fr: "✦ Prime", en: "✦ Prime", fn: (it) => (it.category || "").includes("Prime") },
+    { id: "kuva_tenet", fr: "◈ Kuva, Principe & Coda", en: "◈ Kuva, Tenet & Coda", fn: (it) => /Kuva|Principe|Coda/i.test(it.category || "") },
+    { id: "incarnon", fr: "⟡ Incarnon", en: "⟡ Incarnon", fn: (it) => (it.category || "").includes("Incarnon") }
   ],
   mods: [
     { id: "all", fr: "Tout", en: "All", fn: () => true },
-    { id: "wf", fr: "⚡ Warframe & Aura", en: "⚡ Warframe & Aura", fn: (it) => /warframe|aura|exilus/i.test(it.category || "") },
-    { id: "primary", fr: "🔫 Fusil & Pompe", en: "🔫 Rifle & Shotgun", fn: (it) => /rifle|shotgun|primary|bow|sniper/i.test(it.category || "") },
-    { id: "pistol", fr: "🔫 Pistolet", en: "🔫 Pistol", fn: (it) => /pistol|secondary/i.test(it.category || "") },
-    { id: "melee", fr: "⚔️ Mêlée & Postures", en: "⚔️ Melee & Stances", fn: (it) => /melee|stance|claws|sword|dagger|hammer|polearm|staff|nikana|scythe|whip|fist|glaive|machete|rapier|sparring|tonfa|nunchaku|heavy blade|dual|blade|shield|warfan|two-handed/i.test(it.category || "") },
-    { id: "companion", fr: "🐾 Compagnon", en: "🐾 Companion", fn: (it) => /companion|kubrow|kavat|sentinel|beast|robotic|hound|moa/i.test(it.category || "") },
-    { id: "vehic", fr: "🤖 Archwing / Necramech / Railjack", en: "🤖 Archwing / Necramech / Railjack", fn: (it) => /arch|necramech|plexus|k-drive|parazon/i.test(it.category || "") },
-    { id: "legendary", fr: "💎 Légendaire (Accru)", en: "💎 Legendary (Primed)", fn: (it) => (it.category || "").includes("Legendary") },
-    { id: "rare", fr: "🟡 Rare (Or)", en: "🟡 Rare (Gold)", fn: (it) => (it.category || "").includes("• Rare") },
-    { id: "uncommon", fr: "⚪ Inhabituel (Argent)", en: "⚪ Uncommon (Silver)", fn: (it) => (it.category || "").includes("Uncommon") },
-    { id: "common", fr: "🟤 Commun (Bronze)", en: "🟤 Common (Bronze)", fn: (it) => /• Common|• Commun/i.test(it.category || "") }
+    { id: "wf", fr: "✦ Warframe & Aura", en: "✦ Warframe & Aura", fn: (it) => /warframe|aura|exilus/i.test(it.category || "") },
+    { id: "primary", fr: "⌖ Fusil & Pompe", en: "⌖ Rifle & Shotgun", fn: (it) => /rifle|shotgun|primary|bow|sniper/i.test(it.category || "") },
+    { id: "pistol", fr: "⌖ Pistolet", en: "⌖ Pistol", fn: (it) => /pistol|secondary/i.test(it.category || "") },
+    { id: "melee", fr: "⚔ Mêlée & Postures", en: "⚔ Melee & Stances", fn: (it) => /melee|stance|claws|sword|dagger|hammer|polearm|staff|nikana|scythe|whip|fist|glaive|machete|rapier|sparring|tonfa|nunchaku|heavy blade|dual|blade|shield|warfan|two-handed/i.test(it.category || "") },
+    { id: "companion", fr: "❖ Compagnon", en: "❖ Companion", fn: (it) => /companion|kubrow|kavat|sentinel|beast|robotic|hound|moa/i.test(it.category || "") },
+    { id: "vehic", fr: "❖ Archwing / Necramech / Railjack", en: "❖ Archwing / Necramech / Railjack", fn: (it) => /arch|necramech|plexus|k-drive|parazon/i.test(it.category || "") },
+    { id: "legendary", fr: "◈ Légendaire (Accru)", en: "◈ Legendary (Primed)", fn: (it) => (it.category || "").includes("Legendary") },
+    { id: "rare", fr: "◆ Rare (Or)", en: "◆ Rare (Gold)", fn: (it) => (it.category || "").includes("• Rare") },
+    { id: "uncommon", fr: "○ Inhabituel (Argent)", en: "○ Uncommon (Silver)", fn: (it) => (it.category || "").includes("Uncommon") },
+    { id: "common", fr: "◇ Commun (Bronze)", en: "◇ Common (Bronze)", fn: (it) => /• Common|• Commun/i.test(it.category || "") }
   ],
   resources: [
     { id: "all", fr: "Tout", en: "All", fn: () => true },
-    { id: "res", fr: "📦 Ressources & Composants", en: "📦 Resources & Parts", fn: (it) => it.category === "Resource" },
-    { id: "gem", fr: "💎 Gemmes & Minerais", en: "💎 Gems & Ores", fn: (it) => it.category === "Gem" },
-    { id: "plant", fr: "🌿 Plantes", en: "🌿 Plants", fn: (it) => it.category === "Plant" },
-    { id: "cetus", fr: "🌍 Cetus / Terre", en: "🌍 Cetus / Earth", fn: (it) => /cetus|earth|eidolon|thumper|ostron/i.test((it.location || "") + " " + (it.drop || "")) },
-    { id: "vallis", fr: "❄️ Orb Vallis / Fortuna", en: "❄️ Orb Vallis / Fortuna", fn: (it) => /vallis|venus|fortuna|solaris|profit-taker/i.test((it.location || "") + " " + (it.drop || "")) },
-    { id: "deimos", fr: "☣️ Deimos / Cambion", en: "☣️ Deimos / Cambion", fn: (it) => /deimos|cambion|necralisk|entrati|albrecht/i.test((it.location || "") + " " + (it.drop || "")) },
-    { id: "duviri", fr: "🌀 Duviri", en: "🌀 Duviri", fn: (it) => /duviri/i.test((it.location || "") + " " + (it.drop || "")) },
-    { id: "1999", fr: "🏍️ 1999 (Höllvania)", en: "🏍️ 1999 (Höllvania)", fn: (it) => /1999|höllvania|hex/i.test((it.location || "") + " " + (it.drop || "")) }
+    { id: "res", fr: "⬡ Ressources & Composants", en: "⬡ Resources & Parts", fn: (it) => it.category === "Resource" },
+    { id: "gem", fr: "◈ Gemmes & Minerais", en: "◈ Gems & Ores", fn: (it) => it.category === "Gem" },
+    { id: "plant", fr: "✦ Plantes", en: "✦ Plants", fn: (it) => it.category === "Plant" },
+    { id: "cetus", fr: "◎ Cetus / Terre", en: "◎ Cetus / Earth", fn: (it) => /cetus|earth|eidolon|thumper|ostron/i.test((it.location || "") + " " + (it.drop || "")) },
+    { id: "vallis", fr: "✦ Orb Vallis / Fortuna", en: "✦ Orb Vallis / Fortuna", fn: (it) => /vallis|venus|fortuna|solaris|profit-taker/i.test((it.location || "") + " " + (it.drop || "")) },
+    { id: "deimos", fr: "⟡ Deimos / Cambion", en: "⟡ Deimos / Cambion", fn: (it) => /deimos|cambion|necralisk|entrati|albrecht/i.test((it.location || "") + " " + (it.drop || "")) },
+    { id: "duviri", fr: "⟡ Duviri", en: "⟡ Duviri", fn: (it) => /duviri/i.test((it.location || "") + " " + (it.drop || "")) },
+    { id: "1999", fr: "⟡ 1999 (Höllvania)", en: "⟡ 1999 (Höllvania)", fn: (it) => /1999|höllvania|hex/i.test((it.location || "") + " " + (it.drop || "")) }
   ]
 };
 
@@ -1383,8 +1383,8 @@ function renderBountiesView(container) {
         <div class="bounty-hdr">
           <img src="${getHubImg(hub.hub)}" alt="${hub.hub}" />
           <div>
-            <div style="font-size:15px; font-weight:700; color:#58A6FF;">📍 ${hub.hub}</div>
-            <div style="font-size:12px; color:#8B949E;">🎯 ${hub.Syndicate || ""} — ${hub.highlights || ""}</div>
+            <div style="font-size:15px; font-weight:700; color:#58A6FF;">⌖ ${hub.hub}</div>
+            <div style="font-size:12px; color:#8B949E;">⌖ ${hub.Syndicate || ""} — ${hub.highlights || ""}</div>
           </div>
         </div>
         ${rotKeys
@@ -1393,7 +1393,7 @@ function renderBountiesView(container) {
             return `
               <div class="bounty-rot-row ${isActive ? "active" : ""}">
                 <span style="color:${isActive ? "#4ADE80" : "#8B949E"};">
-                  ${isActive ? "🟢 " : "⚪ "}${rotLabels[idx]}${isActive ? " (ACTIVE)" : ""}
+                  ${isActive ? "● " : "○ "}${rotLabels[idx]}${isActive ? " (ACTIVE)" : ""}
                 </span>
                 <span style="color:${isActive ? "#FFFFFF" : "#B1BAC4"};">
                   ${hub[rk] || ""}
@@ -1484,7 +1484,7 @@ function renderDuviriView(container) {
       <div class="bounty-card" style="margin-bottom:0; border-color:#3B82F6; box-shadow:0 0 18px rgba(59,130,246,0.18);">
         <div style="display:flex; justify-content:space-between; align-items:center;">
           <span style="font-size:13.5px; font-weight:800; color:#79C0FF;">
-            🔥 ${currentLang === "fr" ? "Armes Incarnon Actives" : "Active Incarnon Weapons"} (${tr("week_label")} ${curIncWeek})
+            ✦ ${currentLang === "fr" ? "Armes Incarnon Actives" : "Active Incarnon Weapons"} (${tr("week_label")} ${curIncWeek})
           </span>
           <span style="font-size:11px; font-weight:700; color:#4ADE80;">● ${currentLang === "fr" ? "EN COURS" : "ACTIVE"}</span>
         </div>
@@ -1505,7 +1505,7 @@ function renderDuviriView(container) {
       <div class="bounty-card" style="margin-bottom:0; border-color:#3B82F6; box-shadow:0 0 18px rgba(59,130,246,0.18);">
         <div style="display:flex; justify-content:space-between; align-items:center;">
           <span style="font-size:13.5px; font-weight:800; color:#79C0FF;">
-            🛡️ ${currentLang === "fr" ? "Warframes du Circuit Actives" : "Active Circuit Warframes"} (${tr("week_label")} ${curWfWeek})
+            ❖ ${currentLang === "fr" ? "Warframes du Circuit Actives" : "Active Circuit Warframes"} (${tr("week_label")} ${curWfWeek})
           </span>
           <span style="font-size:11px; font-weight:700; color:#4ADE80;">● ${currentLang === "fr" ? "EN COURS" : "ACTIVE"}</span>
         </div>
@@ -1622,8 +1622,8 @@ function renderBaroView(container) {
               .map(
                 (it) => `
             <div style="display:flex; justify-content:space-between; padding:8px 10px; border-bottom:1px solid rgba(255,255,255,0.05); font-size:13px;">
-              <span style="font-weight:700; color:#F0F6FC;">🔹 ${it.item}</span>
-              <span style="color:#F59E0B; font-weight:700;">🟡 ${it.ducats} Ducats   |   ⚪ ${(it.credits || 0).toLocaleString()} Crédits</span>
+              <span style="font-weight:700; color:#F0F6FC;">▸ ${it.item}</span>
+              <span style="color:#F59E0B; font-weight:700;">◆ ${it.ducats} Ducats   |   ○ ${(it.credits || 0).toLocaleString()} Crédits</span>
             </div>
           `
               )
@@ -1661,7 +1661,7 @@ function setLanguage(lang) {
     "nav-duviri": cleanNavText(tr("nav_duviri")),
     "nav-baro": cleanNavText(tr("nav_baro")),
     "btn-refresh": tr("btn_refresh"),
-    "btn-check-update": `${tr("btn_check_update")} (v${WF_DATA.version?.version || "1.0.14"})`,
+    "btn-check-update": `${tr("btn_check_update")} (v${WF_DATA.version?.version || "1.0.15"})`,
     "live-badge": tr("live_badge"),
     "live-tag": tr("live_tag"),
     "live-worlds-title": tr("live_worlds_title"),
@@ -1718,7 +1718,7 @@ async function refreshAllData(showLoader = false) {
 }
 
 async function checkForUpdatesManual() {
-  const localVer = WF_DATA.version?.version || "1.0.14";
+  const localVer = WF_DATA.version?.version || "1.0.15";
   try {
     const res = await fetch("https://raw.githubusercontent.com/Nyxo-17/WireFrame/main/version.json?t=" + Date.now());
     if (!res.ok) throw new Error("HTTP " + res.status);
