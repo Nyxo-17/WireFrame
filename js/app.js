@@ -6,19 +6,19 @@ const WF_DATA = window.WIREFRAME_DATA || {
   codex: { warframes: [], resources: [], mods: [], relics: [], bounties: [] },
   duviri: { warframes_weeks: [], incarnon_weeks: [] },
   translations: { fr: {}, en: {} },
-  version: { version: "1.0.3" }
+  version: { version: "1.0.4" }
 };
 
 let currentLang = localStorage.getItem("wf_lang") || "fr";
 let currentZoom = parseInt(localStorage.getItem("wf_zoom") || "100", 10);
 let currentTab = "welcome";
 
-// État de la pagination et recherche Codex
+// État de la recherche et des filtres Codex
 const codexState = {
-  resources: { query: "", page: 0 },
-  mods: { query: "", page: 0 },
-  warframes: { query: "", page: 0 },
-  relics: { query: "", page: 0 }
+  resources: { query: "", filter: "all" },
+  mods: { query: "", filter: "all" },
+  warframes: { query: "", filter: "all" },
+  relics: { query: "", filter: "all" }
 };
 const ITEMS_PER_PAGE = 20;
 
@@ -741,24 +741,102 @@ function formatGridBadge(rawCat) {
     .replace("Warframe Prime • ", "⭐ Prime • ");
 }
 
+const CODEX_FILTERS = {
+  relics: [
+    { id: "all", fr: "Tout", en: "All", fn: () => true },
+    { id: "active", fr: "🟢 Actives (En jeu)", en: "🟢 Active (In-game)", fn: (it) => (it.category || "").includes("Active") },
+    { id: "vaulted", fr: "🔒 Vaultées (Soute)", en: "🔒 Vaulted", fn: (it) => (it.category || "").includes("Vaultée") },
+    { id: "lith", fr: "Lith", en: "Lith", fn: (it) => (it.name || "").startsWith("Lith ") },
+    { id: "meso", fr: "Meso", en: "Meso", fn: (it) => (it.name || "").startsWith("Meso ") },
+    { id: "neo", fr: "Neo", en: "Neo", fn: (it) => (it.name || "").startsWith("Neo ") },
+    { id: "axi", fr: "Axi", en: "Axi", fn: (it) => (it.name || "").startsWith("Axi ") },
+    { id: "requiem", fr: "Requiem", en: "Requiem", fn: (it) => (it.name || "").startsWith("Requiem ") }
+  ],
+  warframes: [
+    { id: "all", fr: "Tout", en: "All", fn: () => true },
+    { id: "prime", fr: "⭐ Warframes Prime", en: "⭐ Prime Warframes", fn: (it) => (it.category || "").includes("Prime") },
+    { id: "standard", fr: "🛡️ Warframes Standard", en: "🛡️ Standard Warframes", fn: (it) => (it.category || "").includes("Standard") },
+    {
+      id: "tank",
+      fr: "❤️ Tanks (PV > 400)",
+      en: "❤️ Tanks (HP > 400)",
+      fn: (it) => {
+        const m = (it.category || "").match(/❤️\s*(\d+)/);
+        return m ? parseInt(m[1], 10) > 400 : false;
+      }
+    }
+  ],
+  mods: [
+    { id: "all", fr: "Tout", en: "All", fn: () => true },
+    { id: "wf", fr: "⚡ Warframe & Aura", en: "⚡ Warframe & Aura", fn: (it) => /warframe|aura|exilus/i.test(it.category || "") },
+    { id: "primary", fr: "🔫 Fusil & Pompe", en: "🔫 Rifle & Shotgun", fn: (it) => /rifle|shotgun|primary|bow|sniper/i.test(it.category || "") },
+    { id: "pistol", fr: "🔫 Pistolet", en: "🔫 Pistol", fn: (it) => /pistol|secondary/i.test(it.category || "") },
+    { id: "melee", fr: "⚔️ Mêlée & Postures", en: "⚔️ Melee & Stances", fn: (it) => /melee|stance|claws|sword|dagger|hammer|polearm|staff|nikana|scythe|whip|fist|glaive|machete|rapier|sparring|tonfa|nunchaku|heavy blade|dual|blade|shield|warfan|two-handed/i.test(it.category || "") },
+    { id: "companion", fr: "🐾 Compagnon", en: "🐾 Companion", fn: (it) => /companion|kubrow|kavat|sentinel|beast|robotic|hound|moa/i.test(it.category || "") },
+    { id: "vehic", fr: "🤖 Archwing / Necramech / Railjack", en: "🤖 Archwing / Necramech / Railjack", fn: (it) => /arch|necramech|plexus|k-drive|parazon/i.test(it.category || "") },
+    { id: "legendary", fr: "💎 Légendaire (Accru)", en: "💎 Legendary (Primed)", fn: (it) => (it.category || "").includes("Legendary") },
+    { id: "rare", fr: "🟡 Rare (Or)", en: "🟡 Rare (Gold)", fn: (it) => (it.category || "").includes("• Rare") },
+    { id: "uncommon", fr: "⚪ Inhabituel (Argent)", en: "⚪ Uncommon (Silver)", fn: (it) => (it.category || "").includes("Uncommon") },
+    { id: "common", fr: "🟤 Commun (Bronze)", en: "🟤 Common (Bronze)", fn: (it) => /• Common|• Commun/i.test(it.category || "") }
+  ],
+  resources: [
+    { id: "all", fr: "Tout", en: "All", fn: () => true },
+    { id: "res", fr: "📦 Ressources & Composants", en: "📦 Resources & Parts", fn: (it) => it.category === "Resource" },
+    { id: "gem", fr: "💎 Gemmes & Minerais", en: "💎 Gems & Ores", fn: (it) => it.category === "Gem" },
+    { id: "plant", fr: "🌿 Plantes", en: "🌿 Plants", fn: (it) => it.category === "Plant" },
+    { id: "cetus", fr: "🌍 Cetus / Terre", en: "🌍 Cetus / Earth", fn: (it) => /cetus|earth|eidolon|thumper|ostron/i.test((it.location || "") + " " + (it.drop || "")) },
+    { id: "vallis", fr: "❄️ Orb Vallis / Fortuna", en: "❄️ Orb Vallis / Fortuna", fn: (it) => /vallis|venus|fortuna|solaris|profit-taker/i.test((it.location || "") + " " + (it.drop || "")) },
+    { id: "deimos", fr: "☣️ Deimos / Cambion", en: "☣️ Deimos / Cambion", fn: (it) => /deimos|cambion|necralisk|entrati|albrecht/i.test((it.location || "") + " " + (it.drop || "")) },
+    { id: "duviri", fr: "🌀 Duviri", en: "🌀 Duviri", fn: (it) => /duviri/i.test((it.location || "") + " " + (it.drop || "")) },
+    { id: "1999", fr: "🏍️ 1999 (Höllvania)", en: "🏍️ 1999 (Höllvania)", fn: (it) => /1999|höllvania|hex/i.test((it.location || "") + " " + (it.drop || "")) }
+  ]
+};
+
 function getFilteredCodexItems(categoryKey) {
   const st = codexState[categoryKey];
   const allItems = WF_DATA.codex[categoryKey] || [];
   const q = (st.query || "").trim().toLowerCase();
-  if (!q) return allItems;
-  return allItems.filter(
-    (it) =>
+  const activeFilterId = st.filter || "all";
+  const filterDef = (CODEX_FILTERS[categoryKey] || []).find((f) => f.id === activeFilterId);
+  const filterFn = filterDef ? filterDef.fn : () => true;
+
+  return allItems.filter((it) => {
+    if (!filterFn(it)) return false;
+    if (!q) return true;
+    return (
       (it.name || "").toLowerCase().includes(q) ||
       (it.category || "").toLowerCase().includes(q) ||
       (it.location || "").toLowerCase().includes(q) ||
       (it.drop || "").toLowerCase().includes(q)
-  );
+    );
+  });
+}
+
+function setCodexFilter(categoryKey, filterId) {
+  codexState[categoryKey].filter = filterId;
+  const filtered = getFilteredCodexItems(categoryKey);
+  window._currentCodexFiltered = filtered;
+
+  document.querySelectorAll(".filter-pill").forEach((btn) => {
+    btn.classList.toggle("active", btn.getAttribute("data-fid") === filterId);
+  });
+
+  const listEl = document.getElementById("codex-results-list");
+  if (listEl) {
+    listEl.innerHTML = renderCodexGridHTML(filtered, 0);
+  }
+  const countEl = document.getElementById("codex-count-label");
+  if (countEl) {
+    countEl.textContent = `${filtered.length} ${currentLang === "fr" ? "éléments affichés" : "items displayed"}`;
+  }
 }
 
 function renderCodexView(container, categoryKey, title) {
   const st = codexState[categoryKey];
   const filtered = getFilteredCodexItems(categoryKey);
   window._currentCodexFiltered = filtered;
+  const filters = CODEX_FILTERS[categoryKey] || [];
+  const curFilter = st.filter || "all";
 
   container.innerHTML = `
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
@@ -777,6 +855,18 @@ function renderCodexView(container, categoryKey, title) {
         value="${st.query.replace(/"/g, "&quot;")}"
         oninput="onCodexSearch('${categoryKey}', this.value)"
       />
+    </div>
+
+    <div class="codex-filters-bar">
+      ${filters
+        .map(
+          (f) => `
+        <button class="filter-pill ${curFilter === f.id ? "active" : ""}" data-fid="${f.id}" onclick="setCodexFilter('${categoryKey}', '${f.id}')">
+          ${currentLang === "fr" ? f.fr : f.en}
+        </button>
+      `
+        )
+        .join("")}
     </div>
 
     <div id="codex-results-list" class="codex-grid">
@@ -1111,7 +1201,7 @@ function setLanguage(lang) {
     "nav-duviri": cleanNavText(tr("nav_duviri")),
     "nav-baro": cleanNavText(tr("nav_baro")),
     "btn-refresh": tr("btn_refresh"),
-    "btn-check-update": `${tr("btn_check_update")} (v${WF_DATA.version?.version || "1.0.3"})`,
+    "btn-check-update": `${tr("btn_check_update")} (v${WF_DATA.version?.version || "1.0.4"})`,
     "live-badge": tr("live_badge"),
     "live-tag": tr("live_tag"),
     "live-worlds-title": tr("live_worlds_title"),
@@ -1156,7 +1246,7 @@ async function refreshAllData(showLoader = false) {
 }
 
 async function checkForUpdatesManual() {
-  const localVer = WF_DATA.version?.version || "1.0.3";
+  const localVer = WF_DATA.version?.version || "1.0.4";
   try {
     const res = await fetch("https://raw.githubusercontent.com/Nyxo-17/WireFrame/main/version.json?t=" + Date.now());
     if (!res.ok) throw new Error("HTTP " + res.status);
