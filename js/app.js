@@ -3,10 +3,10 @@
    ========================================================================== */
 
 const WF_DATA = window.WIREFRAME_DATA || {
-  codex: { warframes: [], resources: [], mods: [], relics: [], bounties: [] },
+  codex: { warframes: [], weapons: [], resources: [], mods: [], relics: [], bounties: [] },
   duviri: { warframes_weeks: [], incarnon_weeks: [] },
   translations: { fr: {}, en: {} },
-  version: { version: "1.0.12" }
+  version: { version: "1.0.13" }
 };
 
 let currentLang = localStorage.getItem("wf_lang") || "fr";
@@ -20,6 +20,7 @@ const codexState = {
   resources: { query: "", filter: "all" },
   mods: { query: "", filter: "all" },
   warframes: { query: "", filter: "all" },
+  weapons: { query: "", filter: "all" },
   relics: { query: "", filter: "all" }
 };
 const ITEMS_PER_PAGE = 20;
@@ -590,6 +591,9 @@ function renderCurrentTab() {
     case "warframes":
       renderCodexView(container, "warframes", tr("wf_page_title"));
       break;
+    case "weapons":
+      renderCodexView(container, "weapons", tr("wpn_page_title"));
+      break;
     case "relics":
       renderCodexView(container, "relics", tr("rel_page_title"));
       break;
@@ -614,6 +618,7 @@ function renderWelcomeView(container) {
     { title: tr("card_res_title"), desc: tr("card_res_desc"), tab: "resources" },
     { title: tr("card_mod_title"), desc: tr("card_mod_desc"), tab: "mods" },
     { title: tr("card_wf_title"), desc: tr("card_wf_desc"), tab: "warframes" },
+    { title: tr("card_wpn_title"), desc: tr("card_wpn_desc"), tab: "weapons" },
     { title: tr("card_rel_title"), desc: tr("card_rel_desc"), tab: "relics" },
     { title: tr("card_wld_title"), desc: tr("card_wld_desc"), tab: "worlds" },
     { title: tr("card_bnt_title"), desc: tr("card_bnt_desc"), tab: "bounties" },
@@ -632,8 +637,9 @@ function renderWelcomeView(container) {
     { icon: "💎", val: "239", lbl: currentLang === "fr" ? "Ressources" : "Resources", tab: "resources" },
     { icon: "🃏", val: "1 442", lbl: "Mods", tab: "mods" },
     { icon: "⚡", val: "120", lbl: "Warframes", tab: "warframes" },
+    { icon: "🗡️", val: "635", lbl: currentLang === "fr" ? "Armes" : "Weapons", tab: "weapons" },
     { icon: "🏺", val: "801", lbl: currentLang === "fr" ? "Reliques" : "Relics", tab: "relics" },
-    { icon: "🌍", val: "24/7", lbl: currentLang === "fr" ? "Cycles & Rotations" : "Live Cycles", tab: "worlds" }
+    { icon: "🌍", val: "24/7", lbl: currentLang === "fr" ? "Cycles Direct" : "Live Cycles", tab: "worlds" }
   ];
 
   container.innerHTML = `
@@ -650,7 +656,7 @@ function renderWelcomeView(container) {
       <p>${tr("welcome_banner_desc")}</p>
     </div>
 
-    <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:10px; margin-bottom:14px;">
+    <div style="display:grid; grid-template-columns:repeat(6, 1fr); gap:10px; margin-bottom:14px;">
       ${stats
         .map(
           (s) => `
@@ -917,6 +923,16 @@ const CODEX_FILTERS = {
       }
     }
   ],
+  weapons: [
+    { id: "all", fr: "Tout", en: "All", fn: () => true },
+    { id: "primary", fr: "🔫 Principales", en: "🔫 Primary", fn: (it) => (it.category || "").includes("Principale") },
+    { id: "secondary", fr: "🔫 Secondaires", en: "🔫 Secondary", fn: (it) => (it.category || "").includes("Secondaire") },
+    { id: "melee", fr: "⚔️ Mêlée", en: "⚔️ Melee", fn: (it) => (it.category || "").includes("Mêlée") && !(it.category || "").includes("Arch-Mêlée") },
+    { id: "arch", fr: "🚀 Arch-Armes", en: "🚀 Arch-Weapons", fn: (it) => (it.category || "").includes("Arch-") },
+    { id: "prime", fr: "⭐ Prime", en: "⭐ Prime", fn: (it) => (it.category || "").includes("Prime") },
+    { id: "kuva_tenet", fr: "🩸 Kuva, Principe & Coda", en: "🩸 Kuva, Tenet & Coda", fn: (it) => /Kuva|Principe|Coda/i.test(it.category || "") },
+    { id: "incarnon", fr: "🌀 Incarnon", en: "🌀 Incarnon", fn: (it) => (it.category || "").includes("Incarnon") }
+  ],
   mods: [
     { id: "all", fr: "Tout", en: "All", fn: () => true },
     { id: "wf", fr: "⚡ Warframe & Aura", en: "⚡ Warframe & Aura", fn: (it) => /warframe|aura|exilus/i.test(it.category || "") },
@@ -963,6 +979,10 @@ function getFilteredCodexItems(categoryKey) {
   });
 }
 
+let codexRenderedCount = 0;
+let codexObserver = null;
+const CODEX_BATCH_SIZE = 48;
+
 function setCodexFilter(categoryKey, filterId) {
   codexState[categoryKey].filter = filterId;
   const filtered = getFilteredCodexItems(categoryKey);
@@ -972,14 +992,7 @@ function setCodexFilter(categoryKey, filterId) {
     btn.classList.toggle("active", btn.getAttribute("data-fid") === filterId);
   });
 
-  const listEl = document.getElementById("codex-results-list");
-  if (listEl) {
-    listEl.innerHTML = renderCodexGridHTML(filtered, 0);
-  }
-  const countEl = document.getElementById("codex-count-label");
-  if (countEl) {
-    countEl.textContent = `${filtered.length} ${currentLang === "fr" ? "éléments affichés" : "items displayed"}`;
-  }
+  resetAndRenderCodexGrid(filtered);
 }
 
 function renderCodexView(container, categoryKey, title) {
@@ -993,7 +1006,7 @@ function renderCodexView(container, categoryKey, title) {
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
       <div class="view-header-title" style="margin-bottom:0;">${title}</div>
       <div id="codex-count-label" style="font-size:12px; font-weight:700; color:#58A6FF;">
-        ${filtered.length} ${currentLang === "fr" ? "éléments affichés" : "items displayed"}
+        ${filtered.length} ${currentLang === "fr" ? "éléments trouvés" : "items found"}
       </div>
     </div>
 
@@ -1020,16 +1033,84 @@ function renderCodexView(container, categoryKey, title) {
         .join("")}
     </div>
 
-    <div id="codex-results-list" class="codex-grid">
-      ${renderCodexGridHTML(filtered, 0)}
-    </div>
+    <div id="codex-results-list" class="codex-grid"></div>
+    <div id="codex-scroll-sentinel" style="height:28px; width:100%;"></div>
   `;
+
+  resetAndRenderCodexGrid(filtered);
+}
+
+function resetAndRenderCodexGrid(filtered) {
+  codexRenderedCount = 0;
+  const listEl = document.getElementById("codex-results-list");
+  if (!listEl) return;
+
+  const countEl = document.getElementById("codex-count-label");
+  if (countEl) {
+    countEl.textContent = `${filtered.length} ${currentLang === "fr" ? "éléments trouvés" : "items found"}`;
+  }
+
+  if (!filtered.length) {
+    listEl.innerHTML = `<div style="grid-column: 1 / -1; padding:24px; text-align:center; color:#8B949E;">Aucun résultat trouvé.</div>`;
+    return;
+  }
+
+  listEl.innerHTML = "";
+  appendNextCodexBatch();
+  setupCodexScrollObserver();
+}
+
+function appendNextCodexBatch() {
+  const filtered = window._currentCodexFiltered || [];
+  const listEl = document.getElementById("codex-results-list");
+  if (!listEl || codexRenderedCount >= filtered.length) return;
+
+  const nextSlice = filtered.slice(codexRenderedCount, codexRenderedCount + CODEX_BATCH_SIZE);
+  const html = renderCodexGridHTML(nextSlice, codexRenderedCount);
+  listEl.insertAdjacentHTML("beforeend", html);
+  codexRenderedCount += nextSlice.length;
+}
+
+function setupCodexScrollObserver() {
+  if (codexObserver) {
+    codexObserver.disconnect();
+    codexObserver = null;
+  }
+  const sentinel = document.getElementById("codex-scroll-sentinel");
+  const scrollRoot = document.querySelector(".center-container");
+  if (!sentinel) return;
+
+  codexObserver = new IntersectionObserver(
+    (entries) => {
+      if (entries.some((e) => e.isIntersecting)) {
+        appendNextCodexBatch();
+      }
+    },
+    {
+      root: scrollRoot || null,
+      rootMargin: "550px"
+    }
+  );
+  codexObserver.observe(sentinel);
+
+  if (scrollRoot && !scrollRoot._hasCodexScrollListener) {
+    scrollRoot._hasCodexScrollListener = true;
+    scrollRoot.addEventListener(
+      "scroll",
+      () => {
+        if (!["resources", "mods", "warframes", "weapons", "relics"].includes(currentTab)) return;
+        const remaining = scrollRoot.scrollHeight - scrollRoot.scrollTop - scrollRoot.clientHeight;
+        if (remaining < 600) {
+          appendNextCodexBatch();
+        }
+      },
+      { passive: true }
+    );
+  }
 }
 
 function renderCodexGridHTML(items, startOffset = 0) {
-  if (!items.length) {
-    return `<div style="grid-column: 1 / -1; padding:24px; text-align:center; color:#8B949E;">Aucun résultat trouvé.</div>`;
-  }
+  if (!items.length) return "";
   return items
     .map((item, idx) => {
       const imgUrl = item.image
@@ -1040,7 +1121,7 @@ function renderCodexGridHTML(items, startOffset = 0) {
       return `
         <div class="codex-grid-card" onclick="openCodexModal(${globalIdx})" title="Cliquer pour voir les détails de ${item.name.replace(/"/g, "&quot;")}">
           <span class="codex-grid-badge">${badgeTxt}</span>
-          <img src="${imgUrl}" alt="${item.name}" class="codex-grid-img" loading="lazy" onerror="this.onerror=null;this.src='data/app_logo.png';" />
+          <img src="${imgUrl}" alt="${item.name}" class="codex-grid-img" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='data/app_logo.png';" />
           <div class="codex-grid-name">${item.name}</div>
         </div>
       `;
@@ -1119,15 +1200,7 @@ function onCodexSearch(categoryKey, val) {
   codexState[categoryKey].query = val;
   const filtered = getFilteredCodexItems(categoryKey);
   window._currentCodexFiltered = filtered;
-
-  const listEl = document.getElementById("codex-results-list");
-  if (listEl) {
-    listEl.innerHTML = renderCodexGridHTML(filtered, 0);
-  }
-  const countEl = document.getElementById("codex-count-label");
-  if (countEl) {
-    countEl.textContent = `${filtered.length} ${currentLang === "fr" ? "éléments affichés" : "items displayed"}`;
-  }
+  resetAndRenderCodexGrid(filtered);
 }
 
 /* --- VUE 6 : TEMPS DES PLANÈTES --- */
@@ -1471,6 +1544,7 @@ function setLanguage(lang) {
     "nav-resources": cleanNavText(tr("nav_resources")),
     "nav-mods": cleanNavText(tr("nav_mods")),
     "nav-warframes": cleanNavText(tr("nav_warframes")),
+    "nav-weapons": cleanNavText(tr("nav_weapons")),
     "nav-relics": cleanNavText(tr("nav_relics")),
     "sec-cycles": tr("sec_cycles"),
     "nav-worlds": cleanNavText(tr("nav_worlds")),
@@ -1478,7 +1552,7 @@ function setLanguage(lang) {
     "nav-duviri": cleanNavText(tr("nav_duviri")),
     "nav-baro": cleanNavText(tr("nav_baro")),
     "btn-refresh": tr("btn_refresh"),
-    "btn-check-update": `${tr("btn_check_update")} (v${WF_DATA.version?.version || "1.0.12"})`,
+    "btn-check-update": `${tr("btn_check_update")} (v${WF_DATA.version?.version || "1.0.13"})`,
     "live-badge": tr("live_badge"),
     "live-tag": tr("live_tag"),
     "live-worlds-title": tr("live_worlds_title"),
@@ -1535,7 +1609,7 @@ async function refreshAllData(showLoader = false) {
 }
 
 async function checkForUpdatesManual() {
-  const localVer = WF_DATA.version?.version || "1.0.12";
+  const localVer = WF_DATA.version?.version || "1.0.13";
   try {
     const res = await fetch("https://raw.githubusercontent.com/Nyxo-17/WireFrame/main/version.json?t=" + Date.now());
     if (!res.ok) throw new Error("HTTP " + res.status);
