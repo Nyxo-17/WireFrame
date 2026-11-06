@@ -6,7 +6,7 @@ const WF_DATA = window.WIREFRAME_DATA || {
   codex: { warframes: [], resources: [], mods: [], relics: [], bounties: [] },
   duviri: { warframes_weeks: [], incarnon_weeks: [] },
   translations: { fr: {}, en: {} },
-  version: { version: "1.0.5" }
+  version: { version: "1.0.6" }
 };
 
 let currentLang = localStorage.getItem("wf_lang") || "fr";
@@ -1201,7 +1201,7 @@ function setLanguage(lang) {
     "nav-duviri": cleanNavText(tr("nav_duviri")),
     "nav-baro": cleanNavText(tr("nav_baro")),
     "btn-refresh": tr("btn_refresh"),
-    "btn-check-update": `${tr("btn_check_update")} (v${WF_DATA.version?.version || "1.0.5"})`,
+    "btn-check-update": `${tr("btn_check_update")} (v${WF_DATA.version?.version || "1.0.6"})`,
     "live-badge": tr("live_badge"),
     "live-tag": tr("live_tag"),
     "live-worlds-title": tr("live_worlds_title"),
@@ -1246,7 +1246,7 @@ async function refreshAllData(showLoader = false) {
 }
 
 async function checkForUpdatesManual() {
-  const localVer = WF_DATA.version?.version || "1.0.5";
+  const localVer = WF_DATA.version?.version || "1.0.6";
   try {
     const res = await fetch("https://raw.githubusercontent.com/Nyxo-17/WireFrame/main/version.json?t=" + Date.now());
     if (!res.ok) throw new Error("HTTP " + res.status);
