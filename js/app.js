@@ -6,7 +6,7 @@ const WF_DATA = window.WIREFRAME_DATA || {
   codex: { warframes: [], weapons: [], resources: [], mods: [], relics: [], bounties: [] },
   duviri: { warframes_weeks: [], incarnon_weeks: [] },
   translations: { fr: {}, en: {} },
-  version: { version: "1.0.16" }
+  version: { version: "1.0.17" }
 };
 
 let currentLang = localStorage.getItem("wf_lang") || "fr";
@@ -1661,7 +1661,7 @@ function setLanguage(lang) {
     "nav-duviri": cleanNavText(tr("nav_duviri")),
     "nav-baro": cleanNavText(tr("nav_baro")),
     "btn-refresh": tr("btn_refresh"),
-    "btn-check-update": `${tr("btn_check_update")} (v${WF_DATA.version?.version || "1.0.16"})`,
+    "btn-check-update": `${tr("btn_check_update")} (v${WF_DATA.version?.version || "1.0.17"})`,
     "live-badge": tr("live_badge"),
     "live-tag": tr("live_tag"),
     "live-worlds-title": tr("live_worlds_title"),
@@ -1717,22 +1717,55 @@ async function refreshAllData(showLoader = false) {
   }
 }
 
-async function checkForUpdatesManual() {
-  const localVer = WF_DATA.version?.version || "1.0.16";
+function isNewerVersion(remoteVer, localVer) {
+  const r = String(remoteVer || "1.0.17").replace(/^v/i, "").split(".").map((n) => parseInt(n, 10) || 0);
+  const l = String(localVer || "1.0.17").replace(/^v/i, "").split(".").map((n) => parseInt(n, 10) || 0);
+  for (let i = 0; i < Math.max(r.length, l.length); i++) {
+    const rv = r[i] || 0;
+    const lv = l[i] || 0;
+    if (rv > lv) return true;
+    if (rv < lv) return false;
+  }
+  return false;
+}
+
+async function checkForUpdatesManual(isSilentAuto = false) {
+  const localVer = WF_DATA.version?.version || "1.0.17";
   try {
-    const res = await fetch("https://raw.githubusercontent.com/Nyxo-17/WireFrame/main/version.json?t=" + Date.now());
+    const res = await fetch("https://raw.githubusercontent.com/Nyxo-17/WireFrame/main/version.json?t=" + Date.now(), {
+      cache: "no-store"
+    });
     if (!res.ok) throw new Error("HTTP " + res.status);
     const remote = await res.json();
-    if (remote.version && remote.version !== localVer) {
+    if (remote.version && isNewerVersion(remote.version, localVer)) {
+      const dlUrl = "https://raw.githubusercontent.com/Nyxo-17/WireFrame/main/WireFrame.exe";
+      const btnUpd = document.getElementById("btn-check-update");
+      if (btnUpd) {
+        btnUpd.textContent = `⇣ ${tr("upd_install_btn")} (v${remote.version})`;
+        btnUpd.style.borderColor = "#4ADE80";
+        btnUpd.style.color = "#4ADE80";
+        btnUpd.onclick = () => window.open(dlUrl, "_blank");
+      }
       triggerAlert(
         `${tr("upd_available_title")} : v${remote.version}`,
         remote.changelog_fr || "Une nouvelle version est disponible sur GitHub !"
       );
-    } else {
+      const tMsg = document.getElementById("toast-msg");
+      if (tMsg) {
+        tMsg.innerHTML = `
+          <div>${remote.changelog_fr || "Nouvelle version disponible !"}</div>
+          <a href="${dlUrl}" target="_blank" class="btn-open" style="display:inline-block; margin-top:8px; text-decoration:none; background:#15803D; border-color:#4ADE80; color:#FFFFFF;">
+            ⇣ ${tr("upd_install_btn")} (v${remote.version})
+          </a>
+        `;
+      }
+    } else if (!isSilentAuto) {
       triggerAlert("WireFrame — Mise à jour", `${tr("upd_up_to_date")} (v${localVer}).`);
     }
   } catch (e) {
-    triggerAlert("WireFrame — Mise à jour", `${tr("upd_up_to_date")} (v${localVer}).`);
+    if (!isSilentAuto) {
+      triggerAlert("WireFrame — Mise à jour", `${tr("upd_up_to_date")} (v${localVer}).`);
+    }
   }
 }
 
@@ -1768,11 +1801,13 @@ window.addEventListener("DOMContentLoaded", async () => {
 
     setTimeout(() => {
       if (splash) splash.classList.add("hidden");
+      checkForUpdatesManual(true);
     }, 320);
   }, 450);
 
-  // Boucle temps réel 1 seconde + rafraîchissement API toutes les 60 secondes
+  // Boucle temps réel 1 seconde + rafraîchissement API toutes les 60 secondes + vérif MAJ auto toutes les 5 min
   setInterval(updateLivePanel, 1000);
   setInterval(() => refreshAllData(false), 60000);
+  setInterval(() => checkForUpdatesManual(true), 300000);
 });
 
