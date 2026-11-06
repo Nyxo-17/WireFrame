@@ -1,8 +1,14 @@
 <div align="center">
   <img src="data/app_logo.png" alt="WireFrame Logo" width="115" />
-  <h1>❖ WireFrame — Warframe Companion App (HTML5 • 144 FPS) ❖</h1>
+  <h1>❖ WireFrame v1.0.24 — Warframe Companion App (HTML5 • 144 FPS) ❖</h1>
+  <p>
+    <img src="https://img.shields.io/badge/Version-v1.0.24-E5C158?style=for-the-badge" alt="Version v1.0.24" />
+    <img src="https://img.shields.io/badge/Engine-HTML5_%E2%80%A2_30--144_FPS-3B82F6?style=for-the-badge" alt="Engine 144 FPS" />
+    <img src="https://img.shields.io/badge/Themes-10_Styles-A855F7?style=for-the-badge" alt="10 Themes" />
+    <a href="https://discord.gg/DhGwHPf82n"><img src="https://img.shields.io/badge/Discord-Rejoindre-5865F2?style=for-the-badge" alt="Discord" /></a>
+  </p>
   <p><b>Ultra-fast, zero-dependency, bilingual (EN / FR) desktop & web companion to track the Origin System in real time.</b></p>
-  <p>Created by <a href="https://github.com/Nyxo-17"><b>Nyxo_17</b></a> • <a href="https://discord.gg/DhGwHPf82n">💬 Join the Discord Server</a></p>
+  <p>Created by <a href="https://github.com/Nyxo-17"><b>Nyxo_17</b></a> • Current Release: <b><code>v1.0.24</code></b> • <a href="https://discord.gg/DhGwHPf82n">❖ Join the Discord Server</a></p>
   <p><a href="#-english-version"><b>🇬🇧 English Version</b></a> &nbsp;|&nbsp; <a href="#-version-française"><b>🇫🇷 Version Française</b></a></p>
 </div>
 
