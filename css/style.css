@@ -563,10 +563,16 @@ html {
 .spinner {
   width: 42px;
   height: 42px;
-  border: 3px solid rgba(229, 193, 88, 0.2);
-  border-top-color: var(--accent-gold);
+  border: 3px solid var(--border-card);
+  border-top-color: var(--accent-blue);
   border-radius: 50%;
   animation: spin 0.75s linear infinite;
+}
+
+#loader-text {
+  font-size: 13px;
+  color: var(--accent-cyan);
+  font-weight: 700;
 }
 
 @keyframes spin {
@@ -582,12 +588,25 @@ html {
   transform: translateX(-50%);
   width: 92%;
   z-index: 60;
-  background: #172542;
-  border: 2px solid var(--accent-gold);
+  background: var(--bg-card);
+  border: 2px solid var(--accent-blue);
   border-radius: 10px;
   padding: 12px 16px;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.65), 0 0 20px rgba(229, 193, 88, 0.3);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45), 0 0 18px rgba(59, 130, 246, 0.25);
   transition: all 0.25s ease;
+}
+
+#toast-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--accent-cyan);
+  margin-bottom: 4px;
+}
+
+#toast-msg {
+  font-size: 12.5px;
+  color: var(--text-main);
+  font-weight: 600;
 }
 
 #toast-banner.hidden {
@@ -2194,6 +2213,263 @@ html {
   background: #9333EA;
   color: #FFFFFF;
 }
+
+/* --- THÈME 9 : ORANGE SOMBRE (EMBER & FUSION SOLAIRE) --- */
+[data-theme="orange-dark"] {
+  --bg-root: #120905;
+  --bg-sidebar: #1A0D07;
+  --bg-center: #1E1008;
+  --bg-live: #1C0E08;
+  --bg-card: #29160C;
+  --bg-card-hover: #381E10;
+  --border-subtle: #432212;
+  --border-card: #613018;
+  --accent-blue: #F97316;
+  --accent-cyan: #FB923C;
+  --accent-gold: #FBBF24;
+  --accent-green: #4ADE80;
+  --text-main: #FFF7ED;
+  --text-muted: #FDBA74;
+  --text-dim: #FB923C;
+}
+
+[data-theme="orange-dark"] .welcome-banner,
+[data-theme="orange-dark"] .planet-card.hero-planet-card,
+[data-theme="orange-dark"] .duviri-showcase-card,
+[data-theme="orange-dark"] .codex-modal-card {
+  background: linear-gradient(155deg, #33190B 0%, #1C0D06 100%);
+  border-color: #7C2D12;
+}
+[data-theme="orange-dark"] .welcome-banner h3,
+[data-theme="orange-dark"] .feature-card h4,
+[data-theme="orange-dark"] .nav-section-title.glow {
+  color: #FB923C;
+}
+[data-theme="orange-dark"] .nav-icon {
+  color: #FB923C;
+}
+[data-theme="orange-dark"] .nav-item:hover {
+  background: #361B0D;
+  border-color: #9A3412;
+}
+[data-theme="orange-dark"] .nav-item.active,
+[data-theme="orange-dark"] .filter-pill.active,
+[data-theme="orange-dark"] .fps-pill-btn.active {
+  background: linear-gradient(90deg, #9A3412 0%, #431407 100%);
+  border-color: #FB923C;
+  box-shadow: 0 0 16px rgba(249, 115, 22, 0.45);
+}
+[data-theme="orange-dark"] .nav-item.active::before {
+  background: #FFEDD5;
+  box-shadow: 0 0 8px #FB923C;
+}
+[data-theme="orange-dark"] .search-input,
+[data-theme="orange-dark"] .filter-pill,
+[data-theme="orange-dark"] .fps-pill-btn,
+[data-theme="orange-dark"] .duviri-item-chip,
+[data-theme="orange-dark"] .modal-sec-box,
+[data-theme="orange-dark"] .control-pill,
+[data-theme="orange-dark"] .live-toggle-btn,
+[data-theme="orange-dark"] .btn-sidebar-action,
+[data-theme="orange-dark"] .btn-sidebar-secondary {
+  background: #241209;
+  border-color: #613018;
+  color: #FFEDD5;
+}
+[data-theme="orange-dark"] .btn-open {
+  background: #431407;
+  border-color: #9A3412;
+  color: #FDBA74;
+}
+[data-theme="orange-dark"] .btn-open:hover,
+[data-theme="orange-dark"] .live-toggle-btn.active,
+[data-theme="orange-dark"] .lang-btn.active {
+  background: #EA580C;
+  border-color: #FB923C;
+  color: #FFFFFF;
+}
+[data-theme="orange-dark"] .bounty-rot-row.active {
+  background: #431407;
+  border-color: #F97316;
+}
+[data-theme="orange-dark"] .bounty-rot-row.active .duviri-item-chip {
+  background: #5C1D0B;
+  border-color: #FB923C;
+}
+
+/* --- THÈME 10 : ORANGE CLAIR (AMBRE CLAIR & CUIVRE) --- */
+[data-theme="orange-light"] {
+  --bg-root: #FFEDD5;
+  --bg-sidebar: #FFF7ED;
+  --bg-center: #FFFAF5;
+  --bg-live: #FFF7ED;
+  --bg-card: #FFFFFF;
+  --bg-card-hover: #FFEDD5;
+  --border-subtle: #FED7AA;
+  --border-card: #FDBA74;
+  --accent-blue: #EA580C;
+  --accent-cyan: #C2410C;
+  --accent-gold: #B45309;
+  --accent-green: #15803D;
+  --text-main: #431407;
+  --text-muted: #7C2D12;
+  --text-dim: #9A3412;
+}
+
+[data-theme="orange-light"] .welcome-banner {
+  background: linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 100%);
+  border-color: #FDBA74;
+}
+[data-theme="orange-light"] .welcome-banner h3,
+[data-theme="orange-light"] .feature-card h4 {
+  color: #C2410C;
+}
+[data-theme="orange-light"] .welcome-banner p {
+  color: #431407;
+}
+[data-theme="orange-light"] .nav-item {
+  color: #7C2D12;
+}
+[data-theme="orange-light"] .nav-icon {
+  color: #EA580C;
+}
+[data-theme="orange-light"] .nav-item:hover {
+  background: #FFEDD5;
+  border-color: #FDBA74;
+  color: #431407;
+}
+[data-theme="orange-light"] .nav-item.active {
+  background: linear-gradient(90deg, #EA580C 0%, #C2410C 100%);
+  border-color: #9A3412;
+  color: #FFFFFF;
+  box-shadow: 0 0 14px rgba(234, 88, 12, 0.35);
+}
+[data-theme="orange-light"] .nav-item.active .nav-icon {
+  color: #FFFFFF;
+}
+[data-theme="orange-light"] .control-pill,
+[data-theme="orange-light"] .live-toggle-btn,
+[data-theme="orange-light"] .live-close-btn,
+[data-theme="orange-light"] .btn-sidebar-action,
+[data-theme="orange-light"] .btn-sidebar-secondary,
+[data-theme="orange-light"] .search-input,
+[data-theme="orange-light"] .filter-pill,
+[data-theme="orange-light"] .fps-pill-btn,
+[data-theme="orange-light"] .duviri-item-chip,
+[data-theme="orange-light"] .modal-sec-box {
+  background: #FFFFFF;
+  border-color: #FDBA74;
+  color: #431407;
+}
+[data-theme="orange-light"] #zoom-label,
+[data-theme="orange-light"] .fps-pill-hz,
+[data-theme="orange-light"] .hero-planet-card .planet-title,
+[data-theme="orange-light"] .cycle-timer,
+[data-theme="orange-light"] .duviri-showcase-name,
+[data-theme="orange-light"] .modal-sec-text {
+  color: #431407 !important;
+}
+[data-theme="orange-light"] .hero-planet-card .planet-sub {
+  color: #7C2D12;
+}
+[data-theme="orange-light"] .planet-card.hero-planet-card,
+[data-theme="orange-light"] .duviri-showcase-card,
+[data-theme="orange-light"] .codex-modal-card {
+  background: linear-gradient(155deg, #FFFFFF 0%, #FFF7ED 100%);
+  border-color: #FDBA74;
+  box-shadow: 0 4px 16px rgba(154, 52, 18, 0.08);
+}
+[data-theme="orange-light"] .hero-planet-card .cycle-state {
+  background: #FFF7ED;
+  border-color: #FDBA74;
+}
+[data-theme="orange-light"] .filter-pill.active,
+[data-theme="orange-light"] .lang-btn.active,
+[data-theme="orange-light"] .live-toggle-btn.active {
+  background: #EA580C;
+  border-color: #C2410C;
+  color: #FFFFFF;
+}
+[data-theme="orange-light"] .fps-pill-btn.active {
+  background: #FFEDD5;
+  border-color: #EA580C;
+  box-shadow: 0 0 12px rgba(234, 88, 12, 0.25);
+}
+[data-theme="orange-light"] .fps-pill-btn.active .fps-pill-hz,
+[data-theme="orange-light"] .fps-pill-btn.active .fps-pill-desc {
+  color: #C2410C;
+  text-shadow: none;
+}
+[data-theme="orange-light"] .bounty-rot-row.active {
+  background: #FFEDD5;
+  border-color: #EA580C;
+}
+[data-theme="orange-light"] .bounty-rot-row.active .duviri-item-chip {
+  background: #FED7AA;
+  border-color: #EA580C;
+  color: #431407;
+}
+[data-theme="orange-light"] .btn-open {
+  background: #FFF7ED;
+  border-color: #FDBA74;
+  color: #C2410C;
+}
+[data-theme="orange-light"] .btn-open:hover {
+  background: #EA580C;
+  color: #FFFFFF;
+}
+
+/* --- ADAPTATION DES NOTIFICATIONS TOAST & LOADER SELON LE THÈME --- */
+[data-theme="light"] #toast-banner,
+[data-theme="full-white"] #toast-banner {
+  background: #FFFFFF;
+  border-color: var(--accent-blue);
+  box-shadow: 0 8px 26px rgba(15, 23, 42, 0.14), 0 0 14px rgba(37, 99, 235, 0.22);
+}
+[data-theme="full-black"] #toast-banner {
+  background: #070709;
+  border-color: var(--accent-cyan);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.9), 0 0 18px rgba(88, 166, 255, 0.35);
+}
+[data-theme="red-dark"] #toast-banner {
+  background: linear-gradient(145deg, #2D0D16 0%, #19070C 100%);
+  border-color: #F87171;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.7), 0 0 18px rgba(239, 68, 68, 0.4);
+}
+[data-theme="red-light"] #toast-banner {
+  background: linear-gradient(145deg, #FFFFFF 0%, #FFF1F2 100%);
+  border-color: #E11D48;
+  box-shadow: 0 8px 24px rgba(136, 19, 55, 0.14), 0 0 14px rgba(225, 29, 72, 0.25);
+}
+[data-theme="orange-dark"] #toast-banner {
+  background: linear-gradient(145deg, #33190B 0%, #1C0D06 100%);
+  border-color: #FB923C;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.7), 0 0 18px rgba(249, 115, 22, 0.4);
+}
+[data-theme="orange-light"] #toast-banner {
+  background: linear-gradient(145deg, #FFFFFF 0%, #FFF7ED 100%);
+  border-color: #EA580C;
+  box-shadow: 0 8px 24px rgba(154, 52, 18, 0.14), 0 0 14px rgba(234, 88, 12, 0.25);
+}
+[data-theme="purple-dark"] #toast-banner {
+  background: linear-gradient(145deg, #271342 0%, #140924 100%);
+  border-color: #C084FC;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.7), 0 0 18px rgba(168, 85, 247, 0.4);
+}
+[data-theme="purple-light"] #toast-banner {
+  background: linear-gradient(145deg, #FFFFFF 0%, #FAF5FF 100%);
+  border-color: #9333EA;
+  box-shadow: 0 8px 24px rgba(107, 33, 168, 0.14), 0 0 14px rgba(147, 51, 234, 0.25);
+}
+[data-theme="light"] #in-app-loader,
+[data-theme="full-white"] #in-app-loader,
+[data-theme="red-light"] #in-app-loader,
+[data-theme="orange-light"] #in-app-loader,
+[data-theme="purple-light"] #in-app-loader {
+  background: rgba(255, 255, 255, 0.82);
+}
+
+
 
 
 

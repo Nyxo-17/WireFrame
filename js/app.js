@@ -6,7 +6,7 @@ const WF_DATA = window.WIREFRAME_DATA || {
   codex: { warframes: [], weapons: [], resources: [], mods: [], relics: [], bounties: [] },
   duviri: { warframes_weeks: [], incarnon_weeks: [] },
   translations: { fr: {}, en: {} },
-  version: { version: "1.0.23" }
+  version: { version: "1.0.24" }
 };
 
 let currentLang = localStorage.getItem("wf_lang") || "fr";
@@ -743,6 +743,8 @@ function setTheme(themeKey) {
     "full-white",
     "red-dark",
     "red-light",
+    "orange-dark",
+    "orange-light",
     "purple-dark",
     "purple-light"
   ];
@@ -871,6 +873,16 @@ function renderSettingsView(container = document.getElementById("center-zoom-con
       sub: currentLang === "fr" ? "Carmin Clair & Rose" : "Soft Crimson Light"
     },
     {
+      id: "orange-dark",
+      label: currentLang === "fr" ? "☼ Orange Sombre" : "☼ Dark Orange",
+      sub: currentLang === "fr" ? "Ember & Fusion Solaire" : "Ember & Solar Fusion"
+    },
+    {
+      id: "orange-light",
+      label: currentLang === "fr" ? "◎ Orange Clair" : "◎ Light Orange",
+      sub: currentLang === "fr" ? "Ambre Clair & Cuivre" : "Soft Amber & Copper"
+    },
+    {
       id: "purple-dark",
       label: currentLang === "fr" ? "⟡ Violet Sombre" : "⟡ Dark Purple",
       sub: currentLang === "fr" ? "Lotus & Énergie du Néant" : "Lotus & Void Energy"
@@ -886,7 +898,7 @@ function renderSettingsView(container = document.getElementById("center-zoom-con
     <div class="view-header-title">${tr("settings_page_title")}</div>
     <div class="view-header-sub">${tr("settings_page_sub")}</div>
 
-    <!-- BLOC 0 : CHOIX DU THÈME VISUEL (8 THÈMES) -->
+    <!-- BLOC 0 : CHOIX DU THÈME VISUEL (10 THÈMES) -->
     <div class="bounty-card" style="padding:16px; margin-bottom:16px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
         <div style="font-size:15px; font-weight:700; color:var(--accent-blue);">
@@ -899,12 +911,12 @@ function renderSettingsView(container = document.getElementById("center-zoom-con
       <div style="font-size:12.5px; color:var(--text-muted); margin-bottom:10px;">
         ${
           currentLang === "fr"
-            ? "Choisis l'apparence visuelle de WireFrame (Sombre, Clair, Full Black, Full White, Rouge ou Violet) :"
-            : "Select the visual theme for WireFrame (Dark, Light, Full Black, Full White, Red or Purple):"
+            ? "Choisis l'apparence visuelle de WireFrame (Sombre, Clair, Full Black, Full White, Rouge, Orange ou Violet) :"
+            : "Select the visual theme for WireFrame (Dark, Light, Full Black, Full White, Red, Orange or Purple):"
         }
       </div>
 
-      <div class="fps-selector-grid" style="grid-template-columns: repeat(4, 1fr);">
+      <div class="fps-selector-grid" style="grid-template-columns: repeat(5, 1fr);">
         ${themeOptions
           .map(
             (th) => `
@@ -943,7 +955,7 @@ function renderSettingsView(container = document.getElementById("center-zoom-con
 
       <div style="margin-top:14px; padding-top:12px; border-top:1px solid var(--border-subtle);">
         <label style="display:flex; align-items:center; gap:12px; cursor:pointer; font-size:13px; color:var(--text-main);">
-          <input type="checkbox" ${showRightPanel ? "checked" : ""} onchange="toggleRightPanel(this.checked)" style="width:17px; height:17px; accent-color:#3B82F6; cursor:pointer;" />
+          <input type="checkbox" ${showRightPanel ? "checked" : ""} onchange="toggleRightPanel(this.checked)" style="width:17px; height:17px; accent-color:var(--accent-blue); cursor:pointer;" />
           <span>${
             currentLang === "fr"
               ? "❖  Afficher la colonne de droite (Actualités Officielles Warframe)"
@@ -964,7 +976,7 @@ function renderSettingsView(container = document.getElementById("center-zoom-con
         .map(
           (sw) => `
         <label style="display:flex; align-items:center; gap:12px; padding:8px 4px; cursor:pointer; font-size:13px; color:var(--text-main);">
-          <input type="checkbox" ${notifPrefs[sw.key] ? "checked" : ""} onchange="toggleNotifPref('${sw.key}', this.checked)" style="width:17px; height:17px; accent-color:#3B82F6; cursor:pointer;" />
+          <input type="checkbox" ${notifPrefs[sw.key] ? "checked" : ""} onchange="toggleNotifPref('${sw.key}', this.checked)" style="width:17px; height:17px; accent-color:var(--accent-blue); cursor:pointer;" />
           <span>${sw.label}</span>
         </label>
       `
@@ -978,19 +990,19 @@ function renderSettingsView(container = document.getElementById("center-zoom-con
       </div>
     </div>
 
-    <div class="view-header-title" style="font-size:15px; margin:16px 0 8px 0; color:#58A6FF;">
+    <div class="view-header-title" style="font-size:15px; margin:16px 0 8px 0; color:var(--accent-blue);">
       ${tr("notif_history_title")}
     </div>
     <div class="bounty-card" style="padding:14px;">
       ${
         notifHistory.length === 0
-          ? `<div style="color:#8B949E; font-size:12.5px;">${tr("notif_empty_history")}</div>`
+          ? `<div style="color:var(--text-muted); font-size:12.5px;">${tr("notif_empty_history")}</div>`
           : notifHistory
               .map(
                 (h) => `
-            <div style="padding:6px 0; border-bottom:1px solid rgba(255,255,255,0.05); font-size:12.5px;">
-              <span style="color:#58A6FF; font-weight:700;">[${h.time}] ${h.title}</span> —
-              <span style="color:#C9D1D9;">${h.message}</span>
+            <div style="padding:6px 0; border-bottom:1px solid var(--border-subtle); font-size:12.5px;">
+              <span style="color:var(--accent-blue); font-weight:700;">[${h.time}] ${h.title}</span> —
+              <span style="color:var(--text-main);">${h.message}</span>
             </div>
           `
               )
@@ -1747,8 +1759,8 @@ async function refreshAllData(showLoader = false) {
 }
 
 function isNewerVersion(remoteVer, localVer) {
-  const r = String(remoteVer || "1.0.23").replace(/^v/i, "").split(".").map((n) => parseInt(n, 10) || 0);
-  const l = String(localVer || "1.0.23").replace(/^v/i, "").split(".").map((n) => parseInt(n, 10) || 0);
+  const r = String(remoteVer || "1.0.24").replace(/^v/i, "").split(".").map((n) => parseInt(n, 10) || 0);
+  const l = String(localVer || "1.0.24").replace(/^v/i, "").split(".").map((n) => parseInt(n, 10) || 0);
   for (let i = 0; i < Math.max(r.length, l.length); i++) {
     const rv = r[i] || 0;
     const lv = l[i] || 0;
@@ -1759,7 +1771,7 @@ function isNewerVersion(remoteVer, localVer) {
 }
 
 function getEffectiveLocalVersion() {
-  const bundledVer = WF_DATA.version?.version || "1.0.23";
+  const bundledVer = WF_DATA.version?.version || "1.0.24";
   const cachedVer = localStorage.getItem("wf_live_version");
   if (cachedVer && isNewerVersion(cachedVer, bundledVer)) {
     WF_DATA.version = { ...(WF_DATA.version || {}), version: cachedVer };
@@ -1769,7 +1781,7 @@ function getEffectiveLocalVersion() {
 }
 
 function restoreCachedLiveUpdate() {
-  const bundledVer = WF_DATA.version?.version || "1.0.23";
+  const bundledVer = WF_DATA.version?.version || "1.0.24";
   const cachedVer = localStorage.getItem("wf_live_version");
   const effectiveVer = getEffectiveLocalVersion();
   const cachedCss = localStorage.getItem("wf_live_css");
