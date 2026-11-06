@@ -6,7 +6,7 @@ const WF_DATA = window.WIREFRAME_DATA || {
   codex: { warframes: [], weapons: [], resources: [], mods: [], relics: [], bounties: [] },
   duviri: { warframes_weeks: [], incarnon_weeks: [] },
   translations: { fr: {}, en: {} },
-  version: { version: "1.0.22" }
+  version: { version: "1.0.23" }
 };
 
 let currentLang = localStorage.getItem("wf_lang") || "fr";
@@ -736,7 +736,16 @@ function renderWelcomeView(container) {
 
 /* --- VUE 2 : PARAMÈTRES (THÈME, FPS & CENTRE DE NOTIFICATIONS) --- */
 function setTheme(themeKey) {
-  const valid = ["dark", "light", "full-black", "full-white", "red-dark", "red-light"];
+  const valid = [
+    "dark",
+    "light",
+    "full-black",
+    "full-white",
+    "red-dark",
+    "red-light",
+    "purple-dark",
+    "purple-light"
+  ];
   currentTheme = valid.includes(themeKey) ? themeKey : "dark";
   localStorage.setItem("wf_theme", currentTheme);
   document.documentElement.setAttribute("data-theme", currentTheme);
@@ -860,6 +869,16 @@ function renderSettingsView(container = document.getElementById("center-zoom-con
       id: "red-light",
       label: currentLang === "fr" ? "✦ Rouge Clair" : "✦ Light Red",
       sub: currentLang === "fr" ? "Carmin Clair & Rose" : "Soft Crimson Light"
+    },
+    {
+      id: "purple-dark",
+      label: currentLang === "fr" ? "⟡ Violet Sombre" : "⟡ Dark Purple",
+      sub: currentLang === "fr" ? "Lotus & Énergie du Néant" : "Lotus & Void Energy"
+    },
+    {
+      id: "purple-light",
+      label: currentLang === "fr" ? "❖ Violet Clair" : "❖ Light Purple",
+      sub: currentLang === "fr" ? "Améthyste & Lavande" : "Amethyst & Lavender"
     }
   ];
 
@@ -867,7 +886,7 @@ function renderSettingsView(container = document.getElementById("center-zoom-con
     <div class="view-header-title">${tr("settings_page_title")}</div>
     <div class="view-header-sub">${tr("settings_page_sub")}</div>
 
-    <!-- BLOC 0 : CHOIX DU THÈME VISUEL (6 THÈMES) -->
+    <!-- BLOC 0 : CHOIX DU THÈME VISUEL (8 THÈMES) -->
     <div class="bounty-card" style="padding:16px; margin-bottom:16px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
         <div style="font-size:15px; font-weight:700; color:var(--accent-blue);">
@@ -880,12 +899,12 @@ function renderSettingsView(container = document.getElementById("center-zoom-con
       <div style="font-size:12.5px; color:var(--text-muted); margin-bottom:10px;">
         ${
           currentLang === "fr"
-            ? "Choisis l'apparence visuelle de WireFrame (Sombre, Clair, Full Black, Full White, Rouge Sombre ou Rouge Clair) :"
-            : "Select the visual theme for WireFrame (Dark, Light, Full Black, Full White, Dark Red or Light Red):"
+            ? "Choisis l'apparence visuelle de WireFrame (Sombre, Clair, Full Black, Full White, Rouge ou Violet) :"
+            : "Select the visual theme for WireFrame (Dark, Light, Full Black, Full White, Red or Purple):"
         }
       </div>
 
-      <div class="fps-selector-grid" style="grid-template-columns: repeat(3, 1fr);">
+      <div class="fps-selector-grid" style="grid-template-columns: repeat(4, 1fr);">
         ${themeOptions
           .map(
             (th) => `
@@ -1728,8 +1747,8 @@ async function refreshAllData(showLoader = false) {
 }
 
 function isNewerVersion(remoteVer, localVer) {
-  const r = String(remoteVer || "1.0.22").replace(/^v/i, "").split(".").map((n) => parseInt(n, 10) || 0);
-  const l = String(localVer || "1.0.22").replace(/^v/i, "").split(".").map((n) => parseInt(n, 10) || 0);
+  const r = String(remoteVer || "1.0.23").replace(/^v/i, "").split(".").map((n) => parseInt(n, 10) || 0);
+  const l = String(localVer || "1.0.23").replace(/^v/i, "").split(".").map((n) => parseInt(n, 10) || 0);
   for (let i = 0; i < Math.max(r.length, l.length); i++) {
     const rv = r[i] || 0;
     const lv = l[i] || 0;
@@ -1740,7 +1759,7 @@ function isNewerVersion(remoteVer, localVer) {
 }
 
 function getEffectiveLocalVersion() {
-  const bundledVer = WF_DATA.version?.version || "1.0.22";
+  const bundledVer = WF_DATA.version?.version || "1.0.23";
   const cachedVer = localStorage.getItem("wf_live_version");
   if (cachedVer && isNewerVersion(cachedVer, bundledVer)) {
     WF_DATA.version = { ...(WF_DATA.version || {}), version: cachedVer };
@@ -1750,9 +1769,11 @@ function getEffectiveLocalVersion() {
 }
 
 function restoreCachedLiveUpdate() {
+  const bundledVer = WF_DATA.version?.version || "1.0.23";
+  const cachedVer = localStorage.getItem("wf_live_version");
   const effectiveVer = getEffectiveLocalVersion();
   const cachedCss = localStorage.getItem("wf_live_css");
-  if (cachedCss) {
+  if (cachedCss && cachedVer && isNewerVersion(cachedVer, bundledVer)) {
     let styleTag = document.getElementById("wf-live-css");
     if (!styleTag) {
       styleTag = document.createElement("style");
@@ -1760,6 +1781,8 @@ function restoreCachedLiveUpdate() {
       document.head.appendChild(styleTag);
     }
     styleTag.textContent = cachedCss;
+  } else {
+    localStorage.removeItem("wf_live_css");
   }
   const btnUpd = document.getElementById("btn-check-update");
   if (btnUpd) {

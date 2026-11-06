@@ -1990,5 +1990,211 @@ html {
   color: #FFFFFF;
 }
 
+/* --- THÈME 7 : VIOLET SOMBRE (LOTUS & NÉANT) --- */
+[data-theme="purple-dark"] {
+  --bg-root: #0D0716;
+  --bg-sidebar: #130B20;
+  --bg-center: #160D26;
+  --bg-live: #150C24;
+  --bg-card: #1F1235;
+  --bg-card-hover: #2B1848;
+  --border-subtle: #321C54;
+  --border-card: #462675;
+  --accent-blue: #A855F7;
+  --accent-cyan: #C084FC;
+  --accent-gold: #FBBF24;
+  --accent-green: #4ADE80;
+  --text-main: #FAF5FF;
+  --text-muted: #D8B4FE;
+  --text-dim: #A855F7;
+}
+
+[data-theme="purple-dark"] .welcome-banner,
+[data-theme="purple-dark"] .planet-card.hero-planet-card,
+[data-theme="purple-dark"] .duviri-showcase-card,
+[data-theme="purple-dark"] .codex-modal-card {
+  background: linear-gradient(155deg, #271342 0%, #140924 100%);
+  border-color: #581C87;
+}
+[data-theme="purple-dark"] .welcome-banner h3,
+[data-theme="purple-dark"] .feature-card h4,
+[data-theme="purple-dark"] .nav-section-title.glow {
+  color: #C084FC;
+}
+[data-theme="purple-dark"] .nav-icon {
+  color: #C084FC;
+}
+[data-theme="purple-dark"] .nav-item:hover {
+  background: #281445;
+  border-color: #6B21A8;
+}
+[data-theme="purple-dark"] .nav-item.active,
+[data-theme="purple-dark"] .filter-pill.active,
+[data-theme="purple-dark"] .fps-pill-btn.active {
+  background: linear-gradient(90deg, #6B21A8 0%, #3B0764 100%);
+  border-color: #C084FC;
+  box-shadow: 0 0 16px rgba(168, 85, 247, 0.45);
+}
+[data-theme="purple-dark"] .nav-item.active::before {
+  background: #E9D5FF;
+  box-shadow: 0 0 8px #C084FC;
+}
+[data-theme="purple-dark"] .search-input,
+[data-theme="purple-dark"] .filter-pill,
+[data-theme="purple-dark"] .fps-pill-btn,
+[data-theme="purple-dark"] .duviri-item-chip,
+[data-theme="purple-dark"] .modal-sec-box,
+[data-theme="purple-dark"] .control-pill,
+[data-theme="purple-dark"] .live-toggle-btn,
+[data-theme="purple-dark"] .btn-sidebar-action,
+[data-theme="purple-dark"] .btn-sidebar-secondary {
+  background: #1A0E2E;
+  border-color: #462675;
+  color: #F3E8FF;
+}
+[data-theme="purple-dark"] .btn-open {
+  background: #2E1065;
+  border-color: #6B21A8;
+  color: #D8B4FE;
+}
+[data-theme="purple-dark"] .btn-open:hover,
+[data-theme="purple-dark"] .live-toggle-btn.active,
+[data-theme="purple-dark"] .lang-btn.active {
+  background: #9333EA;
+  border-color: #C084FC;
+  color: #FFFFFF;
+}
+[data-theme="purple-dark"] .bounty-rot-row.active {
+  background: #2E1065;
+  border-color: #A855F7;
+}
+[data-theme="purple-dark"] .bounty-rot-row.active .duviri-item-chip {
+  background: #3B0764;
+  border-color: #C084FC;
+}
+
+/* --- THÈME 8 : VIOLET CLAIR (AMÉTHYSTE & LAVANDE) --- */
+[data-theme="purple-light"] {
+  --bg-root: #F3E8FF;
+  --bg-sidebar: #FAF5FF;
+  --bg-center: #FCF9FF;
+  --bg-live: #FAF5FF;
+  --bg-card: #FFFFFF;
+  --bg-card-hover: #F3E8FF;
+  --border-subtle: #E9D5FF;
+  --border-card: #D8B4FE;
+  --accent-blue: #9333EA;
+  --accent-cyan: #7E22CE;
+  --accent-gold: #B45309;
+  --accent-green: #15803D;
+  --text-main: #3B0764;
+  --text-muted: #6B21A8;
+  --text-dim: #7E22CE;
+}
+
+[data-theme="purple-light"] .welcome-banner {
+  background: linear-gradient(135deg, #FAF5FF 0%, #F3E8FF 100%);
+  border-color: #D8B4FE;
+}
+[data-theme="purple-light"] .welcome-banner h3,
+[data-theme="purple-light"] .feature-card h4 {
+  color: #7E22CE;
+}
+[data-theme="purple-light"] .welcome-banner p {
+  color: #3B0764;
+}
+[data-theme="purple-light"] .nav-item {
+  color: #6B21A8;
+}
+[data-theme="purple-light"] .nav-icon {
+  color: #9333EA;
+}
+[data-theme="purple-light"] .nav-item:hover {
+  background: #F3E8FF;
+  border-color: #D8B4FE;
+  color: #3B0764;
+}
+[data-theme="purple-light"] .nav-item.active {
+  background: linear-gradient(90deg, #9333EA 0%, #7E22CE 100%);
+  border-color: #6B21A8;
+  color: #FFFFFF;
+  box-shadow: 0 0 14px rgba(147, 51, 234, 0.35);
+}
+[data-theme="purple-light"] .nav-item.active .nav-icon {
+  color: #FFFFFF;
+}
+[data-theme="purple-light"] .control-pill,
+[data-theme="purple-light"] .live-toggle-btn,
+[data-theme="purple-light"] .live-close-btn,
+[data-theme="purple-light"] .btn-sidebar-action,
+[data-theme="purple-light"] .btn-sidebar-secondary,
+[data-theme="purple-light"] .search-input,
+[data-theme="purple-light"] .filter-pill,
+[data-theme="purple-light"] .fps-pill-btn,
+[data-theme="purple-light"] .duviri-item-chip,
+[data-theme="purple-light"] .modal-sec-box {
+  background: #FFFFFF;
+  border-color: #D8B4FE;
+  color: #3B0764;
+}
+[data-theme="purple-light"] #zoom-label,
+[data-theme="purple-light"] .fps-pill-hz,
+[data-theme="purple-light"] .hero-planet-card .planet-title,
+[data-theme="purple-light"] .cycle-timer,
+[data-theme="purple-light"] .duviri-showcase-name,
+[data-theme="purple-light"] .modal-sec-text {
+  color: #3B0764 !important;
+}
+[data-theme="purple-light"] .hero-planet-card .planet-sub {
+  color: #6B21A8;
+}
+[data-theme="purple-light"] .planet-card.hero-planet-card,
+[data-theme="purple-light"] .duviri-showcase-card,
+[data-theme="purple-light"] .codex-modal-card {
+  background: linear-gradient(155deg, #FFFFFF 0%, #FAF5FF 100%);
+  border-color: #D8B4FE;
+  box-shadow: 0 4px 16px rgba(107, 33, 168, 0.08);
+}
+[data-theme="purple-light"] .hero-planet-card .cycle-state {
+  background: #FAF5FF;
+  border-color: #D8B4FE;
+}
+[data-theme="purple-light"] .filter-pill.active,
+[data-theme="purple-light"] .lang-btn.active,
+[data-theme="purple-light"] .live-toggle-btn.active {
+  background: #9333EA;
+  border-color: #7E22CE;
+  color: #FFFFFF;
+}
+[data-theme="purple-light"] .fps-pill-btn.active {
+  background: #F3E8FF;
+  border-color: #9333EA;
+  box-shadow: 0 0 12px rgba(147, 51, 234, 0.25);
+}
+[data-theme="purple-light"] .fps-pill-btn.active .fps-pill-hz,
+[data-theme="purple-light"] .fps-pill-btn.active .fps-pill-desc {
+  color: #7E22CE;
+  text-shadow: none;
+}
+[data-theme="purple-light"] .bounty-rot-row.active {
+  background: #F3E8FF;
+  border-color: #9333EA;
+}
+[data-theme="purple-light"] .bounty-rot-row.active .duviri-item-chip {
+  background: #E9D5FF;
+  border-color: #9333EA;
+  color: #3B0764;
+}
+[data-theme="purple-light"] .btn-open {
+  background: #FAF5FF;
+  border-color: #D8B4FE;
+  color: #7E22CE;
+}
+[data-theme="purple-light"] .btn-open:hover {
+  background: #9333EA;
+  color: #FFFFFF;
+}
+
+
 
 
