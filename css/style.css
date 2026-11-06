@@ -2419,6 +2419,211 @@ html {
   color: #FFFFFF;
 }
 
+/* --- THÈME 11 : BLEU SOMBRE (CORPUS & PRISMA) --- */
+[data-theme="blue-dark"] {
+  --bg-root: #030B17;
+  --bg-sidebar: #061326;
+  --bg-center: #08182F;
+  --bg-live: #07152B;
+  --bg-card: #0C2242;
+  --bg-card-hover: #12315E;
+  --border-subtle: #15386B;
+  --border-card: #1D4D91;
+  --accent-blue: #0EA5E9;
+  --accent-cyan: #38BDF8;
+  --accent-gold: #FBBF24;
+  --accent-green: #4ADE80;
+  --text-main: #F0F9FF;
+  --text-muted: #7DD3FC;
+  --text-dim: #38BDF8;
+}
+
+[data-theme="blue-dark"] .welcome-banner,
+[data-theme="blue-dark"] .planet-card.hero-planet-card,
+[data-theme="blue-dark"] .duviri-showcase-card,
+[data-theme="blue-dark"] .codex-modal-card {
+  background: linear-gradient(155deg, #0E2A52 0%, #06152D 100%);
+  border-color: #0284C7;
+}
+[data-theme="blue-dark"] .welcome-banner h3,
+[data-theme="blue-dark"] .feature-card h4,
+[data-theme="blue-dark"] .nav-section-title.glow {
+  color: #38BDF8;
+}
+[data-theme="blue-dark"] .nav-icon {
+  color: #38BDF8;
+}
+[data-theme="blue-dark"] .nav-item:hover {
+  background: #0F2B54;
+  border-color: #0284C7;
+}
+[data-theme="blue-dark"] .nav-item.active,
+[data-theme="blue-dark"] .filter-pill.active,
+[data-theme="blue-dark"] .fps-pill-btn.active {
+  background: linear-gradient(90deg, #0284C7 0%, #075985 100%);
+  border-color: #38BDF8;
+  box-shadow: 0 0 16px rgba(14, 165, 233, 0.45);
+}
+[data-theme="blue-dark"] .nav-item.active::before {
+  background: #E0F2FE;
+  box-shadow: 0 0 8px #38BDF8;
+}
+[data-theme="blue-dark"] .search-input,
+[data-theme="blue-dark"] .filter-pill,
+[data-theme="blue-dark"] .fps-pill-btn,
+[data-theme="blue-dark"] .duviri-item-chip,
+[data-theme="blue-dark"] .modal-sec-box,
+[data-theme="blue-dark"] .control-pill,
+[data-theme="blue-dark"] .live-toggle-btn,
+[data-theme="blue-dark"] .btn-sidebar-action,
+[data-theme="blue-dark"] .btn-sidebar-secondary {
+  background: #091B36;
+  border-color: #1D4D91;
+  color: #E0F2FE;
+}
+[data-theme="blue-dark"] .btn-open {
+  background: #0C2D59;
+  border-color: #0284C7;
+  color: #7DD3FC;
+}
+[data-theme="blue-dark"] .btn-open:hover,
+[data-theme="blue-dark"] .live-toggle-btn.active,
+[data-theme="blue-dark"] .lang-btn.active {
+  background: #0284C7;
+  border-color: #38BDF8;
+  color: #FFFFFF;
+}
+[data-theme="blue-dark"] .bounty-rot-row.active {
+  background: #0C2D59;
+  border-color: #0EA5E9;
+}
+[data-theme="blue-dark"] .bounty-rot-row.active .duviri-item-chip {
+  background: #075985;
+  border-color: #38BDF8;
+}
+
+/* --- THÈME 12 : BLEU CLAIR (GLACE DE FORTUNA & AZUR) --- */
+[data-theme="blue-light"] {
+  --bg-root: #E0F2FE;
+  --bg-sidebar: #F0F9FF;
+  --bg-center: #F5FBFF;
+  --bg-live: #F0F9FF;
+  --bg-card: #FFFFFF;
+  --bg-card-hover: #E0F2FE;
+  --border-subtle: #BAE6FD;
+  --border-card: #7DD3FC;
+  --accent-blue: #0284C7;
+  --accent-cyan: #0369A1;
+  --accent-gold: #B45309;
+  --accent-green: #15803D;
+  --text-main: #0C4A6E;
+  --text-muted: #0369A1;
+  --text-dim: #0284C7;
+}
+
+[data-theme="blue-light"] .welcome-banner {
+  background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%);
+  border-color: #7DD3FC;
+}
+[data-theme="blue-light"] .welcome-banner h3,
+[data-theme="blue-light"] .feature-card h4 {
+  color: #0369A1;
+}
+[data-theme="blue-light"] .welcome-banner p {
+  color: #0C4A6E;
+}
+[data-theme="blue-light"] .nav-item {
+  color: #0369A1;
+}
+[data-theme="blue-light"] .nav-icon {
+  color: #0284C7;
+}
+[data-theme="blue-light"] .nav-item:hover {
+  background: #E0F2FE;
+  border-color: #7DD3FC;
+  color: #0C4A6E;
+}
+[data-theme="blue-light"] .nav-item.active {
+  background: linear-gradient(90deg, #0284C7 0%, #0369A1 100%);
+  border-color: #075985;
+  color: #FFFFFF;
+  box-shadow: 0 0 14px rgba(2, 132, 199, 0.35);
+}
+[data-theme="blue-light"] .nav-item.active .nav-icon {
+  color: #FFFFFF;
+}
+[data-theme="blue-light"] .control-pill,
+[data-theme="blue-light"] .live-toggle-btn,
+[data-theme="blue-light"] .live-close-btn,
+[data-theme="blue-light"] .btn-sidebar-action,
+[data-theme="blue-light"] .btn-sidebar-secondary,
+[data-theme="blue-light"] .search-input,
+[data-theme="blue-light"] .filter-pill,
+[data-theme="blue-light"] .fps-pill-btn,
+[data-theme="blue-light"] .duviri-item-chip,
+[data-theme="blue-light"] .modal-sec-box {
+  background: #FFFFFF;
+  border-color: #7DD3FC;
+  color: #0C4A6E;
+}
+[data-theme="blue-light"] #zoom-label,
+[data-theme="blue-light"] .fps-pill-hz,
+[data-theme="blue-light"] .hero-planet-card .planet-title,
+[data-theme="blue-light"] .cycle-timer,
+[data-theme="blue-light"] .duviri-showcase-name,
+[data-theme="blue-light"] .modal-sec-text {
+  color: #0C4A6E !important;
+}
+[data-theme="blue-light"] .hero-planet-card .planet-sub {
+  color: #0369A1;
+}
+[data-theme="blue-light"] .planet-card.hero-planet-card,
+[data-theme="blue-light"] .duviri-showcase-card,
+[data-theme="blue-light"] .codex-modal-card {
+  background: linear-gradient(155deg, #FFFFFF 0%, #F0F9FF 100%);
+  border-color: #7DD3FC;
+  box-shadow: 0 4px 16px rgba(3, 105, 161, 0.08);
+}
+[data-theme="blue-light"] .hero-planet-card .cycle-state {
+  background: #F0F9FF;
+  border-color: #7DD3FC;
+}
+[data-theme="blue-light"] .filter-pill.active,
+[data-theme="blue-light"] .lang-btn.active,
+[data-theme="blue-light"] .live-toggle-btn.active {
+  background: #0284C7;
+  border-color: #0369A1;
+  color: #FFFFFF;
+}
+[data-theme="blue-light"] .fps-pill-btn.active {
+  background: #E0F2FE;
+  border-color: #0284C7;
+  box-shadow: 0 0 12px rgba(2, 132, 199, 0.25);
+}
+[data-theme="blue-light"] .fps-pill-btn.active .fps-pill-hz,
+[data-theme="blue-light"] .fps-pill-btn.active .fps-pill-desc {
+  color: #0369A1;
+  text-shadow: none;
+}
+[data-theme="blue-light"] .bounty-rot-row.active {
+  background: #E0F2FE;
+  border-color: #0284C7;
+}
+[data-theme="blue-light"] .bounty-rot-row.active .duviri-item-chip {
+  background: #BAE6FD;
+  border-color: #0284C7;
+  color: #0C4A6E;
+}
+[data-theme="blue-light"] .btn-open {
+  background: #F0F9FF;
+  border-color: #7DD3FC;
+  color: #0369A1;
+}
+[data-theme="blue-light"] .btn-open:hover {
+  background: #0284C7;
+  color: #FFFFFF;
+}
+
 /* --- ADAPTATION DES NOTIFICATIONS TOAST & LOADER SELON LE THÈME --- */
 [data-theme="light"] #toast-banner,
 [data-theme="full-white"] #toast-banner {
@@ -2430,6 +2635,16 @@ html {
   background: #070709;
   border-color: var(--accent-cyan);
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.9), 0 0 18px rgba(88, 166, 255, 0.35);
+}
+[data-theme="blue-dark"] #toast-banner {
+  background: linear-gradient(145deg, #0E2A52 0%, #06152D 100%);
+  border-color: #38BDF8;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.7), 0 0 18px rgba(14, 165, 233, 0.4);
+}
+[data-theme="blue-light"] #toast-banner {
+  background: linear-gradient(145deg, #FFFFFF 0%, #F0F9FF 100%);
+  border-color: #0284C7;
+  box-shadow: 0 8px 24px rgba(3, 105, 161, 0.14), 0 0 14px rgba(2, 132, 199, 0.25);
 }
 [data-theme="red-dark"] #toast-banner {
   background: linear-gradient(145deg, #2D0D16 0%, #19070C 100%);
@@ -2463,6 +2678,7 @@ html {
 }
 [data-theme="light"] #in-app-loader,
 [data-theme="full-white"] #in-app-loader,
+[data-theme="blue-light"] #in-app-loader,
 [data-theme="red-light"] #in-app-loader,
 [data-theme="orange-light"] #in-app-loader,
 [data-theme="purple-light"] #in-app-loader {

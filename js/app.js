@@ -6,7 +6,7 @@ const WF_DATA = window.WIREFRAME_DATA || {
   codex: { warframes: [], weapons: [], resources: [], mods: [], relics: [], bounties: [] },
   duviri: { warframes_weeks: [], incarnon_weeks: [] },
   translations: { fr: {}, en: {} },
-  version: { version: "1.0.25" }
+  version: { version: "1.0.26" }
 };
 
 let currentLang = localStorage.getItem("wf_lang") || "fr";
@@ -741,6 +741,8 @@ function setTheme(themeKey) {
     "light",
     "full-black",
     "full-white",
+    "blue-dark",
+    "blue-light",
     "red-dark",
     "red-light",
     "orange-dark",
@@ -863,6 +865,16 @@ function renderSettingsView(container = document.getElementById("center-zoom-con
       sub: currentLang === "fr" ? "Blanc Pur (#FFF)" : "Pure White (#FFF)"
     },
     {
+      id: "blue-dark",
+      label: currentLang === "fr" ? "⬡ Bleu Sombre" : "⬡ Dark Blue",
+      sub: currentLang === "fr" ? "Corpus & Prisma" : "Corpus & Prisma"
+    },
+    {
+      id: "blue-light",
+      label: currentLang === "fr" ? "✧ Bleu Clair" : "✧ Light Blue",
+      sub: currentLang === "fr" ? "Glace de Fortuna & Azur" : "Fortuna Ice & Azure"
+    },
+    {
       id: "red-dark",
       label: currentLang === "fr" ? "◈ Rouge Sombre" : "◈ Dark Red",
       sub: currentLang === "fr" ? "Kuva & Voile Rouge" : "Kuva & Red Veil"
@@ -898,7 +910,7 @@ function renderSettingsView(container = document.getElementById("center-zoom-con
     <div class="view-header-title">${tr("settings_page_title")}</div>
     <div class="view-header-sub">${tr("settings_page_sub")}</div>
 
-    <!-- BLOC 0 : CHOIX DU THÈME VISUEL (10 THÈMES) -->
+    <!-- BLOC 0 : CHOIX DU THÈME VISUEL (12 THÈMES) -->
     <div class="bounty-card" style="padding:16px; margin-bottom:16px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
         <div style="font-size:15px; font-weight:700; color:var(--accent-blue);">
@@ -911,12 +923,12 @@ function renderSettingsView(container = document.getElementById("center-zoom-con
       <div style="font-size:12.5px; color:var(--text-muted); margin-bottom:10px;">
         ${
           currentLang === "fr"
-            ? "Choisis l'apparence visuelle de WireFrame (Sombre, Clair, Full Black, Full White, Rouge, Orange ou Violet) :"
-            : "Select the visual theme for WireFrame (Dark, Light, Full Black, Full White, Red, Orange or Purple):"
+            ? "Choisis l'apparence visuelle de WireFrame parmi les 12 thèmes (Sombre, Clair, OLED, Bleu, Rouge, Orange, Violet) :"
+            : "Select the visual theme for WireFrame among the 12 themes (Dark, Light, OLED, Blue, Red, Orange, Purple):"
         }
       </div>
 
-      <div class="fps-selector-grid" style="grid-template-columns: repeat(5, 1fr);">
+      <div class="fps-selector-grid" style="grid-template-columns: repeat(4, 1fr);">
         ${themeOptions
           .map(
             (th) => `
@@ -1702,7 +1714,9 @@ function setLanguage(lang) {
     "nav-duviri": cleanNavText(tr("nav_duviri")),
     "nav-baro": cleanNavText(tr("nav_baro")),
     "btn-refresh": tr("btn_refresh"),
-    "btn-check-update": `${tr("btn_check_update")} (v${getEffectiveLocalVersion()})`,
+    "btn-check-update": pendingRemoteUpdate
+      ? `⇣ ${tr("upd_install_btn")} (v${pendingRemoteUpdate.version})`
+      : `${tr("btn_check_update")} (v${getEffectiveLocalVersion()})`,
     "live-badge": tr("live_badge"),
     "live-tag": tr("live_tag"),
     "live-worlds-title": tr("live_worlds_title"),
@@ -1759,8 +1773,8 @@ async function refreshAllData(showLoader = false) {
 }
 
 function isNewerVersion(remoteVer, localVer) {
-  const r = String(remoteVer || "1.0.25").replace(/^v/i, "").split(".").map((n) => parseInt(n, 10) || 0);
-  const l = String(localVer || "1.0.25").replace(/^v/i, "").split(".").map((n) => parseInt(n, 10) || 0);
+  const r = String(remoteVer || "1.0.26").replace(/^v/i, "").split(".").map((n) => parseInt(n, 10) || 0);
+  const l = String(localVer || "1.0.26").replace(/^v/i, "").split(".").map((n) => parseInt(n, 10) || 0);
   for (let i = 0; i < Math.max(r.length, l.length); i++) {
     const rv = r[i] || 0;
     const lv = l[i] || 0;
@@ -1771,7 +1785,7 @@ function isNewerVersion(remoteVer, localVer) {
 }
 
 function getEffectiveLocalVersion() {
-  const bundledVer = WF_DATA.version?.version || "1.0.25";
+  const bundledVer = WF_DATA.version?.version || "1.0.26";
   const cachedVer = localStorage.getItem("wf_live_version");
   if (cachedVer && isNewerVersion(cachedVer, bundledVer)) {
     WF_DATA.version = { ...(WF_DATA.version || {}), version: cachedVer };
@@ -1781,7 +1795,7 @@ function getEffectiveLocalVersion() {
 }
 
 function restoreCachedLiveUpdate() {
-  const bundledVer = WF_DATA.version?.version || "1.0.25";
+  const bundledVer = WF_DATA.version?.version || "1.0.26";
   const cachedVer = localStorage.getItem("wf_live_version");
   const effectiveVer = getEffectiveLocalVersion();
   const cachedCss = localStorage.getItem("wf_live_css");
@@ -1860,6 +1874,60 @@ async function applyLiveUpdateZeroDownload(remote) {
   }
 }
 
+let pendingRemoteUpdate = null;
+let lastPromptedVersion = null;
+
+async function installPendingUpdate() {
+  if (!pendingRemoteUpdate) return;
+  const target = pendingRemoteUpdate;
+  pendingRemoteUpdate = null;
+  await applyLiveUpdateZeroDownload(target);
+}
+
+function dismissUpdatePrompt() {
+  const banner = document.getElementById("toast-banner");
+  if (banner) banner.classList.add("hidden");
+}
+
+function promptUpdateProposal(remote) {
+  pendingRemoteUpdate = remote;
+  lastPromptedVersion = remote.version;
+
+  const btnUpd = document.getElementById("btn-check-update");
+  if (btnUpd) {
+    btnUpd.textContent = `⇣ ${tr("upd_install_btn")} (v${remote.version})`;
+    btnUpd.style.borderColor = "#4ADE80";
+    btnUpd.style.color = "#4ADE80";
+    btnUpd.onclick = () => installPendingUpdate();
+  }
+
+  triggerAlert(
+    `${tr("upd_available_title")} : v${remote.version}`,
+    remote.changelog_fr || "Une nouvelle version est disponible !"
+  );
+
+  const banner = document.getElementById("toast-banner");
+  const tMsg = document.getElementById("toast-msg");
+  if (tMsg) {
+    const laterTxt = currentLang === "fr" ? "Plus tard" : "Later";
+    tMsg.innerHTML = `
+      <div style="margin-bottom:8px;">${remote.changelog_fr || "Une nouvelle version est prête à être installée !"}</div>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <button onclick="installPendingUpdate()" class="btn-open" style="cursor:pointer; background:#15803D; border-color:#4ADE80; color:#FFFFFF; padding:6px 14px;">
+          ⇣ ${tr("upd_install_btn")} (v${remote.version})
+        </button>
+        <button onclick="dismissUpdatePrompt()" class="btn-open" style="cursor:pointer; padding:6px 12px;">
+          ✕ ${laterTxt}
+        </button>
+      </div>
+    `;
+  }
+  if (banner) {
+    clearTimeout(window._toastTimeout);
+    window._toastTimeout = setTimeout(() => banner.classList.add("hidden"), 20000);
+  }
+}
+
 async function checkForUpdatesManual(isSilentAuto = false) {
   const localVer = getEffectiveLocalVersion();
   try {
@@ -1869,7 +1937,9 @@ async function checkForUpdatesManual(isSilentAuto = false) {
     if (!res.ok) throw new Error("HTTP " + res.status);
     const remote = await res.json();
     if (remote.version && isNewerVersion(remote.version, localVer)) {
-      await applyLiveUpdateZeroDownload(remote);
+      if (!isSilentAuto || lastPromptedVersion !== remote.version) {
+        promptUpdateProposal(remote);
+      }
     } else if (!isSilentAuto) {
       triggerAlert("WireFrame — Mise à jour", `${tr("upd_up_to_date")} (v${localVer}).`);
     }
@@ -1917,7 +1987,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     }, 320);
   }, 450);
 
-  // Boucle temps réel 1 seconde + rafraîchissement API toutes les 60 secondes + vérif MAJ auto toutes les 5 min
+  // Boucle temps réel 1 seconde + rafraîchissement API toutes les 60 secondes + détection de MAJ (avec proposition) toutes les 5 min
   setInterval(updateLivePanel, 1000);
   setInterval(() => refreshAllData(false), 60000);
   setInterval(() => checkForUpdatesManual(true), 300000);
