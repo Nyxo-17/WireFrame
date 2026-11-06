@@ -6,7 +6,7 @@ const WF_DATA = window.WIREFRAME_DATA || {
   codex: { warframes: [], weapons: [], resources: [], mods: [], relics: [], bounties: [] },
   duviri: { warframes_weeks: [], incarnon_weeks: [] },
   translations: { fr: {}, en: {} },
-  version: { version: "1.0.21" }
+  version: { version: "1.0.22" }
 };
 
 let currentLang = localStorage.getItem("wf_lang") || "fr";
@@ -1671,7 +1671,7 @@ function setLanguage(lang) {
     "nav-duviri": cleanNavText(tr("nav_duviri")),
     "nav-baro": cleanNavText(tr("nav_baro")),
     "btn-refresh": tr("btn_refresh"),
-    "btn-check-update": `${tr("btn_check_update")} (v${WF_DATA.version?.version || "1.0.21"})`,
+    "btn-check-update": `${tr("btn_check_update")} (v${getEffectiveLocalVersion()})`,
     "live-badge": tr("live_badge"),
     "live-tag": tr("live_tag"),
     "live-worlds-title": tr("live_worlds_title"),
@@ -1728,8 +1728,8 @@ async function refreshAllData(showLoader = false) {
 }
 
 function isNewerVersion(remoteVer, localVer) {
-  const r = String(remoteVer || "1.0.21").replace(/^v/i, "").split(".").map((n) => parseInt(n, 10) || 0);
-  const l = String(localVer || "1.0.21").replace(/^v/i, "").split(".").map((n) => parseInt(n, 10) || 0);
+  const r = String(remoteVer || "1.0.22").replace(/^v/i, "").split(".").map((n) => parseInt(n, 10) || 0);
+  const l = String(localVer || "1.0.22").replace(/^v/i, "").split(".").map((n) => parseInt(n, 10) || 0);
   for (let i = 0; i < Math.max(r.length, l.length); i++) {
     const rv = r[i] || 0;
     const lv = l[i] || 0;
@@ -1739,8 +1739,94 @@ function isNewerVersion(remoteVer, localVer) {
   return false;
 }
 
+function getEffectiveLocalVersion() {
+  const bundledVer = WF_DATA.version?.version || "1.0.22";
+  const cachedVer = localStorage.getItem("wf_live_version");
+  if (cachedVer && isNewerVersion(cachedVer, bundledVer)) {
+    WF_DATA.version = { ...(WF_DATA.version || {}), version: cachedVer };
+    return cachedVer;
+  }
+  return bundledVer;
+}
+
+function restoreCachedLiveUpdate() {
+  const effectiveVer = getEffectiveLocalVersion();
+  const cachedCss = localStorage.getItem("wf_live_css");
+  if (cachedCss) {
+    let styleTag = document.getElementById("wf-live-css");
+    if (!styleTag) {
+      styleTag = document.createElement("style");
+      styleTag.id = "wf-live-css";
+      document.head.appendChild(styleTag);
+    }
+    styleTag.textContent = cachedCss;
+  }
+  const btnUpd = document.getElementById("btn-check-update");
+  if (btnUpd) {
+    btnUpd.textContent = `⇣ ${tr("btn_check_update")} (v${effectiveVer})`;
+  }
+}
+
+async function applyLiveUpdateZeroDownload(remote) {
+  const baseUrl = "https://raw.githubusercontent.com/Nyxo-17/WireFrame/main/";
+  const ts = "?t=" + Date.now();
+  try {
+    const [cssRes, trRes, duvRes, codexRes] = await Promise.allSettled([
+      fetch(baseUrl + "css/style.css" + ts, { cache: "no-store" }),
+      fetch(baseUrl + "data/translations.json" + ts, { cache: "no-store" }),
+      fetch(baseUrl + "data/duviri_rotations.json" + ts, { cache: "no-store" }),
+      fetch(baseUrl + "data/codex_data.json" + ts, { cache: "no-store" })
+    ]);
+
+    if (cssRes.status === "fulfilled" && cssRes.value.ok) {
+      const cssText = await cssRes.value.text();
+      let styleTag = document.getElementById("wf-live-css");
+      if (!styleTag) {
+        styleTag = document.createElement("style");
+        styleTag.id = "wf-live-css";
+        document.head.appendChild(styleTag);
+      }
+      styleTag.textContent = cssText;
+      try {
+        localStorage.setItem("wf_live_css", cssText);
+      } catch (e) {}
+    }
+
+    if (trRes.status === "fulfilled" && trRes.value.ok) {
+      WF_DATA.translations = await trRes.value.json();
+    }
+    if (duvRes.status === "fulfilled" && duvRes.value.ok) {
+      WF_DATA.duviri = await duvRes.value.json();
+    }
+    if (codexRes.status === "fulfilled" && codexRes.value.ok) {
+      WF_DATA.codex = await codexRes.value.json();
+    }
+
+    WF_DATA.version = remote;
+    localStorage.setItem("wf_live_version", remote.version);
+
+    const btnUpd = document.getElementById("btn-check-update");
+    if (btnUpd) {
+      btnUpd.textContent = `⇣ ${tr("btn_check_update")} (v${remote.version})`;
+      btnUpd.style.borderColor = "";
+      btnUpd.style.color = "";
+      btnUpd.onclick = () => checkForUpdatesManual(false);
+    }
+
+    setLanguage(currentLang);
+    renderCurrentTab();
+
+    triggerAlert(
+      `✦ Mise à jour v${remote.version} installée en direct`,
+      remote.changelog_fr || "Mise à jour appliquée instantanément sans aucun fichier à télécharger !"
+    );
+  } catch (err) {
+    console.warn("Live update sync error:", err);
+  }
+}
+
 async function checkForUpdatesManual(isSilentAuto = false) {
-  const localVer = WF_DATA.version?.version || "1.0.21";
+  const localVer = getEffectiveLocalVersion();
   try {
     const res = await fetch("https://raw.githubusercontent.com/Nyxo-17/WireFrame/main/version.json?t=" + Date.now(), {
       cache: "no-store"
@@ -1748,27 +1834,7 @@ async function checkForUpdatesManual(isSilentAuto = false) {
     if (!res.ok) throw new Error("HTTP " + res.status);
     const remote = await res.json();
     if (remote.version && isNewerVersion(remote.version, localVer)) {
-      const dlUrl = "https://raw.githubusercontent.com/Nyxo-17/WireFrame/main/WireFrame.exe";
-      const btnUpd = document.getElementById("btn-check-update");
-      if (btnUpd) {
-        btnUpd.textContent = `⇣ ${tr("upd_install_btn")} (v${remote.version})`;
-        btnUpd.style.borderColor = "#4ADE80";
-        btnUpd.style.color = "#4ADE80";
-        btnUpd.onclick = () => window.open(dlUrl, "_blank");
-      }
-      triggerAlert(
-        `${tr("upd_available_title")} : v${remote.version}`,
-        remote.changelog_fr || "Une nouvelle version est disponible sur GitHub !"
-      );
-      const tMsg = document.getElementById("toast-msg");
-      if (tMsg) {
-        tMsg.innerHTML = `
-          <div>${remote.changelog_fr || "Nouvelle version disponible !"}</div>
-          <a href="${dlUrl}" target="_blank" class="btn-open" style="display:inline-block; margin-top:8px; text-decoration:none; background:#15803D; border-color:#4ADE80; color:#FFFFFF;">
-            ⇣ ${tr("upd_install_btn")} (v${remote.version})
-          </a>
-        `;
-      }
+      await applyLiveUpdateZeroDownload(remote);
     } else if (!isSilentAuto) {
       triggerAlert("WireFrame — Mise à jour", `${tr("upd_up_to_date")} (v${localVer}).`);
     }
@@ -1792,6 +1858,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   setFps(currentFps);
   toggleRightPanel(showRightPanel);
   worldState = computeOfflineWorldState();
+  restoreCachedLiveUpdate();
   setLanguage(currentLang);
 
   if (bar) bar.style.width = "45%";
