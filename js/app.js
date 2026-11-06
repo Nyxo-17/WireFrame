@@ -6,7 +6,7 @@ const WF_DATA = window.WIREFRAME_DATA || {
   codex: { warframes: [], weapons: [], resources: [], mods: [], relics: [], bounties: [] },
   duviri: { warframes_weeks: [], incarnon_weeks: [] },
   translations: { fr: {}, en: {} },
-  version: { version: "1.0.20" }
+  version: { version: "1.0.21" }
 };
 
 let currentLang = localStorage.getItem("wf_lang") || "fr";
@@ -736,7 +736,7 @@ function renderWelcomeView(container) {
 
 /* --- VUE 2 : PARAMÈTRES (THÈME, FPS & CENTRE DE NOTIFICATIONS) --- */
 function setTheme(themeKey) {
-  const valid = ["dark", "light", "full-black", "full-white"];
+  const valid = ["dark", "light", "full-black", "full-white", "red-dark", "red-light"];
   currentTheme = valid.includes(themeKey) ? themeKey : "dark";
   localStorage.setItem("wf_theme", currentTheme);
   document.documentElement.setAttribute("data-theme", currentTheme);
@@ -850,6 +850,16 @@ function renderSettingsView(container = document.getElementById("center-zoom-con
       id: "full-white",
       label: "◇ Full White",
       sub: currentLang === "fr" ? "Blanc Pur (#FFF)" : "Pure White (#FFF)"
+    },
+    {
+      id: "red-dark",
+      label: currentLang === "fr" ? "◈ Rouge Sombre" : "◈ Dark Red",
+      sub: currentLang === "fr" ? "Kuva & Voile Rouge" : "Kuva & Red Veil"
+    },
+    {
+      id: "red-light",
+      label: currentLang === "fr" ? "✦ Rouge Clair" : "✦ Light Red",
+      sub: currentLang === "fr" ? "Carmin Clair & Rose" : "Soft Crimson Light"
     }
   ];
 
@@ -857,7 +867,7 @@ function renderSettingsView(container = document.getElementById("center-zoom-con
     <div class="view-header-title">${tr("settings_page_title")}</div>
     <div class="view-header-sub">${tr("settings_page_sub")}</div>
 
-    <!-- BLOC 0 : CHOIX DU THÈME VISUEL (SOMBRE / CLAIR / FULL BLACK / FULL WHITE) -->
+    <!-- BLOC 0 : CHOIX DU THÈME VISUEL (6 THÈMES) -->
     <div class="bounty-card" style="padding:16px; margin-bottom:16px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
         <div style="font-size:15px; font-weight:700; color:var(--accent-blue);">
@@ -870,12 +880,12 @@ function renderSettingsView(container = document.getElementById("center-zoom-con
       <div style="font-size:12.5px; color:var(--text-muted); margin-bottom:10px;">
         ${
           currentLang === "fr"
-            ? "Choisis l'apparence visuelle de WireFrame (Sombre, Clair, Full Black OLED ou Full White) :"
-            : "Select the visual theme for WireFrame (Dark, Light, Full Black OLED or Full White):"
+            ? "Choisis l'apparence visuelle de WireFrame (Sombre, Clair, Full Black, Full White, Rouge Sombre ou Rouge Clair) :"
+            : "Select the visual theme for WireFrame (Dark, Light, Full Black, Full White, Dark Red or Light Red):"
         }
       </div>
 
-      <div class="fps-selector-grid">
+      <div class="fps-selector-grid" style="grid-template-columns: repeat(3, 1fr);">
         ${themeOptions
           .map(
             (th) => `
@@ -1661,7 +1671,7 @@ function setLanguage(lang) {
     "nav-duviri": cleanNavText(tr("nav_duviri")),
     "nav-baro": cleanNavText(tr("nav_baro")),
     "btn-refresh": tr("btn_refresh"),
-    "btn-check-update": `${tr("btn_check_update")} (v${WF_DATA.version?.version || "1.0.20"})`,
+    "btn-check-update": `${tr("btn_check_update")} (v${WF_DATA.version?.version || "1.0.21"})`,
     "live-badge": tr("live_badge"),
     "live-tag": tr("live_tag"),
     "live-worlds-title": tr("live_worlds_title"),
@@ -1718,8 +1728,8 @@ async function refreshAllData(showLoader = false) {
 }
 
 function isNewerVersion(remoteVer, localVer) {
-  const r = String(remoteVer || "1.0.20").replace(/^v/i, "").split(".").map((n) => parseInt(n, 10) || 0);
-  const l = String(localVer || "1.0.20").replace(/^v/i, "").split(".").map((n) => parseInt(n, 10) || 0);
+  const r = String(remoteVer || "1.0.21").replace(/^v/i, "").split(".").map((n) => parseInt(n, 10) || 0);
+  const l = String(localVer || "1.0.21").replace(/^v/i, "").split(".").map((n) => parseInt(n, 10) || 0);
   for (let i = 0; i < Math.max(r.length, l.length); i++) {
     const rv = r[i] || 0;
     const lv = l[i] || 0;
@@ -1730,7 +1740,7 @@ function isNewerVersion(remoteVer, localVer) {
 }
 
 async function checkForUpdatesManual(isSilentAuto = false) {
-  const localVer = WF_DATA.version?.version || "1.0.20";
+  const localVer = WF_DATA.version?.version || "1.0.21";
   try {
     const res = await fetch("https://raw.githubusercontent.com/Nyxo-17/WireFrame/main/version.json?t=" + Date.now(), {
       cache: "no-store"

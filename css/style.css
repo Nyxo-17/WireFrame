@@ -1785,4 +1785,210 @@ html {
   color: #FFFFFF;
 }
 
+/* --- THÈME 5 : ROUGE SOMBRE (KUVA / VOILE ROUGE) --- */
+[data-theme="red-dark"] {
+  --bg-root: #110508;
+  --bg-sidebar: #17070B;
+  --bg-center: #1A080D;
+  --bg-live: #17070B;
+  --bg-card: #240B12;
+  --bg-card-hover: #311019;
+  --border-subtle: #3B121E;
+  --border-card: #521829;
+  --accent-blue: #EF4444;
+  --accent-cyan: #F87171;
+  --accent-gold: #FBBF24;
+  --accent-green: #4ADE80;
+  --text-main: #FFF1F2;
+  --text-muted: #FDA4AF;
+  --text-dim: #FB7185;
+}
+
+[data-theme="red-dark"] .welcome-banner,
+[data-theme="red-dark"] .planet-card.hero-planet-card,
+[data-theme="red-dark"] .duviri-showcase-card,
+[data-theme="red-dark"] .codex-modal-card {
+  background: linear-gradient(155deg, #2D0D16 0%, #19070C 100%);
+  border-color: #6B1D32;
+}
+[data-theme="red-dark"] .welcome-banner h3,
+[data-theme="red-dark"] .feature-card h4,
+[data-theme="red-dark"] .nav-section-title.glow {
+  color: #F87171;
+}
+[data-theme="red-dark"] .nav-icon {
+  color: #F87171;
+}
+[data-theme="red-dark"] .nav-item:hover {
+  background: #2D0E17;
+  border-color: #7F1D3A;
+}
+[data-theme="red-dark"] .nav-item.active,
+[data-theme="red-dark"] .filter-pill.active,
+[data-theme="red-dark"] .fps-pill-btn.active {
+  background: linear-gradient(90deg, #7F1D1D 0%, #4C0519 100%);
+  border-color: #F87171;
+  box-shadow: 0 0 16px rgba(239, 68, 68, 0.45);
+}
+[data-theme="red-dark"] .nav-item.active::before {
+  background: #FECDD3;
+  box-shadow: 0 0 8px #F87171;
+}
+[data-theme="red-dark"] .search-input,
+[data-theme="red-dark"] .filter-pill,
+[data-theme="red-dark"] .fps-pill-btn,
+[data-theme="red-dark"] .duviri-item-chip,
+[data-theme="red-dark"] .modal-sec-box,
+[data-theme="red-dark"] .control-pill,
+[data-theme="red-dark"] .live-toggle-btn,
+[data-theme="red-dark"] .btn-sidebar-action,
+[data-theme="red-dark"] .btn-sidebar-secondary {
+  background: #1F0910;
+  border-color: #4C1626;
+  color: #FFE4E6;
+}
+[data-theme="red-dark"] .btn-open {
+  background: #3F111E;
+  border-color: #881337;
+  color: #FDA4AF;
+}
+[data-theme="red-dark"] .btn-open:hover,
+[data-theme="red-dark"] .live-toggle-btn.active,
+[data-theme="red-dark"] .lang-btn.active {
+  background: #DC2626;
+  border-color: #F87171;
+  color: #FFFFFF;
+}
+[data-theme="red-dark"] .bounty-rot-row.active {
+  background: #3B0F1C;
+  border-color: #EF4444;
+}
+[data-theme="red-dark"] .bounty-rot-row.active .duviri-item-chip {
+  background: #4C0519;
+  border-color: #F87171;
+}
+
+/* --- THÈME 6 : ROUGE CLAIR (CARMIN CLAIR) --- */
+[data-theme="red-light"] {
+  --bg-root: #FFE4E6;
+  --bg-sidebar: #FFF1F2;
+  --bg-center: #FFF7F8;
+  --bg-live: #FFF1F2;
+  --bg-card: #FFFFFF;
+  --bg-card-hover: #FFE4E6;
+  --border-subtle: #FECDD3;
+  --border-card: #FDA4AF;
+  --accent-blue: #E11D48;
+  --accent-cyan: #BE123C;
+  --accent-gold: #B45309;
+  --accent-green: #15803D;
+  --text-main: #4C0519;
+  --text-muted: #881337;
+  --text-dim: #9F1239;
+}
+
+[data-theme="red-light"] .welcome-banner {
+  background: linear-gradient(135deg, #FFF1F2 0%, #FFE4E6 100%);
+  border-color: #FDA4AF;
+}
+[data-theme="red-light"] .welcome-banner h3,
+[data-theme="red-light"] .feature-card h4 {
+  color: #BE123C;
+}
+[data-theme="red-light"] .welcome-banner p {
+  color: #4C0519;
+}
+[data-theme="red-light"] .nav-item {
+  color: #881337;
+}
+[data-theme="red-light"] .nav-icon {
+  color: #E11D48;
+}
+[data-theme="red-light"] .nav-item:hover {
+  background: #FFE4E6;
+  border-color: #FDA4AF;
+  color: #4C0519;
+}
+[data-theme="red-light"] .nav-item.active {
+  background: linear-gradient(90deg, #E11D48 0%, #BE123C 100%);
+  border-color: #9F1239;
+  color: #FFFFFF;
+  box-shadow: 0 0 14px rgba(225, 29, 72, 0.35);
+}
+[data-theme="red-light"] .nav-item.active .nav-icon {
+  color: #FFFFFF;
+}
+[data-theme="red-light"] .control-pill,
+[data-theme="red-light"] .live-toggle-btn,
+[data-theme="red-light"] .live-close-btn,
+[data-theme="red-light"] .btn-sidebar-action,
+[data-theme="red-light"] .btn-sidebar-secondary,
+[data-theme="red-light"] .search-input,
+[data-theme="red-light"] .filter-pill,
+[data-theme="red-light"] .fps-pill-btn,
+[data-theme="red-light"] .duviri-item-chip,
+[data-theme="red-light"] .modal-sec-box {
+  background: #FFFFFF;
+  border-color: #FDA4AF;
+  color: #4C0519;
+}
+[data-theme="red-light"] #zoom-label,
+[data-theme="red-light"] .fps-pill-hz,
+[data-theme="red-light"] .hero-planet-card .planet-title,
+[data-theme="red-light"] .cycle-timer,
+[data-theme="red-light"] .duviri-showcase-name,
+[data-theme="red-light"] .modal-sec-text {
+  color: #4C0519 !important;
+}
+[data-theme="red-light"] .hero-planet-card .planet-sub {
+  color: #881337;
+}
+[data-theme="red-light"] .planet-card.hero-planet-card,
+[data-theme="red-light"] .duviri-showcase-card,
+[data-theme="red-light"] .codex-modal-card {
+  background: linear-gradient(155deg, #FFFFFF 0%, #FFF1F2 100%);
+  border-color: #FDA4AF;
+  box-shadow: 0 4px 16px rgba(136, 19, 55, 0.08);
+}
+[data-theme="red-light"] .hero-planet-card .cycle-state {
+  background: #FFF1F2;
+  border-color: #FDA4AF;
+}
+[data-theme="red-light"] .filter-pill.active,
+[data-theme="red-light"] .lang-btn.active,
+[data-theme="red-light"] .live-toggle-btn.active {
+  background: #E11D48;
+  border-color: #BE123C;
+  color: #FFFFFF;
+}
+[data-theme="red-light"] .fps-pill-btn.active {
+  background: #FFE4E6;
+  border-color: #E11D48;
+  box-shadow: 0 0 12px rgba(225, 29, 72, 0.25);
+}
+[data-theme="red-light"] .fps-pill-btn.active .fps-pill-hz,
+[data-theme="red-light"] .fps-pill-btn.active .fps-pill-desc {
+  color: #BE123C;
+  text-shadow: none;
+}
+[data-theme="red-light"] .bounty-rot-row.active {
+  background: #FFE4E6;
+  border-color: #E11D48;
+}
+[data-theme="red-light"] .bounty-rot-row.active .duviri-item-chip {
+  background: #FECDD3;
+  border-color: #E11D48;
+  color: #4C0519;
+}
+[data-theme="red-light"] .btn-open {
+  background: #FFF1F2;
+  border-color: #FDA4AF;
+  color: #BE123C;
+}
+[data-theme="red-light"] .btn-open:hover {
+  background: #E11D48;
+  color: #FFFFFF;
+}
+
+
 
